@@ -33,3 +33,8 @@ Commands extend oclif's `Command` class with:
 ## Testing
 
 Uses `@oclif/test` with `runCommand()` helper to test CLI commands end-to-end. Tests verify command output using Chai expectations.
+
+## Git Conventions
+
+- All commit messages should be written in English
+- Follow conventional commit format when possible
