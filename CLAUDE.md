@@ -14,6 +14,28 @@ This is `gcal-commander`, a Google Calendar CLI tool built with the oclif framew
 - `npm run posttest` - Automatically runs lint after tests
 - `./bin/run.js COMMAND` or `gcal COMMAND` - Run CLI commands locally
 
+## Release Process
+
+This project uses **simple-release-action** for automated releases:
+
+### How It Works
+1. **Development**: Make commits using conventional commit format (`feat:`, `fix:`, `docs:`, etc.)
+2. **Automatic PR**: When releasable changes are pushed to main, a release PR is automatically created
+3. **Review & Merge**: Review the generated CHANGELOG.md and version bump, then merge the PR
+4. **Automatic Release**: Upon merge, the package is automatically published to npm and a GitHub release is created
+
+### Configuration
+- **simple-release-action**: Configured via `.simple-release.json`
+- **GitHub Actions**: Workflow defined in `.github/workflows/release.yml`
+- **Conventional Commits**: Used for automatic version determination and changelog generation
+
+### Manual Release (if needed)
+```bash
+# Force a specific version (emergency use only)
+npm version 1.0.0
+git push --tags
+```
+
 ## Pre-commit Hooks
 
 The project uses **Husky + lint-staged** for automatic code quality checks before commits:
@@ -32,30 +54,34 @@ The project uses **Husky + lint-staged** for automatic code quality checks befor
 
 ```
 gcal-commander/
-├── bin/                    # CLI executable entry point
-├── src/                    # TypeScript source code
-│   ├── commands/          # CLI command implementations
-│   │   ├── calendars/     # Calendar-related commands
-│   │   │   └── list.ts   # List calendars command
-│   │   ├── events/       # Event-related commands
-│   │   │   ├── list.ts   # List events command
-│   │   │   └── show.ts   # Show event details command
-│   │   └── hello/        # Example commands (can be removed)
-│   ├── services/         # Business logic services
-│   │   └── calendar.ts   # Google Calendar API wrapper
-│   ├── auth.ts          # OAuth2 authentication handling
-│   └── index.ts         # Main entry point
-├── test/                 # Test files (mirrors src/ structure)
-│   ├── commands/        # Command tests
-│   ├── services/        # Service tests
-│   └── tsconfig.json   # Test-specific TypeScript config
-├── dist/                # Compiled JavaScript output (generated)
-├── .husky/             # Git hooks (husky)
+├── .github/              # GitHub Actions workflows
+│   └── workflows/
+│       └── release.yml   # Automated release workflow
+├── bin/                  # CLI executable entry point
+├── src/                  # TypeScript source code
+│   ├── commands/        # CLI command implementations
+│   │   ├── calendars/   # Calendar-related commands
+│   │   │   └── list.ts # List calendars command
+│   │   ├── events/     # Event-related commands
+│   │   │   ├── list.ts # List events command
+│   │   │   └── show.ts # Show event details command
+│   │   └── hello/      # Example commands (can be removed)
+│   ├── services/       # Business logic services
+│   │   └── calendar.ts # Google Calendar API wrapper
+│   ├── auth.ts        # OAuth2 authentication handling
+│   └── index.ts       # Main entry point
+├── test/               # Test files (mirrors src/ structure)
+│   ├── commands/      # Command tests
+│   ├── services/      # Service tests
+│   └── tsconfig.json # Test-specific TypeScript config
+├── dist/              # Compiled JavaScript output (generated)
+├── .husky/           # Git hooks (husky)
+├── .simple-release.json # simple-release-action configuration
 ├── lint-staged.config.js # lint-staged configuration
-├── package.json         # Project configuration and dependencies
-├── tsconfig.json       # TypeScript configuration
-├── eslint.config.mjs   # ESLint configuration
-└── CLAUDE.md           # This file
+├── package.json       # Project configuration and dependencies
+├── tsconfig.json     # TypeScript configuration
+├── eslint.config.mjs # ESLint configuration
+└── CLAUDE.md         # This file
 ```
 
 ## Architecture

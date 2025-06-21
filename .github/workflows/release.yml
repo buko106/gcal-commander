@@ -1,0 +1,62 @@
+name: Release
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [closed]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      workflow: ${{ steps.check.outputs.workflow }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: check
+        uses: trigensoftware/simple-release-action@v1
+        with:
+          workflow: check
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  pull-request:
+    needs: check
+    if: needs.check.outputs.workflow == 'pull-request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - uses: trigensoftware/simple-release-action@v1
+        with:
+          workflow: pull-request
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  release:
+    needs: check
+    if: needs.check.outputs.workflow == 'release'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - uses: trigensoftware/simple-release-action@v1
+        with:
+          workflow: release
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          npm-token: ${{ secrets.NPM_TOKEN }}
