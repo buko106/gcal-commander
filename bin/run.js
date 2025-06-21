@@ -1,5 +1,7 @@
 #!/usr/bin/env node
+/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable unicorn/prefer-module */
 
-import {execute} from '@oclif/core'
+const {execute} = require('@oclif/core')
 
-await execute({dir: import.meta.url})
+execute({dir: __dirname})

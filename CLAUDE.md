@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is `gcal-commander`, a Google Calendar CLI tool built with the oclif framework. Currently contains placeholder "hello" commands but is intended to become a Google Calendar management tool.
+This is `gcal-commander`, a Google Calendar CLI tool built with the oclif framework. Provides read-only access to Google Calendar events and calendars via command-line interface with OAuth2 authentication.
 
 ## Development Commands
 
@@ -17,10 +17,23 @@ This is `gcal-commander`, a Google Calendar CLI tool built with the oclif framew
 ## Architecture
 
 Built on oclif CLI framework:
-- **Commands**: Located in `src/commands/` with nested structure (e.g., `hello/index.ts`, `hello/world.ts`)
+- **Commands**: Located in `src/commands/` with nested structure:
+  - `events/list.ts` - List calendar events
+  - `events/show.ts` - Show event details
+  - `calendars/list.ts` - List available calendars
+- **Authentication**: `src/auth.ts` handles OAuth2 flow with Google Calendar API
+- **Services**: `src/services/calendar.ts` wraps Google Calendar API calls
 - **Tests**: Mirror command structure in `test/commands/` using Mocha and Chai
 - **CLI Entry**: `bin/run.js` points to built commands in `dist/commands/`
 - **Configuration**: oclif config in package.json defines bin name "gcal", command discovery, and topics
+
+## Google Calendar Integration
+
+- **Authentication**: OAuth2 flow with automatic token refresh
+- **Credentials**: Stored in `~/.gcal-commander/credentials.json`
+- **Tokens**: Auto-saved to `~/.gcal-commander/token.json`
+- **Scopes**: Currently read-only (`https://www.googleapis.com/auth/calendar.readonly`)
+- **API**: Uses Google Calendar API v3 via `googleapis` library
 
 ## Command Structure
 
@@ -33,6 +46,25 @@ Commands extend oclif's `Command` class with:
 ## Testing
 
 Uses `@oclif/test` with `runCommand()` helper to test CLI commands end-to-end. Tests verify command output using Chai expectations.
+
+## Current Features (v0.1.0)
+
+### Available Commands
+- `gcal calendars list` - List all accessible Google calendars
+- `gcal events list [calendar]` - List upcoming events (default: primary calendar)
+- `gcal events show <eventId>` - Show detailed event information
+
+### Command Options
+- `--format json|table` - Output format (default: table)
+- `--max-results N` - Maximum events to return (default: 10)
+- `--days N` - Number of days to look ahead (default: 30)
+
+## Setup Requirements
+
+Before using the CLI, users need:
+1. Google Cloud Console project with Calendar API enabled
+2. OAuth2 desktop application credentials
+3. Credentials file placed at `~/.gcal-commander/credentials.json`
 
 ## Git Conventions
 
