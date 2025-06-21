@@ -14,6 +14,34 @@ This is `gcal-commander`, a Google Calendar CLI tool built with the oclif framew
 - `npm run posttest` - Automatically runs lint after tests
 - `./bin/run.js COMMAND` or `gcal COMMAND` - Run CLI commands locally
 
+## Repository Structure
+
+```
+gcal-commander/
+├── bin/                    # CLI executable entry point
+├── src/                    # TypeScript source code
+│   ├── commands/          # CLI command implementations
+│   │   ├── calendars/     # Calendar-related commands
+│   │   │   └── list.ts   # List calendars command
+│   │   ├── events/       # Event-related commands
+│   │   │   ├── list.ts   # List events command
+│   │   │   └── show.ts   # Show event details command
+│   │   └── hello/        # Example commands (can be removed)
+│   ├── services/         # Business logic services
+│   │   └── calendar.ts   # Google Calendar API wrapper
+│   ├── auth.ts          # OAuth2 authentication handling
+│   └── index.ts         # Main entry point
+├── test/                 # Test files (mirrors src/ structure)
+│   ├── commands/        # Command tests
+│   ├── services/        # Service tests
+│   └── tsconfig.json   # Test-specific TypeScript config
+├── dist/                # Compiled JavaScript output (generated)
+├── package.json         # Project configuration and dependencies
+├── tsconfig.json       # TypeScript configuration
+├── eslint.config.mjs   # ESLint configuration
+└── CLAUDE.md           # This file
+```
+
 ## Architecture
 
 Built on oclif CLI framework:
@@ -70,3 +98,7 @@ Before using the CLI, users need:
 
 - All commit messages should be written in English
 - Follow conventional commit format when possible
+
+## Important Notes
+
+- **Repository Structure Updates**: When adding/removing directories or files, always update the Repository Structure section in this CLAUDE.md file to keep it current
