@@ -14,6 +14,20 @@ This is `gcal-commander`, a Google Calendar CLI tool built with the oclif framew
 - `npm run posttest` - Automatically runs lint after tests
 - `./bin/run.js COMMAND` or `gcal COMMAND` - Run CLI commands locally
 
+## Pre-commit Hooks
+
+The project uses **Husky + lint-staged** for automatic code quality checks before commits:
+
+- **ESLint**: Automatically fixes linting issues on staged `.ts` and `.js` files
+- **Prettier**: Formats staged code files (`.ts`, `.js`, `.json`, `.md`)
+- **Automatic setup**: Hooks are installed via `npm run prepare` (runs automatically on `npm install`)
+
+### Configuration
+- **Husky**: Pre-commit hook in `.husky/pre-commit`
+- **lint-staged**: Configuration in `lint-staged.config.js` (moved from package.json for extensibility)
+- **Prettier**: Installed as dev dependency for code formatting
+- **Supported files**: TypeScript/JavaScript (lint + format), JSON/Markdown (format only)
+
 ## Repository Structure
 
 ```
@@ -36,6 +50,8 @@ gcal-commander/
 │   ├── services/        # Service tests
 │   └── tsconfig.json   # Test-specific TypeScript config
 ├── dist/                # Compiled JavaScript output (generated)
+├── .husky/             # Git hooks (husky)
+├── lint-staged.config.js # lint-staged configuration
 ├── package.json         # Project configuration and dependencies
 ├── tsconfig.json       # TypeScript configuration
 ├── eslint.config.mjs   # ESLint configuration
