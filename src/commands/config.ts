@@ -3,21 +3,23 @@ import { Args, Command, Flags } from '@oclif/core';
 import { ConfigService } from '../services/config';
 
 export default class Config extends Command {
+  /* eslint-disable perfectionist/sort-objects */
   static args = {
-    key: Args.string({
-      description: 'Configuration key',
-      required: false,
-    }),
     subcommand: Args.string({
       description: 'Config subcommand',
       options: ['get', 'set', 'list', 'unset', 'reset'],
       required: true,
+    }),
+    key: Args.string({
+      description: 'Configuration key',
+      required: false,
     }),
     value: Args.string({
       description: 'Configuration value',
       required: false,
     }),
   };
+  /* eslint-enable perfectionist/sort-objects */
 static description = 'Manage global configuration settings';
 static examples = [
     '<%= config.bin %> <%= command.id %> set defaultCalendar my-work@gmail.com',

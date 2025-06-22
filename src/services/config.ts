@@ -133,9 +133,15 @@ export class ConfigService {
     const keys = path.split('.');
     const lastKey = keys.pop()!;
     
-    const target = keys.reduce((current: null | Record<string, unknown>, key) => current && typeof current === 'object' && key in current
-        ? (current as Record<string, unknown>)[key] as Record<string, unknown>
-        : null, obj as null | Record<string, unknown>);
+    let target: null | Record<string, unknown> = obj as null | Record<string, unknown>;
+    for (const key of keys) {
+      if (target && typeof target === 'object' && key in target) {
+        target = target[key] as Record<string, unknown>;
+      } else {
+        target = null;
+        break;
+      }
+    }
 
     if (target && typeof target === 'object') {
       delete target[lastKey];
@@ -143,22 +149,30 @@ export class ConfigService {
   }
 
   private getNestedValue(obj: unknown, path: string): unknown {
-    return path.split('.').reduce((current, key) => current && typeof current === 'object' && key in current
-        ? (current as Record<string, unknown>)[key]
-        : undefined, obj);
+    let current = obj;
+    for (const key of path.split('.')) {
+      if (current && typeof current === 'object' && key in current) {
+        current = (current as Record<string, unknown>)[key];
+      } else {
+        return undefined;
+      }
+    }
+
+    return current;
   }
 
   private setNestedValue(obj: Record<string, unknown>, path: string, value: unknown): void {
     const keys = path.split('.');
     const lastKey = keys.pop()!;
     
-    const target = keys.reduce((current, key) => {
-      if (!(key in current) || typeof current[key] !== 'object' || current[key] === null) {
-        current[key] = {};
+    let target = obj;
+    for (const key of keys) {
+      if (!(key in target) || typeof target[key] !== 'object' || target[key] === null) {
+        target[key] = {};
       }
 
-      return current[key] as Record<string, unknown>;
-    }, obj);
+      target = target[key] as Record<string, unknown>;
+    }
 
     target[lastKey] = value;
   }
