@@ -16,25 +16,75 @@ This is `gcal-commander`, a Google Calendar CLI tool built with the oclif framew
 
 ## Release Process
 
-This project uses **simple-release-action** for automated releases:
+This project uses **simple-release-action** for fully automated releases based on conventional commits:
 
-### How It Works
-1. **Development**: Make commits using conventional commit format (`feat:`, `fix:`, `docs:`, etc.)
-2. **Automatic PR**: When releasable changes are pushed to main, a release PR is automatically created
-3. **Review & Merge**: Review the generated CHANGELOG.md and version bump, then merge the PR
-4. **Automatic Release**: Upon merge, the package is automatically published to npm and a GitHub release is created
+### 🔄 Complete Release Flow
 
-### Configuration
-- **simple-release-action**: Configured via `.simple-release.json`
-- **GitHub Actions**: Workflow defined in `.github/workflows/release.yml`
-- **Conventional Commits**: Used for automatic version determination and changelog generation
+1. **Development & Commits**
+   ```bash
+   git commit -m "feat: add new calendar filtering feature"
+   git commit -m "fix: resolve timezone display issue"
+   git commit -m "docs: update installation guide"
+   git push
+   ```
 
-### Manual Release (if needed)
-```bash
-# Force a specific version (emergency use only)
-npm version 1.0.0
-git push --tags
+2. **Automatic PR Creation** (triggered by push to main)
+   - GitHub Actions runs `check` job to detect releasable changes
+   - If conventional commits are found, `pull-request` job creates release PR
+   - PR includes:
+     - Automatic CHANGELOG.md generation from commit messages
+     - Version bump based on conventional commit types
+     - Updated package.json version
+
+3. **Review & Merge**
+   - Review the generated CHANGELOG.md for accuracy
+   - Verify version bump is appropriate (patch/minor/major)
+   - Merge the PR to trigger release
+
+4. **Automatic Release** (triggered by PR merge)
+   - GitHub Actions runs `release` job with full build pipeline:
+     ```
+     npm ci → npm run build → npm run test → npm publish
+     ```
+   - Creates GitHub Release with CHANGELOG content
+   - Creates Git tag (e.g., `v1.0.0`)
+   - Package published to npm registry
+
+### 🛠️ Technical Configuration
+
+**GitHub Actions Workflow** (`.github/workflows/release.yml`):
+- **Triggers**: `push` to main, `issue_comment` for manual control
+- **Three-stage pipeline**: `check` → `pull-request` / `release`
+- **Authentication**: GitHub Token (automatic) + NPM Token (secrets)
+- **Registry**: `registry-url: 'https://registry.npmjs.org/'`
+
+**simple-release-action Configuration** (`.simple-release.json`):
+```json
+{
+  "project": ["@simple-release/npm#NpmProject", {}]
+}
 ```
+
+**Version Management**:
+- `feat:` → Minor version bump (0.1.0 → 0.2.0)
+- `fix:` → Patch version bump (0.1.0 → 0.1.1)
+- `BREAKING CHANGE:` → Major version bump (0.1.0 → 1.0.0)
+- `docs:`, `style:`, `refactor:` → No version bump (until next feat/fix)
+
+### 🔧 Manual Release (Emergency Use)
+```bash
+# Only for emergency releases or workflow bypass
+npm version patch|minor|major
+git push --tags
+
+# Check release status
+npm view gcal-commander versions --json
+```
+
+### 📋 Required Secrets
+- **NPM_TOKEN**: Set in GitHub Settings → Secrets → Actions
+  - Use Granular Access Token for security
+  - Grant `Read and write` access to `gcal-commander` package
 
 ## Pre-commit Hooks
 
