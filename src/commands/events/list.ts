@@ -1,11 +1,12 @@
-import { Args, Command, Flags } from '@oclif/core';
+import { Args, Flags } from '@oclif/core';
 import { calendar_v3 as calendarV3 } from 'googleapis';
 
 import { getCalendarAuth } from '../../auth';
+import { BaseCommand } from '../../base-command';
 import { CalendarService } from '../../services/calendar';
 import { ConfigService } from '../../services/config';
 
-export default class EventsList extends Command {
+export default class EventsList extends BaseCommand {
   static args = {
     calendar: Args.string({
       default: 'primary',
@@ -20,6 +21,7 @@ static examples = [
     '<%= config.bin %> <%= command.id %> --days 7',
   ];
 static flags = {
+    ...BaseCommand.baseFlags,
     days: Flags.integer({
       char: 'd',
       default: 30,
@@ -42,7 +44,7 @@ static flags = {
     const { args, flags } = await this.parse(EventsList);
 
     try {
-      this.logToStderr('Authenticating with Google Calendar...');
+      this.logStatus('Authenticating with Google Calendar...');
       const auth = await getCalendarAuth();
       const calendarService = new CalendarService(auth);
 
@@ -65,7 +67,7 @@ static flags = {
       const timeMin = new Date().toISOString();
       const timeMax = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
 
-      this.logToStderr(`Fetching events from ${calendarId}...`);
+      this.logStatus(`Fetching events from ${calendarId}...`);
       const events = await calendarService.listEvents({
         calendarId,
         maxResults,
@@ -74,7 +76,7 @@ static flags = {
       });
 
       if (events.length === 0) {
-        this.log('No upcoming events found.');
+        this.logResult('No upcoming events found.');
         return;
       }
 
@@ -84,12 +86,12 @@ static flags = {
         this.displayEventsTable(events);
       }
     } catch (error) {
-      this.error(`Failed to list events: ${error}`);
+      this.logError(`Failed to list events: ${error}`);
     }
   }
 
   private displayEventsTable(events: calendarV3.Schema$Event[]): void {
-    this.log(`\nUpcoming Events (${events.length} found):\n`);
+    this.logResult(`\nUpcoming Events (${events.length} found):\n`);
     
     for (const [index, event] of events.entries()) {
       const start = event.start?.dateTime || event.start?.date;
@@ -103,16 +105,16 @@ static flags = {
           ? startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           : 'All day';
         
-        this.log(`${index + 1}. ${summary}`);
-        this.log(`   ${dateStr} • ${timeStr}${location}`);
+        this.logResult(`${index + 1}. ${summary}`);
+        this.logResult(`   ${dateStr} • ${timeStr}${location}`);
         if (event.description) {
           const description = event.description.length > 100 
             ? event.description.slice(0, 100) + '...'
             : event.description;
-          this.log(`   ${description}`);
+          this.logResult(`   ${description}`);
         }
 
-        this.log('');
+        this.logResult('');
       }
     }
   }

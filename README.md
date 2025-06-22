@@ -17,6 +17,7 @@ A command-line interface for Google Calendar operations. Manage your Google Cale
 - 📋 **Manage multiple calendars** - Access all your Google calendars
 - 🔐 **Secure OAuth2 authentication** - One-time setup with automatic token refresh
 - 💻 **Terminal-friendly output** - Clean table format or JSON for scripting
+- 🔇 **Quiet mode support** - Use `--quiet` flag to suppress status messages for scripting
 - 🚀 **Fast and lightweight** - Built with oclif framework
 
 ## Installation
@@ -135,6 +136,9 @@ gcal events show <event-id>
 
 # Limit number of events and time range
 gcal events list --max-results 5 --days 7
+
+# Use quiet mode for scripting (suppresses status messages)
+gcal events list --quiet --format json | jq '.[] | .summary'
 
 # Configuration examples
 gcal config set defaultCalendar work@company.com

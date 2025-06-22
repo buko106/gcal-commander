@@ -117,10 +117,12 @@ gcal-commander/
 │   │   ├── calendar.ts # Google Calendar API wrapper
 │   │   └── config.ts   # Configuration service
 │   ├── auth.ts        # OAuth2 authentication handling
+│   ├── base-command.ts # Base command class with --quiet flag support
 │   └── index.ts       # Main entry point
 ├── test/               # Test files (mirrors src/ structure)
 │   ├── commands/      # Command tests
-│   │   └── config.test.ts # Config command tests
+│   │   ├── config.test.ts # Config command tests
+│   │   └── quiet.test.ts  # --quiet flag behavior tests
 │   ├── services/      # Service tests
 │   └── tsconfig.json # Test-specific TypeScript config
 ├── dist/              # Compiled JavaScript output (generated)
@@ -141,6 +143,10 @@ Built on oclif CLI framework:
   - `events/show.ts` - Show event details
   - `calendars/list.ts` - List available calendars
   - `config.ts` - Manage global configuration settings
+- **Base Command**: `src/base-command.ts` provides common functionality:
+  - Universal `--quiet` flag support across all commands
+  - Logging method separation (status, result, error)
+  - Consistent output behavior and flag inheritance
 - **Authentication**: `src/auth.ts` handles OAuth2 flow with Google Calendar API
 - **Services**: 
   - `src/services/calendar.ts` wraps Google Calendar API calls
@@ -160,11 +166,12 @@ Built on oclif CLI framework:
 
 ## Command Structure
 
-Commands extend oclif's `Command` class with:
+Commands extend the `BaseCommand` class (which extends oclif's `Command`) with:
 - Static `args` and `flags` for CLI arguments
 - Static `description` and `examples` for help text
 - `async run()` method for command logic
-- Use `this.log()` for output and `this.parse()` for argument parsing
+- Automatic `--quiet` flag inheritance from BaseCommand
+- Use specialized logging methods: `logStatus()`, `logResult()`, `logError()`
 
 ### oclif Framework Best Practices
 
@@ -175,6 +182,13 @@ Always prefer oclif's built-in logging methods over custom implementations:
 - **`this.logToStderr(message)`** - Output to stderr (suppressed in JSON mode)
 - **`this.logJson(data)`** - Format and output JSON to stdout with proper styling
 - **`this.error(message)`** - Output error and exit with code 1
+
+#### BaseCommand Logging Methods
+Use BaseCommand's specialized logging methods for consistent --quiet flag behavior:
+
+- **`this.logStatus(message)`** - Progress/status messages to stderr (suppressed with --quiet)
+- **`this.logResult(message)`** - Command results to stdout (always shown)
+- **`this.logError(message)`** - Error messages and exit (always shown)
 
 #### CLI Output Design Principles
 
@@ -249,7 +263,8 @@ Uses `@oclif/test` with `runCommand()` helper to test CLI commands end-to-end. T
 - `events.format` - Default output format ("table"|"json", default: "table")
 - `events.days` - Default days ahead (1-365, default: 30)
 
-### Command Options
+### Global Command Options
+- `--quiet, -q` - Suppress non-essential output (status messages, progress indicators)
 - `--format json|table` - Output format (overrides config)
 - `--max-results N` - Maximum events to return (overrides config)
 - `--days N` - Number of days to look ahead (overrides config)

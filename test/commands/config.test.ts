@@ -34,9 +34,9 @@ describe('config', () => {
 
   describe('config list', () => {
     it('shows empty configuration when no config exists', async () => {
-      const { stdout } = await runCommand('config list');
+      const { stderr, stdout } = await runCommand('config list');
       expect(stdout).to.contain('No configuration set');
-      expect(stdout).to.contain('Config file:');
+      expect(stderr).to.contain('Config file:');
     });
 
     it('supports JSON format', async () => {

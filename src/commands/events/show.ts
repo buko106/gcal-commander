@@ -1,10 +1,11 @@
-import { Args, Command, Flags } from '@oclif/core';
+import { Args, Flags } from '@oclif/core';
 import { calendar_v3 as calendarV3 } from 'googleapis';
 
 import { getCalendarAuth } from '../../auth';
+import { BaseCommand } from '../../base-command';
 import { CalendarService } from '../../services/calendar';
 
-export default class EventsShow extends Command {
+export default class EventsShow extends BaseCommand {
   static args = {
     eventId: Args.string({
       description: 'Event ID to show details for',
@@ -18,6 +19,7 @@ static examples = [
     '<%= config.bin %> <%= command.id %> event123 --format json',
   ];
 static flags = {
+    ...BaseCommand.baseFlags,
     calendar: Flags.string({
       char: 'c',
       default: 'primary',
@@ -35,11 +37,11 @@ static flags = {
     const { args, flags } = await this.parse(EventsShow);
 
     try {
-      this.logToStderr('Authenticating with Google Calendar...');
+      this.logStatus('Authenticating with Google Calendar...');
       const auth = await getCalendarAuth();
       const calendarService = new CalendarService(auth);
 
-      this.logToStderr(`Fetching event details...`);
+      this.logStatus(`Fetching event details...`);
       const event = await calendarService.getEvent(args.eventId, flags.calendar);
 
       if (flags.format === 'json') {
@@ -48,74 +50,74 @@ static flags = {
         this.displayEventDetails(event);
       }
     } catch (error) {
-      this.error(`Failed to show event: ${error}`);
+      this.logError(`Failed to show event: ${error}`);
     }
   }
 
   private displayAdditionalInfo(event: calendarV3.Schema$Event): void {
     if (event.recurrence && event.recurrence.length > 0) {
-      this.log('\nRecurrence:');
+      this.logResult('\nRecurrence:');
       for (const [index, rule] of event.recurrence.entries()) {
-        this.log(`  ${index + 1}. ${rule}`);
+        this.logResult(`  ${index + 1}. ${rule}`);
       }
     }
     
     if (event.htmlLink) {
-      this.log(`\nGoogle Calendar Link: ${event.htmlLink}`);
+      this.logResult(`\nGoogle Calendar Link: ${event.htmlLink}`);
     }
     
     if (event.created) {
-      this.log(`Created: ${new Date(event.created).toLocaleString()}`);
+      this.logResult(`Created: ${new Date(event.created).toLocaleString()}`);
     }
     
     if (event.updated) {
-      this.log(`Last Updated: ${new Date(event.updated).toLocaleString()}`);
+      this.logResult(`Last Updated: ${new Date(event.updated).toLocaleString()}`);
     }
   }
 
   private displayBasicInfo(event: calendarV3.Schema$Event): void {
-    this.log(`Title: ${event.summary || '(No title)'}`);
-    this.log(`ID: ${event.id}`);
+    this.logResult(`Title: ${event.summary || '(No title)'}`);
+    this.logResult(`ID: ${event.id}`);
     
     if (event.description) {
-      this.log(`Description: ${event.description}`);
+      this.logResult(`Description: ${event.description}`);
     }
     
     if (event.location) {
-      this.log(`Location: ${event.location}`);
+      this.logResult(`Location: ${event.location}`);
     }
     
     if (event.status) {
-      this.log(`Status: ${event.status}`);
+      this.logResult(`Status: ${event.status}`);
     }
   }
 
   private displayEventDetails(event: calendarV3.Schema$Event): void {
-    this.log('\n=== Event Details ===\n');
+    this.logResult('\n=== Event Details ===\n');
     
     this.displayBasicInfo(event);
     this.displayTimeInfo(event);
     this.displayPeopleInfo(event);
     this.displayAdditionalInfo(event);
     
-    this.log('');
+    this.logResult('');
   }
 
   private displayPeopleInfo(event: calendarV3.Schema$Event): void {
     if (event.creator) {
-      this.log(`Creator: ${event.creator.displayName || event.creator.email}`);
+      this.logResult(`Creator: ${event.creator.displayName || event.creator.email}`);
     }
     
     if (event.organizer) {
-      this.log(`Organizer: ${event.organizer.displayName || event.organizer.email}`);
+      this.logResult(`Organizer: ${event.organizer.displayName || event.organizer.email}`);
     }
     
     if (event.attendees && event.attendees.length > 0) {
-      this.log('\nAttendees:');
+      this.logResult('\nAttendees:');
       for (const [index, attendee] of event.attendees.entries()) {
         const name = attendee.displayName || attendee.email;
         const status = attendee.responseStatus ? ` (${attendee.responseStatus})` : '';
-        this.log(`  ${index + 1}. ${name}${status}`);
+        this.logResult(`  ${index + 1}. ${name}${status}`);
       }
     }
   }
@@ -126,9 +128,9 @@ static flags = {
       if (startTime) {
         const startDate = new Date(startTime);
         if (event.start.dateTime) {
-          this.log(`Start: ${startDate.toLocaleString()}`);
+          this.logResult(`Start: ${startDate.toLocaleString()}`);
         } else {
-          this.log(`Start: ${startDate.toLocaleDateString()} (All day)`);
+          this.logResult(`Start: ${startDate.toLocaleDateString()} (All day)`);
         }
       }
     }
@@ -138,9 +140,9 @@ static flags = {
       if (endTime) {
         const endDate = new Date(endTime);
         if (event.end.dateTime) {
-          this.log(`End: ${endDate.toLocaleString()}`);
+          this.logResult(`End: ${endDate.toLocaleString()}`);
         } else {
-          this.log(`End: ${endDate.toLocaleDateString()} (All day)`);
+          this.logResult(`End: ${endDate.toLocaleDateString()} (All day)`);
         }
       }
     }

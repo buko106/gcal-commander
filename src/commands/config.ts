@@ -1,8 +1,9 @@
-import { Args, Command, Flags } from '@oclif/core';
+import { Args, Flags } from '@oclif/core';
 
+import { BaseCommand } from '../base-command';
 import { ConfigService } from '../services/config';
 
-export default class Config extends Command {
+export default class Config extends BaseCommand {
   /* eslint-disable perfectionist/sort-objects */
   static args = {
     subcommand: Args.string({
@@ -29,6 +30,7 @@ static examples = [
     '<%= config.bin %> <%= command.id %> reset',
   ];
 static flags = {
+    ...BaseCommand.baseFlags,
     confirm: Flags.boolean({
       default: false,
       description: 'Skip confirmation prompt for reset',
@@ -75,18 +77,18 @@ static flags = {
 
   private async handleGet(configService: ConfigService, key?: string): Promise<void> {
     if (!key) {
-      this.error('Key is required for get command\nUsage: gcal config get <key>');
+      this.logError('Key is required for get command\nUsage: gcal config get <key>');
     }
 
     if (!configService.validateKey(key)) {
-      this.error(`Invalid configuration key: ${key}\nValid keys: defaultCalendar, events.maxResults, events.format, events.days`);
+      this.logError(`Invalid configuration key: ${key}\nValid keys: defaultCalendar, events.maxResults, events.format, events.days`);
     }
 
     const value = await configService.get(key);
     if (value === undefined) {
-      this.log(`Configuration key '${key}' is not set`);
+      this.logResult(`Configuration key '${key}' is not set`);
     } else {
-      this.log(`${key} = ${JSON.stringify(value)}`);
+      this.logResult(`${key} = ${JSON.stringify(value)}`);
     }
   }
 
@@ -94,14 +96,14 @@ static flags = {
     const config = await configService.list();
     
     if (format === 'json') {
-      this.log(JSON.stringify(config, null, 2));
+      this.logResult(JSON.stringify(config, null, 2));
     } else {
-      this.log('Current configuration:');
-      this.log(`Config file: ${configService.getConfigPath()}`);
-      this.log('');
+      this.logStatus('Current configuration:');
+      this.logStatus(`Config file: ${configService.getConfigPath()}`);
+      this.logResult('');
       
       if (Object.keys(config).length === 0) {
-        this.log('No configuration set');
+        this.logResult('No configuration set');
       } else {
         this.printConfigTable(config);
       }
@@ -110,22 +112,22 @@ static flags = {
 
   private async handleReset(configService: ConfigService, confirm: boolean): Promise<void> {
     if (!confirm) {
-      this.log('This will reset all configuration settings.');
-      this.log('Use --confirm flag to proceed: gcal config reset --confirm');
+      this.logResult('This will reset all configuration settings.');
+      this.logResult('Use --confirm flag to proceed: gcal config reset --confirm');
       return;
     }
 
     await configService.reset();
-    this.log('All configuration settings have been reset');
+    this.logResult('All configuration settings have been reset');
   }
 
   private async handleSet(configService: ConfigService, key?: string, value?: string): Promise<void> {
     if (!key || value === undefined) {
-      this.error('Key and value are required for set command\nUsage: gcal config set <key> <value>');
+      this.logError('Key and value are required for set command\nUsage: gcal config set <key> <value>');
     }
 
     if (!configService.validateKey(key)) {
-      this.error(`Invalid configuration key: ${key}\nValid keys: defaultCalendar, events.maxResults, events.format, events.days`);
+      this.logError(`Invalid configuration key: ${key}\nValid keys: defaultCalendar, events.maxResults, events.format, events.days`);
     }
 
     // Parse value based on key type
@@ -133,7 +135,7 @@ static flags = {
     if (key === 'events.maxResults' || key === 'events.days') {
       const numValue = Number(value);
       if (Number.isNaN(numValue)) {
-        this.error(`Invalid number value for ${key}: ${value}`);
+        this.logError(`Invalid number value for ${key}: ${value}`);
       }
 
       parsedValue = numValue;
@@ -141,30 +143,30 @@ static flags = {
 
     const validation = configService.validateValue(key, parsedValue);
     if (!validation.valid) {
-      this.error(validation.error!);
+      this.logError(validation.error!);
     }
 
     await configService.set(key, parsedValue);
-    this.log(`Set ${key} = ${JSON.stringify(parsedValue)}`);
+    this.logResult(`Set ${key} = ${JSON.stringify(parsedValue)}`);
   }
 
   private async handleUnset(configService: ConfigService, key?: string): Promise<void> {
     if (!key) {
-      this.error('Key is required for unset command\nUsage: gcal config unset <key>');
+      this.logError('Key is required for unset command\nUsage: gcal config unset <key>');
     }
 
     if (!configService.validateKey(key)) {
-      this.error(`Invalid configuration key: ${key}\nValid keys: defaultCalendar, events.maxResults, events.format, events.days`);
+      this.logError(`Invalid configuration key: ${key}\nValid keys: defaultCalendar, events.maxResults, events.format, events.days`);
     }
 
     const currentValue = await configService.get(key);
     if (currentValue === undefined) {
-      this.log(`Configuration key '${key}' is not set`);
+      this.logResult(`Configuration key '${key}' is not set`);
       return;
     }
 
     await configService.unset(key);
-    this.log(`Unset ${key}`);
+    this.logResult(`Unset ${key}`);
   }
 
   private printConfigTable(config: Record<string, unknown>): void {
@@ -187,7 +189,7 @@ static flags = {
     const entries = flattenConfig(config);
     
     for (const [key, value] of entries) {
-      this.log(`${key.padEnd(20)} = ${JSON.stringify(value)}`);
+      this.logResult(`${key.padEnd(20)} = ${JSON.stringify(value)}`);
     }
   }
 
