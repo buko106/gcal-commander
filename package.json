@@ -70,6 +70,9 @@
       },
       "calendars": {
         "description": "Manage Google Calendars"
+      },
+      "config": {
+        "description": "Manage global configuration settings"
       }
     }
   },

@@ -109,15 +109,18 @@ gcal-commander/
 │   │   ├── calendars/   # Calendar-related commands
 │   │   │   └── list.ts # List calendars command
 │   │   ├── events/     # Event-related commands
-│   │   │   ├── list.ts # List events command
+│   │   │   ├── list.ts # List events command (supports config defaults)
 │   │   │   └── show.ts # Show event details command
+│   │   ├── config.ts   # Configuration management command
 │   │   └── hello/      # Example commands (can be removed)
 │   ├── services/       # Business logic services
-│   │   └── calendar.ts # Google Calendar API wrapper
+│   │   ├── calendar.ts # Google Calendar API wrapper
+│   │   └── config.ts   # Configuration service
 │   ├── auth.ts        # OAuth2 authentication handling
 │   └── index.ts       # Main entry point
 ├── test/               # Test files (mirrors src/ structure)
 │   ├── commands/      # Command tests
+│   │   └── config.test.ts # Config command tests
 │   ├── services/      # Service tests
 │   └── tsconfig.json # Test-specific TypeScript config
 ├── dist/              # Compiled JavaScript output (generated)
@@ -134,11 +137,14 @@ gcal-commander/
 
 Built on oclif CLI framework:
 - **Commands**: Located in `src/commands/` with nested structure:
-  - `events/list.ts` - List calendar events
+  - `events/list.ts` - List calendar events (supports config defaults)
   - `events/show.ts` - Show event details
   - `calendars/list.ts` - List available calendars
+  - `config.ts` - Manage global configuration settings
 - **Authentication**: `src/auth.ts` handles OAuth2 flow with Google Calendar API
-- **Services**: `src/services/calendar.ts` wraps Google Calendar API calls
+- **Services**: 
+  - `src/services/calendar.ts` wraps Google Calendar API calls
+  - `src/services/config.ts` manages user configuration in JSON format
 - **Tests**: Mirror command structure in `test/commands/` using Mocha and Chai
 - **CLI Entry**: `bin/run.js` points to built commands in `dist/commands/`
 - **Configuration**: oclif config in package.json defines bin name "gcal", command discovery, and topics
@@ -148,6 +154,7 @@ Built on oclif CLI framework:
 - **Authentication**: OAuth2 flow with automatic token refresh
 - **Credentials**: Stored in `~/.gcal-commander/credentials.json`
 - **Tokens**: Auto-saved to `~/.gcal-commander/token.json`
+- **Configuration**: User settings stored in `~/.gcal-commander/config.json`
 - **Scopes**: Currently read-only (`https://www.googleapis.com/auth/calendar.readonly`)
 - **API**: Uses Google Calendar API v3 via `googleapis` library
 
@@ -167,13 +174,27 @@ Uses `@oclif/test` with `runCommand()` helper to test CLI commands end-to-end. T
 
 ### Available Commands
 - `gcal calendars list` - List all accessible Google calendars
-- `gcal events list [calendar]` - List upcoming events (default: primary calendar)
+- `gcal events list [calendar]` - List upcoming events (default: configurable)
 - `gcal events show <eventId>` - Show detailed event information
+- `gcal config <subcommand>` - Manage global configuration settings
+
+### Configuration Management
+- `gcal config set <key> <value>` - Set configuration value
+- `gcal config get <key>` - Get configuration value
+- `gcal config list` - List all configuration
+- `gcal config unset <key>` - Remove configuration value
+- `gcal config reset --confirm` - Reset all configuration
+
+### Configurable Settings
+- `defaultCalendar` - Default calendar for events list (default: "primary")
+- `events.maxResults` - Default maximum events (1-100, default: 10)
+- `events.format` - Default output format ("table"|"json", default: "table")
+- `events.days` - Default days ahead (1-365, default: 30)
 
 ### Command Options
-- `--format json|table` - Output format (default: table)
-- `--max-results N` - Maximum events to return (default: 10)
-- `--days N` - Number of days to look ahead (default: 30)
+- `--format json|table` - Output format (overrides config)
+- `--max-results N` - Maximum events to return (overrides config)
+- `--days N` - Number of days to look ahead (overrides config)
 
 ## Setup Requirements
 
@@ -187,6 +208,8 @@ Before using the CLI, users need:
 - All commit messages should be written in English
 - Follow conventional commit format when possible
 
-## Important Notes
+## Development Guidelines
 
 - **Repository Structure Updates**: When adding/removing directories or files, always update the Repository Structure section in this CLAUDE.md file to keep it current
+- **README Updates**: When adding new commands or changing command options, always update the README.md file with usage examples and documentation
+- **Architecture Updates**: When making significant architectural changes (new services, major feature additions), update the Architecture section in this CLAUDE.md file

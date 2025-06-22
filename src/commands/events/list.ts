@@ -3,6 +3,7 @@ import { calendar_v3 as calendarV3 } from 'googleapis';
 
 import { getCalendarAuth } from '../../auth';
 import { CalendarService } from '../../services/calendar';
+import { ConfigService } from '../../services/config';
 
 export default class EventsList extends Command {
   static args = {
@@ -45,13 +46,29 @@ static flags = {
       const auth = await getCalendarAuth();
       const calendarService = new CalendarService(auth);
 
-      const timeMin = new Date().toISOString();
-      const timeMax = new Date(Date.now() + flags.days * 24 * 60 * 60 * 1000).toISOString();
+      // Get configuration values
+      const configService = ConfigService.getInstance();
+      
+      // Determine calendar to use: explicit CLI arg > config > default 'primary'
+      const defaultCalendar = await configService.get<string>('defaultCalendar');
+      const calendarId = args.calendar === 'primary' ? (defaultCalendar || 'primary') : args.calendar;
+      
+      // Apply config defaults for other settings
+      const configMaxResults = await configService.get<number>('events.maxResults') || 10;
+      const configDays = await configService.get<number>('events.days') || 30;
+      const configFormat = await configService.get<'json' | 'table'>('events.format') || 'table';
+      
+      const maxResults = flags['max-results'] || configMaxResults;
+      const days = flags.days || configDays;
+      const format = flags.format || configFormat;
 
-      this.log(`Fetching events from ${args.calendar}...`);
+      const timeMin = new Date().toISOString();
+      const timeMax = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
+
+      this.log(`Fetching events from ${calendarId}...`);
       const events = await calendarService.listEvents({
-        calendarId: args.calendar,
-        maxResults: flags['max-results'],
+        calendarId,
+        maxResults,
         timeMax,
         timeMin,
       });
@@ -61,7 +78,7 @@ static flags = {
         return;
       }
 
-      if (flags.format === 'json') {
+      if (format === 'json') {
         this.log(JSON.stringify(events, null, 2));
       } else {
         this.displayEventsTable(events);

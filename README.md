@@ -79,6 +79,45 @@ gcal calendars list
 
 The authentication token will be saved to `~/.gcal-commander/token.json` and automatically refreshed when needed.
 
+## Configuration
+
+gcal-commander supports global configuration to customize default behavior:
+
+```bash
+# Set default calendar for events list
+gcal config set defaultCalendar work@company.com
+
+# Set default number of events to display
+gcal config set events.maxResults 25
+
+# Set default output format
+gcal config set events.format json
+
+# Set default time range (days)
+gcal config set events.days 60
+
+# View all current configuration
+gcal config list
+
+# View specific configuration value
+gcal config get defaultCalendar
+
+# Remove a configuration setting
+gcal config unset defaultCalendar
+
+# Reset all configuration
+gcal config reset --confirm
+```
+
+### Configuration Options
+
+- `defaultCalendar` - Default calendar ID for `gcal events list` (defaults to "primary")
+- `events.maxResults` - Default maximum number of events (1-100, defaults to 10)
+- `events.format` - Default output format: "table" or "json" (defaults to "table")
+- `events.days` - Default number of days to look ahead (1-365, defaults to 30)
+
+Configuration is stored in `~/.gcal-commander/config.json` and can be edited manually.
+
 ### Basic Usage
 
 ```bash
@@ -96,6 +135,10 @@ gcal events show <event-id>
 
 # Limit number of events and time range
 gcal events list --max-results 5 --days 7
+
+# Configuration examples
+gcal config set defaultCalendar work@company.com
+gcal events list  # Now uses work@company.com as default
 ```
 
 <!-- toc -->
@@ -109,7 +152,7 @@ $ npm install -g gcal-commander
 $ gcal COMMAND
 running command...
 $ gcal (--version)
-gcal-commander/0.0.0 darwin-arm64 node-v18.20.8
+gcal-commander/0.0.0-development darwin-arm64 node-v22.16.0
 $ gcal --help [COMMAND]
 USAGE
   $ gcal COMMAND
@@ -119,55 +162,100 @@ USAGE
 # Commands
 <!-- commands -->
 * [`gcal calendars list`](#gcal-calendars-list)
+* [`gcal config [KEY] SUBCOMMAND [VALUE]`](#gcal-config-key-subcommand-value)
 * [`gcal events list [CALENDAR]`](#gcal-events-list-calendar)
 * [`gcal events show EVENTID`](#gcal-events-show-eventid)
 * [`gcal help [COMMAND]`](#gcal-help-command)
 
 ## `gcal calendars list`
 
-List all accessible Google calendars
+List all available calendars
 
 ```
 USAGE
-  $ gcal calendars list [--format json|table]
+  $ gcal calendars list [-f table|json]
 
 FLAGS
-  --format=<option>  [default: table] Output format
-                     <options: json|table>
+  -f, --format=<option>  [default: table] Output format
+                         <options: table|json>
 
 DESCRIPTION
-  List all accessible Google calendars
+  List all available calendars
 
 EXAMPLES
   $ gcal calendars list
+
   $ gcal calendars list --format json
 ```
 
-## `gcal events list [CALENDAR]`
+_See code: [src/commands/calendars/list.ts](https://github.com/buko106/gcal-commander/blob/v0.0.0-development/src/commands/calendars/list.ts)_
 
-List upcoming events from Google Calendar
+## `gcal config [KEY] SUBCOMMAND [VALUE]`
+
+Manage global configuration settings
 
 ```
 USAGE
-  $ gcal events list [CALENDAR] [--format json|table] [--max-results <value>] [--days <value>]
+  $ gcal config [KEY] SUBCOMMAND [VALUE] [--confirm] [-f table|json]
 
 ARGUMENTS
-  CALENDAR  Calendar ID (default: primary calendar)
+  KEY         Configuration key
+  SUBCOMMAND  (get|set|list|unset|reset) Config subcommand
+  VALUE       Configuration value
 
 FLAGS
-  --days=<value>         [default: 30] Number of days to look ahead
-  --format=<option>      [default: table] Output format
-                         <options: json|table>
-  --max-results=<value>  [default: 10] Maximum number of events to return
+  -f, --format=<option>  [default: table] Output format
+                         <options: table|json>
+      --confirm          Skip confirmation prompt for reset
 
 DESCRIPTION
-  List upcoming events from Google Calendar
+  Manage global configuration settings
+
+EXAMPLES
+  $ gcal config set defaultCalendar my-work@gmail.com
+
+  $ gcal config get defaultCalendar
+
+  $ gcal config list
+
+  $ gcal config unset defaultCalendar
+
+  $ gcal config reset
+```
+
+_See code: [src/commands/config.ts](https://github.com/buko106/gcal-commander/blob/v0.0.0-development/src/commands/config.ts)_
+
+## `gcal events list [CALENDAR]`
+
+List upcoming calendar events
+
+```
+USAGE
+  $ gcal events list [CALENDAR] [-d <value>] [-f table|json] [-n <value>]
+
+ARGUMENTS
+  CALENDAR  [default: primary] Calendar ID to list events from
+
+FLAGS
+  -d, --days=<value>         [default: 30] Number of days to look ahead
+  -f, --format=<option>      [default: table] Output format
+                             <options: table|json>
+  -n, --max-results=<value>  [default: 10] Maximum number of events to return
+
+DESCRIPTION
+  List upcoming calendar events
 
 EXAMPLES
   $ gcal events list
-  $ gcal events list --max-results 5 --days 7
-  $ gcal events list my-calendar@gmail.com --format json
+
+  $ gcal events list my-calendar@gmail.com
+
+  $ gcal events list --max-results 20
+
+  $ gcal events list --days 7
 ```
+
+_See code: [src/commands/events/list.ts](https://github.com/buko106/gcal-commander/blob/v0.0.0-development/src/commands/events/list.ts)_
 
 ## `gcal events show EVENTID`
 
@@ -175,22 +263,28 @@ Show detailed information about a specific event
 
 ```
 USAGE
-  $ gcal events show EVENTID [--format json|table]
+  $ gcal events show EVENTID [-c <value>] [-f table|json]
 
 ARGUMENTS
-  EVENTID  Event ID to display
+  EVENTID  Event ID to show details for
 
 FLAGS
-  --format=<option>  [default: table] Output format
-                     <options: json|table>
+  -c, --calendar=<value>  [default: primary] Calendar ID where the event is located
+  -f, --format=<option>   [default: table] Output format
+                          <options: table|json>
 
 DESCRIPTION
   Show detailed information about a specific event
 
 EXAMPLES
-  $ gcal events show abc123def456
-  $ gcal events show abc123def456 --format json
+  $ gcal events show event123
+
+  $ gcal events show event123 --calendar my-calendar@gmail.com
+
+  $ gcal events show event123 --format json
 ```
+
+_See code: [src/commands/events/show.ts](https://github.com/buko106/gcal-commander/blob/v0.0.0-development/src/commands/events/show.ts)_
 
 ## `gcal help [COMMAND]`
 
@@ -209,6 +303,8 @@ FLAGS
 DESCRIPTION
   Display help for gcal.
 ```
+
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.29/src/commands/help.ts)_
 <!-- commandsstop -->
 
 ## Contributing
