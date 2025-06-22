@@ -2,10 +2,10 @@ import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 
 describe('calendars list', () => {
-  it('shows authentication message', async () => {
+  it('shows authentication message in stderr', async () => {
     try {
-      const {stdout} = await runCommand('calendars list')
-      expect(stdout).to.contain('Authenticating with Google Calendar...')
+      const {stderr} = await runCommand('calendars list')
+      expect(stderr).to.contain('Authenticating with Google Calendar...')
     } catch (error) {
       // Expected to fail without proper authentication setup
       expect(String(error)).to.contain('Authentication failed')

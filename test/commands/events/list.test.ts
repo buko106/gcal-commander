@@ -3,10 +3,21 @@ import {expect} from 'chai'
 
 describe('events list', () => {
 
-  it('shows authentication message', async () => {
+  it('shows authentication message in stderr for table format', async () => {
     try {
-      const {stdout} = await runCommand('events list')
-      expect(stdout).to.contain('Authenticating with Google Calendar...')
+      const {stderr} = await runCommand('events list')
+      expect(stderr).to.contain('Authenticating with Google Calendar...')
+    } catch (error) {
+      // Expected to fail without proper authentication setup
+      expect(String(error)).to.contain('Authentication failed')
+    }
+  })
+
+  it('does not show authentication message in stdout for json format', async () => {
+    try {
+      const {stderr, stdout} = await runCommand('events list --format json')
+      expect(stderr).to.contain('Authenticating with Google Calendar...')
+      expect(stdout).to.not.contain('Authenticating with Google Calendar...')
     } catch (error) {
       // Expected to fail without proper authentication setup
       expect(String(error)).to.contain('Authentication failed')

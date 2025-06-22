@@ -23,11 +23,11 @@ static flags = {
     const { flags } = await this.parse(CalendarsList);
 
     try {
-      this.log('Authenticating with Google Calendar...');
+      this.logToStderr('Authenticating with Google Calendar...');
       const auth = await getCalendarAuth();
       const calendarService = new CalendarService(auth);
 
-      this.log('Fetching calendars...');
+      this.logToStderr('Fetching calendars...');
       const calendars = await calendarService.listCalendars();
 
       if (calendars.length === 0) {
@@ -36,7 +36,7 @@ static flags = {
       }
 
       if (flags.format === 'json') {
-        this.log(JSON.stringify(calendars, null, 2));
+        this.logJson(calendars);
       } else {
         this.displayCalendarsTable(calendars);
       }

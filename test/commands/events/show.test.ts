@@ -11,10 +11,10 @@ describe('events show', () => {
     }
   })
 
-  it('shows authentication message with eventId', async () => {
+  it('shows authentication message in stderr with eventId', async () => {
     try {
-      const {stdout} = await runCommand('events show test-event-123')
-      expect(stdout).to.contain('Authenticating with Google Calendar...')
+      const {stderr} = await runCommand('events show test-event-123')
+      expect(stderr).to.contain('Authenticating with Google Calendar...')
     } catch (error) {
       // Expected to fail without proper authentication setup
       expect(String(error)).to.contain('Authentication failed')

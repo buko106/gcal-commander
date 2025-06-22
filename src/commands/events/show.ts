@@ -35,15 +35,15 @@ static flags = {
     const { args, flags } = await this.parse(EventsShow);
 
     try {
-      this.log('Authenticating with Google Calendar...');
+      this.logToStderr('Authenticating with Google Calendar...');
       const auth = await getCalendarAuth();
       const calendarService = new CalendarService(auth);
 
-      this.log(`Fetching event details...`);
+      this.logToStderr(`Fetching event details...`);
       const event = await calendarService.getEvent(args.eventId, flags.calendar);
 
       if (flags.format === 'json') {
-        this.log(JSON.stringify(event, null, 2));
+        this.logJson(event);
       } else {
         this.displayEventDetails(event);
       }

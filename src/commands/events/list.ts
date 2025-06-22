@@ -42,7 +42,7 @@ static flags = {
     const { args, flags } = await this.parse(EventsList);
 
     try {
-      this.log('Authenticating with Google Calendar...');
+      this.logToStderr('Authenticating with Google Calendar...');
       const auth = await getCalendarAuth();
       const calendarService = new CalendarService(auth);
 
@@ -65,7 +65,7 @@ static flags = {
       const timeMin = new Date().toISOString();
       const timeMax = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
 
-      this.log(`Fetching events from ${calendarId}...`);
+      this.logToStderr(`Fetching events from ${calendarId}...`);
       const events = await calendarService.listEvents({
         calendarId,
         maxResults,
@@ -79,7 +79,7 @@ static flags = {
       }
 
       if (format === 'json') {
-        this.log(JSON.stringify(events, null, 2));
+        this.logJson(events);
       } else {
         this.displayEventsTable(events);
       }
