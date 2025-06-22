@@ -166,6 +166,64 @@ Commands extend oclif's `Command` class with:
 - `async run()` method for command logic
 - Use `this.log()` for output and `this.parse()` for argument parsing
 
+### oclif Framework Best Practices
+
+#### Built-in Logging Methods
+Always prefer oclif's built-in logging methods over custom implementations:
+
+- **`this.log(message)`** - Output to stdout (suppressed in JSON mode)
+- **`this.logToStderr(message)`** - Output to stderr (suppressed in JSON mode)
+- **`this.logJson(data)`** - Format and output JSON to stdout with proper styling
+- **`this.error(message)`** - Output error and exit with code 1
+
+#### CLI Output Design Principles
+
+Follow Unix CLI best practices for clean, pipeable output:
+
+**stdout (Standard Output)**:
+- Reserved exclusively for actual command results/data
+- Should be clean and parseable when using `--format json`
+- Must support piping: `gcal events list --format json | jq`
+- Use `this.log()` or `this.logJson()` for data output
+
+**stderr (Standard Error)**:
+- Used for status messages, progress indicators, and diagnostics
+- Authentication messages, "Fetching..." status updates
+- Error messages and warnings
+- Use `this.logToStderr()` for all informational messages
+
+**Example Implementation**:
+```typescript
+// ✅ Correct: Status to stderr, data to stdout
+this.logToStderr('Authenticating with Google Calendar...');
+const events = await calendarService.listEvents();
+
+if (format === 'json') {
+  this.logJson(events);  // Clean JSON to stdout
+} else {
+  this.displayEventsTable(events);  // Table to stdout via this.log()
+}
+
+// ❌ Incorrect: Mixed output corrupts JSON parsing
+this.log('Authenticating...');  // This breaks JSON piping
+console.log(JSON.stringify(events));  // Raw JSON without oclif styling
+```
+
+#### Framework Investigation First
+
+Before implementing custom solutions:
+1. **Check oclif documentation** for built-in functionality
+2. **Search existing codebase** for similar patterns
+3. **Test framework capabilities** with simple examples
+4. **Consider Unix CLI conventions** for standard behavior
+
+Common oclif features to leverage:
+- Automatic JSON flag handling (`--json` suppresses logs)
+- Built-in flag validation and parsing
+- Error handling with proper exit codes
+- Command help generation
+- Plugin architecture for extensibility
+
 ## Testing
 
 Uses `@oclif/test` with `runCommand()` helper to test CLI commands end-to-end. Tests verify command output using Chai expectations.
@@ -276,6 +334,24 @@ When implementing new features or fixing bugs, follow these step-by-step testing
 - Test authentication flow behavior (success/failure cases)
 - Verify JSON output is clean and parseable (no status messages mixed in)
 
+**Essential CLI Test Patterns**:
+```typescript
+// Test stdout/stderr separation
+it('separates status from data output', async () => {
+  const {stderr, stdout} = await runCommand('events list --format json');
+  expect(stderr).to.contain('Authenticating with Google Calendar...');
+  expect(stdout).to.not.contain('Authenticating');
+  expect(() => JSON.parse(stdout)).to.not.throw(); // Clean JSON
+});
+
+// Test pipeable output
+it('produces clean JSON for piping', async () => {
+  const {stdout} = await runCommand('events list --format json');
+  const events = JSON.parse(stdout); // Should not throw
+  expect(Array.isArray(events)).to.be.true;
+});
+```
+
 #### 8. **Refactoring Safety**
 - Keep existing tests passing during refactoring
 - Add new tests for new functionality before changing implementation
@@ -283,3 +359,56 @@ When implementing new features or fixing bugs, follow these step-by-step testing
 - Use TypeScript compilation as an additional safety net
 
 This approach ensures robust, maintainable code and prevents regressions while making it easy to identify and fix issues quickly.
+
+## Problem-Solving Methodology
+
+### Solution Evaluation Framework
+
+When facing implementation decisions, systematically evaluate options:
+
+#### 1. **Research Phase**
+- **Framework Documentation**: Check if oclif provides built-in solutions
+- **Existing Patterns**: Search codebase for similar implementations
+- **Community Standards**: Research Unix CLI conventions and best practices
+- **External Libraries**: Evaluate if external dependencies are necessary
+
+#### 2. **Solution Comparison**
+Document and compare multiple approaches:
+
+**Example: Logging Implementation Options**
+1. **Custom Logger Class** ❌
+   - Pros: Full control, custom features
+   - Cons: Reinventing wheel, maintenance burden, not oclif-integrated
+   
+2. **Console Methods** ❌  
+   - Pros: Simple, direct
+   - Cons: No JSON mode integration, manual stderr routing
+   
+3. **oclif Built-in Methods** ✅
+   - Pros: Framework integration, automatic JSON handling, standard behavior
+   - Cons: Must learn framework APIs
+   - Winner: Leverages existing, tested functionality
+
+#### 3. **Decision Criteria**
+Prioritize solutions that:
+- **Leverage framework capabilities** rather than fighting them
+- **Follow established conventions** (Unix CLI patterns)
+- **Minimize custom code** and maintenance burden
+- **Integrate well** with existing architecture
+- **Support testing** and verification
+
+#### 4. **Implementation Strategy**
+- **Start small**: Prototype with minimal viable implementation
+- **Test early**: Verify behavior matches expectations
+- **Document findings**: Update CLAUDE.md with learnings
+- **Refactor safely**: Use tests to ensure no regressions
+
+### Common Anti-Patterns to Avoid
+
+- **Not checking framework capabilities first** - Always research before building
+- **Mixing stdout/stderr inappropriately** - Breaks piping and Unix conventions
+- **Custom implementations of standard features** - Increases maintenance burden
+- **Skipping comparative analysis** - May choose suboptimal approach
+- **Large, untested changes** - Makes debugging and verification difficult
+
+This methodology ensures well-informed technical decisions and maintainable solutions.
