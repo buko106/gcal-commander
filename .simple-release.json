@@ -1,6 +1,0 @@
-{
-  "project": [
-    "@simple-release/npm#NpmProject",
-    {}
-  ]
-}

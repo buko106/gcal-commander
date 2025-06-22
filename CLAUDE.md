@@ -16,7 +16,7 @@ This is `gcal-commander`, a Google Calendar CLI tool built with the oclif framew
 
 ## Release Process
 
-This project uses **simple-release-action** for fully automated releases based on conventional commits:
+This project uses **semantic-release** for fully automated releases based on conventional commits:
 
 ### 🔄 Complete Release Flow
 
@@ -28,40 +28,36 @@ This project uses **simple-release-action** for fully automated releases based o
    git push
    ```
 
-2. **Automatic PR Creation** (triggered by push to main)
-   - GitHub Actions runs `check` job to detect releasable changes
-   - If conventional commits are found, `pull-request` job creates release PR
-   - PR includes:
-     - Automatic CHANGELOG.md generation from commit messages
-     - Version bump based on conventional commit types
-     - Updated package.json version
-
-3. **Review & Merge**
-   - Review the generated CHANGELOG.md for accuracy
-   - Verify version bump is appropriate (patch/minor/major)
-   - Merge the PR to trigger release
-
-4. **Automatic Release** (triggered by PR merge)
-   - GitHub Actions runs `release` job with full build pipeline:
+2. **Automatic Release** (triggered by push to main)
+   - GitHub Actions runs tests first (`test` job)
+   - If tests pass, `release` job runs semantic-release:
      ```
-     npm ci → npm run build → npm run test → npm publish
+     npm ci → npm run build → npx semantic-release
      ```
-   - Creates GitHub Release with CHANGELOG content
+   - Automatically determines version based on commit messages
+   - Generates CHANGELOG.md from commit history
+   - Creates GitHub Release with release notes
    - Creates Git tag (e.g., `v1.0.0`)
-   - Package published to npm registry
+   - Publishes package to npm registry
 
 ### 🛠️ Technical Configuration
 
 **GitHub Actions Workflow** (`.github/workflows/release.yml`):
-- **Triggers**: `push` to main, `issue_comment` for manual control
-- **Three-stage pipeline**: `check` → `pull-request` / `release`
+- **Triggers**: `push` to main, `pull_request` for testing
+- **Two-stage pipeline**: `test` → `release` (release only on main push)
 - **Authentication**: GitHub Token (automatic) + NPM Token (secrets)
 - **Registry**: `registry-url: 'https://registry.npmjs.org/'`
 
-**simple-release-action Configuration** (`.simple-release.json`):
+**semantic-release Configuration** (`.releaserc.json`):
 ```json
 {
-  "project": ["@simple-release/npm#NpmProject", {}]
+  "branches": ["main"],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/npm",
+    "@semantic-release/github"
+  ]
 }
 ```
 
@@ -69,13 +65,13 @@ This project uses **simple-release-action** for fully automated releases based o
 - `feat:` → Minor version bump (0.1.0 → 0.2.0)
 - `fix:` → Patch version bump (0.1.0 → 0.1.1)
 - `BREAKING CHANGE:` → Major version bump (0.1.0 → 1.0.0)
-- `docs:`, `style:`, `refactor:` → No version bump (until next feat/fix)
+- `docs:`, `style:`, `refactor:`, `test:` → No version bump (until next feat/fix)
 
 ### 🔧 Manual Release (Emergency Use)
 ```bash
 # Only for emergency releases or workflow bypass
-npm version patch|minor|major
-git push --tags
+npx semantic-release --dry-run  # Preview what would be released
+npx semantic-release --no-ci    # Force release locally (not recommended)
 
 # Check release status
 npm view gcal-commander versions --json
@@ -126,7 +122,7 @@ gcal-commander/
 │   └── tsconfig.json # Test-specific TypeScript config
 ├── dist/              # Compiled JavaScript output (generated)
 ├── .husky/           # Git hooks (husky)
-├── .simple-release.json # simple-release-action configuration
+├── .releaserc.json     # semantic-release configuration
 ├── lint-staged.config.js # lint-staged configuration
 ├── package.json       # Project configuration and dependencies
 ├── tsconfig.json     # TypeScript configuration
