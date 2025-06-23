@@ -1,9 +1,7 @@
 import { Args, Flags } from '@oclif/core';
 import { calendar_v3 as calendarV3 } from 'googleapis';
 
-import { getCalendarAuth } from '../../auth';
 import { BaseCommand } from '../../base-command';
-import { CalendarService } from '../../services/calendar';
 
 export default class EventsShow extends BaseCommand {
   static args = {
@@ -38,11 +36,10 @@ static flags = {
 
     try {
       this.logStatus('Authenticating with Google Calendar...');
-      const auth = await getCalendarAuth();
-      const calendarService = new CalendarService(auth);
+      await this.initCalendarService();
 
       this.logStatus(`Fetching event details...`);
-      const event = await calendarService.getEvent(args.eventId, flags.calendar);
+      const event = await this.calendarService.getEvent(args.eventId, flags.calendar);
 
       if (flags.format === 'json') {
         this.logJson(event);

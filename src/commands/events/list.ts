@@ -1,9 +1,7 @@
 import { Args, Flags } from '@oclif/core';
 import { calendar_v3 as calendarV3 } from 'googleapis';
 
-import { getCalendarAuth } from '../../auth';
 import { BaseCommand } from '../../base-command';
-import { CalendarService } from '../../services/calendar';
 import { ConfigService } from '../../services/config';
 
 export default class EventsList extends BaseCommand {
@@ -45,8 +43,7 @@ static flags = {
 
     try {
       this.logStatus('Authenticating with Google Calendar...');
-      const auth = await getCalendarAuth();
-      const calendarService = new CalendarService(auth);
+      await this.initCalendarService();
 
       // Get configuration values
       const configService = ConfigService.getInstance();
@@ -68,7 +65,7 @@ static flags = {
       const timeMax = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
 
       this.logStatus(`Fetching events from ${calendarId}...`);
-      const events = await calendarService.listEvents({
+      const events = await this.calendarService.listEvents({
         calendarId,
         maxResults,
         timeMax,

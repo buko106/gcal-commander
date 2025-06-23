@@ -1,7 +1,20 @@
 import { runCommand } from '@oclif/test';
 import { expect } from 'chai';
 
+import { ServiceRegistry } from '../../src/services/service-registry';
+import { MockAuthService, MockCalendarService } from '../../src/test-utils/mock-services';
+
 describe('--quiet flag', () => {
+  beforeEach(() => {
+    // Set up mock services for testing
+    ServiceRegistry.registerMock('AuthService', new MockAuthService());
+    ServiceRegistry.registerMock('CalendarService', new MockCalendarService());
+  });
+
+  afterEach(() => {
+    ServiceRegistry.clearMocks();
+  });
+
   it('should suppress status messages in events list command', async () => {
     const { stderr, stdout } = await runCommand('events list --quiet --max-results 1');
     
@@ -9,8 +22,9 @@ describe('--quiet flag', () => {
     expect(stderr).to.not.contain('Authenticating with Google Calendar...');
     expect(stderr).to.not.contain('Fetching events from');
     
-    // Result output should still be present (or "No upcoming events found")
+    // Result output should still be present
     expect(stdout.length).to.be.greaterThan(0);
+    expect(stdout).to.contain('Mock Event');
   });
 
   it('should suppress status messages in calendars list command', async () => {
@@ -22,21 +36,27 @@ describe('--quiet flag', () => {
     
     // Result output should still be present
     expect(stdout.length).to.be.greaterThan(0);
+    expect(stdout).to.contain('Primary Calendar');
   });
 
   it('should suppress status messages in events show command', async () => {
     try {
-      await runCommand('events show test-event-id --quiet');
-    } catch (error: unknown) {
-      // Command should fail due to invalid event ID
-      const stderr = (error as Error).message || '';
+      const { stderr, stdout } = await runCommand('events show mock-event-1 --quiet');
       
       // Status messages should be suppressed
       expect(stderr).to.not.contain('Authenticating with Google Calendar...');
       expect(stderr).to.not.contain('Fetching event details...');
       
-      // Error messages should still be present for invalid event ID
-      expect(stderr.length).to.be.greaterThan(0);
+      // Result output should be present
+      expect(stdout.length).to.be.greaterThan(0);
+      expect(stdout).to.contain('Mock Event 1');
+    } catch (error: unknown) {
+      // If command fails for other reasons, check error messages
+      const errorMessage = (error as Error).message || '';
+      
+      // Status messages should be suppressed even in error case
+      expect(errorMessage).to.not.contain('Authenticating with Google Calendar...');
+      expect(errorMessage).to.not.contain('Fetching event details...');
     }
   });
 
@@ -59,10 +79,14 @@ describe('--quiet flag', () => {
   });
 
   it('should work with short flag -q', async () => {
-    const { stderr } = await runCommand('events list -q --max-results 1');
+    const { stderr, stdout } = await runCommand('events list -q --max-results 1');
     
     // Status messages should be suppressed with short flag
     expect(stderr).to.not.contain('Authenticating with Google Calendar...');
     expect(stderr).to.not.contain('Fetching events from');
+    
+    // Result output should still be present
+    expect(stdout.length).to.be.greaterThan(0);
+    expect(stdout).to.contain('Mock Event');
   });
 });

@@ -1,9 +1,7 @@
 import { Flags } from '@oclif/core';
 import { calendar_v3 as calendarV3 } from 'googleapis';
 
-import { getCalendarAuth } from '../../auth';
 import { BaseCommand } from '../../base-command';
-import { CalendarService } from '../../services/calendar';
 
 export default class CalendarsList extends BaseCommand {
   static description = 'List all available calendars';
@@ -26,11 +24,10 @@ static flags = {
 
     try {
       this.logStatus('Authenticating with Google Calendar...');
-      const auth = await getCalendarAuth();
-      const calendarService = new CalendarService(auth);
+      await this.initCalendarService();
 
       this.logStatus('Fetching calendars...');
-      const calendars = await calendarService.listCalendars();
+      const calendars = await this.calendarService.listCalendars();
 
       if (calendars.length === 0) {
         this.logResult('No calendars found.');
