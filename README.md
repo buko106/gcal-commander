@@ -192,7 +192,7 @@ EXAMPLES
   $ gcal calendars list --format json
 ```
 
-_See code: [src/commands/calendars/list.ts](https://github.com/buko106/gcal-commander/blob/v0.0.0-development/src/commands/calendars/list.ts)_
+_See code: [src/commands/calendars/list.ts](src/commands/calendars/list.ts)_
 
 ## `gcal config [KEY] SUBCOMMAND [VALUE]`
 
@@ -227,7 +227,7 @@ EXAMPLES
   $ gcal config reset
 ```
 
-_See code: [src/commands/config.ts](https://github.com/buko106/gcal-commander/blob/v0.0.0-development/src/commands/config.ts)_
+_See code: [src/commands/config.ts](src/commands/config.ts)_
 
 ## `gcal events list [CALENDAR]`
 
@@ -259,7 +259,7 @@ EXAMPLES
   $ gcal events list --days 7
 ```
 
-_See code: [src/commands/events/list.ts](https://github.com/buko106/gcal-commander/blob/v0.0.0-development/src/commands/events/list.ts)_
+_See code: [src/commands/events/list.ts](src/commands/events/list.ts)_
 
 ## `gcal events show EVENTID`
 
@@ -288,7 +288,7 @@ EXAMPLES
   $ gcal events show event123 --format json
 ```
 
-_See code: [src/commands/events/show.ts](https://github.com/buko106/gcal-commander/blob/v0.0.0-development/src/commands/events/show.ts)_
+_See code: [src/commands/events/show.ts](src/commands/events/show.ts)_
 
 ## `gcal help [COMMAND]`
 
