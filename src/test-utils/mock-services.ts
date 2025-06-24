@@ -65,8 +65,9 @@ export class MockCalendarService implements ICalendarService {
     return this.mockCalendars;
   }
 
-  async listEvents(_params: ListEventsParams): Promise<calendarV3.Schema$Event[]> {
-    return this.mockEvents;
+  async listEvents(params: ListEventsParams): Promise<calendarV3.Schema$Event[]> {
+    // Respect the maxResults parameter for testing
+    return this.mockEvents.slice(0, params.maxResults);
   }
 
   setMockCalendars(calendars: calendarV3.Schema$CalendarListEntry[]): void {

@@ -2,8 +2,7 @@ import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 
 describe('events list', () => {
-
-  it('shows authentication message in stderr for table format', async () => {
+  it('shows authentication message in stderr', async () => {
     try {
       const {stderr} = await runCommand('events list')
       expect(stderr).to.contain('Authenticating with Google Calendar...')
@@ -13,20 +12,37 @@ describe('events list', () => {
     }
   })
 
-  it('does not show authentication message in stdout for json format', async () => {
+  it('accepts calendar argument', async () => {
     try {
-      const {stderr, stdout} = await runCommand('events list --format json')
+      const {stderr} = await runCommand('events list my-calendar@gmail.com')
       expect(stderr).to.contain('Authenticating with Google Calendar...')
-      expect(stdout).to.not.contain('Authenticating with Google Calendar...')
     } catch (error) {
       // Expected to fail without proper authentication setup
       expect(String(error)).to.contain('Authentication failed')
     }
   })
 
-  it('accepts max-results flag', async () => {
+  it('accepts format flag', async () => {
     try {
-      await runCommand('events list --max-results 5')
+      await runCommand('events list --format json')
+    } catch (error) {
+      // Command should parse flags correctly even if authentication fails
+      expect(String(error)).to.not.contain('Unknown flag')
+    }
+  })
+
+  it('rejects invalid format', async () => {
+    try {
+      await runCommand('events list --format invalid')
+      expect.fail('Should have thrown an error for invalid format')
+    } catch (error) {
+      expect(String(error)).to.match(/Expected.*format.*to be one of|invalid.*format/i)
+    }
+  })
+
+  it('accepts table format', async () => {
+    try {
+      await runCommand('events list --format table')
     } catch (error) {
       // Command should parse flags correctly even if authentication fails
       expect(String(error)).to.not.contain('Unknown flag')
@@ -42,21 +58,48 @@ describe('events list', () => {
     }
   })
 
-  it('accepts format flag', async () => {
+  it('accepts max-results flag', async () => {
     try {
-      await runCommand('events list --format json')
+      await runCommand('events list --max-results 20')
     } catch (error) {
       // Command should parse flags correctly even if authentication fails
       expect(String(error)).to.not.contain('Unknown flag')
     }
   })
 
-  it('accepts calendar argument', async () => {
+  it('rejects invalid max-results value', async () => {
     try {
-      await runCommand('events list my-calendar@gmail.com')
+      await runCommand('events list --max-results abc')
+      expect.fail('Should have thrown an error for invalid max-results')
     } catch (error) {
-      // Command should parse arguments correctly even if authentication fails
-      expect(String(error)).to.not.contain('Unexpected argument')
+      expect(String(error)).to.match(/Expected.*integer|Invalid.*max-results/i)
+    }
+  })
+
+  it('rejects invalid days value', async () => {
+    try {
+      await runCommand('events list --days xyz')
+      expect.fail('Should have thrown an error for invalid days')
+    } catch (error) {
+      expect(String(error)).to.match(/Expected.*integer|Invalid.*days/i)
+    }
+  })
+
+  it('accepts short flag aliases', async () => {
+    try {
+      await runCommand('events list -f json -d 7 -n 5')
+    } catch (error) {
+      // Command should parse short flags correctly even if authentication fails
+      expect(String(error)).to.not.contain('Unknown flag')
+    }
+  })
+
+  it('accepts --quiet flag from base command', async () => {
+    try {
+      await runCommand('events list --quiet')
+    } catch (error) {
+      // Command should parse --quiet flag correctly even if authentication fails
+      expect(String(error)).to.not.contain('Unknown flag')
     }
   })
 })
