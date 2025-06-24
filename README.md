@@ -80,6 +80,32 @@ gcal calendars list
 
 The authentication token will be saved to `~/.gcal-commander/token.json` and automatically refreshed when needed.
 
+## Basic Usage
+
+```bash
+# List all your calendars
+gcal calendars list
+
+# List upcoming events from your primary calendar
+gcal events list
+
+# List events from a specific calendar
+gcal events list my-calendar@gmail.com
+
+# Show detailed information about an event
+gcal events show <event-id>
+
+# Limit number of events and time range
+gcal events list --max-results 5 --days 7
+
+# Use quiet mode for scripting (suppresses status messages)
+gcal events list --quiet --format json | jq '.[] | .summary'
+
+# Configuration examples
+gcal config set defaultCalendar work@company.com
+gcal events list  # Now uses work@company.com as default
+```
+
 ## Configuration
 
 gcal-commander supports global configuration to customize default behavior:
@@ -119,197 +145,24 @@ gcal config reset --confirm
 
 Configuration is stored in `~/.gcal-commander/config.json` and can be edited manually.
 
-### Basic Usage
+## Commands
 
-```bash
-# List all your calendars
-gcal calendars list
+gcal-commander provides several commands to interact with Google Calendar:
 
-# List upcoming events from your primary calendar
-gcal events list
+### Calendar Management
+- **[`gcal calendars list`](docs/calendars-list.md)** - List all available calendars
 
-# List events from a specific calendar
-gcal events list my-calendar@gmail.com
+### Event Management  
+- **[`gcal events list`](docs/events-list.md)** - List upcoming calendar events
+- **[`gcal events show`](docs/events-show.md)** - Show detailed event information
 
-# Show detailed information about an event
-gcal events show <event-id>
+### Configuration
+- **[`gcal config`](docs/config.md)** - Manage global configuration settings
 
-# Limit number of events and time range
-gcal events list --max-results 5 --days 7
+### Help
+- **`gcal help`** - Display help for any command
 
-# Use quiet mode for scripting (suppresses status messages)
-gcal events list --quiet --format json | jq '.[] | .summary'
-
-# Configuration examples
-gcal config set defaultCalendar work@company.com
-gcal events list  # Now uses work@company.com as default
-```
-
-<!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
-<!-- tocstop -->
-# Usage
-<!-- usage -->
-```sh-session
-$ npm install -g gcal-commander
-$ gcal COMMAND
-running command...
-$ gcal (--version)
-gcal-commander/0.0.0-development darwin-arm64 node-v22.16.0
-$ gcal --help [COMMAND]
-USAGE
-  $ gcal COMMAND
-...
-```
-<!-- usagestop -->
-# Commands
-<!-- commands -->
-* [`gcal calendars list`](#gcal-calendars-list)
-* [`gcal config [KEY] SUBCOMMAND [VALUE]`](#gcal-config-key-subcommand-value)
-* [`gcal events list [CALENDAR]`](#gcal-events-list-calendar)
-* [`gcal events show EVENTID`](#gcal-events-show-eventid)
-* [`gcal help [COMMAND]`](#gcal-help-command)
-
-## `gcal calendars list`
-
-List all available calendars
-
-```
-USAGE
-  $ gcal calendars list [-f table|json]
-
-FLAGS
-  -f, --format=<option>  [default: table] Output format
-                         <options: table|json>
-
-DESCRIPTION
-  List all available calendars
-
-EXAMPLES
-  $ gcal calendars list
-
-  $ gcal calendars list --format json
-```
-
-_See code: [src/commands/calendars/list.ts](src/commands/calendars/list.ts)_
-
-## `gcal config [KEY] SUBCOMMAND [VALUE]`
-
-Manage global configuration settings
-
-```
-USAGE
-  $ gcal config [KEY] SUBCOMMAND [VALUE] [--confirm] [-f table|json]
-
-ARGUMENTS
-  KEY         Configuration key
-  SUBCOMMAND  (get|set|list|unset|reset) Config subcommand
-  VALUE       Configuration value
-
-FLAGS
-  -f, --format=<option>  [default: table] Output format
-                         <options: table|json>
-      --confirm          Skip confirmation prompt for reset
-
-DESCRIPTION
-  Manage global configuration settings
-
-EXAMPLES
-  $ gcal config set defaultCalendar my-work@gmail.com
-
-  $ gcal config get defaultCalendar
-
-  $ gcal config list
-
-  $ gcal config unset defaultCalendar
-
-  $ gcal config reset
-```
-
-_See code: [src/commands/config.ts](src/commands/config.ts)_
-
-## `gcal events list [CALENDAR]`
-
-List upcoming calendar events
-
-```
-USAGE
-  $ gcal events list [CALENDAR] [-d <value>] [-f table|json] [-n <value>]
-
-ARGUMENTS
-  CALENDAR  [default: primary] Calendar ID to list events from
-
-FLAGS
-  -d, --days=<value>         [default: 30] Number of days to look ahead
-  -f, --format=<option>      [default: table] Output format
-                             <options: table|json>
-  -n, --max-results=<value>  [default: 10] Maximum number of events to return
-
-DESCRIPTION
-  List upcoming calendar events
-
-EXAMPLES
-  $ gcal events list
-
-  $ gcal events list my-calendar@gmail.com
-
-  $ gcal events list --max-results 20
-
-  $ gcal events list --days 7
-```
-
-_See code: [src/commands/events/list.ts](src/commands/events/list.ts)_
-
-## `gcal events show EVENTID`
-
-Show detailed information about a specific event
-
-```
-USAGE
-  $ gcal events show EVENTID [-c <value>] [-f table|json]
-
-ARGUMENTS
-  EVENTID  Event ID to show details for
-
-FLAGS
-  -c, --calendar=<value>  [default: primary] Calendar ID where the event is located
-  -f, --format=<option>   [default: table] Output format
-                          <options: table|json>
-
-DESCRIPTION
-  Show detailed information about a specific event
-
-EXAMPLES
-  $ gcal events show event123
-
-  $ gcal events show event123 --calendar my-calendar@gmail.com
-
-  $ gcal events show event123 --format json
-```
-
-_See code: [src/commands/events/show.ts](src/commands/events/show.ts)_
-
-## `gcal help [COMMAND]`
-
-Display help for gcal.
-
-```
-USAGE
-  $ gcal help [COMMAND...] [-n]
-
-ARGUMENTS
-  COMMAND...  Command to show help for.
-
-FLAGS
-  -n, --nested-commands  Include all nested commands in the output.
-
-DESCRIPTION
-  Display help for gcal.
-```
-
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.29/src/commands/help.ts)_
-<!-- commandsstop -->
+For detailed usage examples and options for each command, click on the links above to view the comprehensive documentation.
 
 ## Contributing
 
