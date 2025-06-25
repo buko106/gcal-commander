@@ -70,13 +70,8 @@ static flags = {
   }
 
   private async handleGet(configService: ConfigService, key?: string): Promise<void> {
-    if (!key) {
-      this.logError('Key is required for get command\nUsage: gcal config get <key>');
-    }
-
-    if (!configService.validateKey(key)) {
-      this.logError(`Invalid configuration key: ${key}\nValid keys: defaultCalendar, events.maxResults, events.format, events.days`);
-    }
+    this.validateKeyRequired(key, 'get');
+    this.validateConfigKey(configService, key!);
 
     const value = await configService.get(key);
     if (value === undefined) {
@@ -120,9 +115,7 @@ static flags = {
       this.logError('Key and value are required for set command\nUsage: gcal config set <key> <value>');
     }
 
-    if (!configService.validateKey(key)) {
-      this.logError(`Invalid configuration key: ${key}\nValid keys: defaultCalendar, events.maxResults, events.format, events.days`);
-    }
+    this.validateConfigKey(configService, key!);
 
     // Parse value based on key type
     let parsedValue: unknown = value;
@@ -145,13 +138,8 @@ static flags = {
   }
 
   private async handleUnset(configService: ConfigService, key?: string): Promise<void> {
-    if (!key) {
-      this.logError('Key is required for unset command\nUsage: gcal config unset <key>');
-    }
-
-    if (!configService.validateKey(key)) {
-      this.logError(`Invalid configuration key: ${key}\nValid keys: defaultCalendar, events.maxResults, events.format, events.days`);
-    }
+    this.validateKeyRequired(key, 'unset');
+    this.validateConfigKey(configService, key!);
 
     const currentValue = await configService.get(key);
     if (currentValue === undefined) {
@@ -187,4 +175,15 @@ static flags = {
     }
   }
 
+  private validateConfigKey(configService: ConfigService, key: string): void {
+    if (!configService.validateKey(key)) {
+      this.logError(`Invalid configuration key: ${key}\nValid keys: ${configService.getValidKeys().join(', ')}`);
+    }
+  }
+
+  private validateKeyRequired(key: string | undefined, command: string): asserts key is string {
+    if (!key) {
+      this.logError(`Key is required for ${command} command\nUsage: gcal config ${command} <key>`);
+    }
+  }
 }

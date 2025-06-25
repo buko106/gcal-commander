@@ -15,6 +15,12 @@ export interface Config extends Record<string, unknown> {
 
 export class ConfigService {
   private static instance: ConfigService;
+  private static readonly VALID_KEYS = [
+    'defaultCalendar',
+    'events.maxResults',
+    'events.format',
+    'events.days',
+  ] as const;
   private config: Config = {};
   private loaded = false;
 
@@ -33,6 +39,10 @@ export class ConfigService {
 
   public getConfigPath(): string {
     return CONFIG_PATH;
+  }
+
+  public getValidKeys(): readonly string[] {
+    return ConfigService.VALID_KEYS;
   }
 
   public async list(): Promise<Config> {
@@ -78,13 +88,7 @@ export class ConfigService {
   }
 
   public validateKey(key: string): boolean {
-    const validKeys = [
-      'defaultCalendar',
-      'events.maxResults',
-      'events.format',
-      'events.days',
-    ];
-    return validKeys.includes(key);
+    return ConfigService.VALID_KEYS.includes(key as typeof ConfigService.VALID_KEYS[number]);
   }
 
   public validateValue(key: string, value: unknown): { error?: string; valid: boolean; } {
