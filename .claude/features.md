@@ -31,6 +31,7 @@ gcal-commander/
 │   │   ├── calendars/        # Calendar-related commands
 │   │   │   └── list.ts      # List calendars command
 │   │   ├── events/          # Event-related commands
+│   │   │   ├── create.ts    # Create new event command (full feature implementation)
 │   │   │   ├── list.ts      # List events command (supports config defaults)
 │   │   │   └── show.ts      # Show event details command
 │   │   ├── config.ts        # Configuration management command
@@ -57,8 +58,10 @@ gcal-commander/
 │   │   │   ├── list.output.test.ts      # Output format tests
 │   │   │   └── list.test.ts             # Unit tests
 │   │   ├── events/          # Event command tests
+│   │   │   ├── create.test.ts           # Create command tests
 │   │   │   ├── list.integration.test.ts # Integration tests
 │   │   │   ├── list.test.ts             # Unit tests
+│   │   │   ├── show.output.test.ts      # Show command output tests
 │   │   │   └── show.test.ts             # Show command tests
 │   │   ├── hello/           # Hello command tests (legacy)
 │   │   │   ├── index.test.ts
@@ -96,7 +99,7 @@ gcal-commander/
 - **Credentials**: Stored in `~/.gcal-commander/credentials.json`
 - **Tokens**: Auto-saved to `~/.gcal-commander/token.json`
 - **Configuration**: User settings stored in `~/.gcal-commander/config.json`
-- **Scopes**: Currently read-only (`https://www.googleapis.com/auth/calendar.readonly`)
+- **Scopes**: Read and write access (`https://www.googleapis.com/auth/calendar.readonly` for read operations, additional scopes for create operations)
 - **API**: Uses Google Calendar API v3 via `googleapis` library
 
 ## Testing
@@ -108,7 +111,9 @@ Uses `@oclif/test` with `runCommand()` helper to test CLI commands end-to-end. T
 For a complete list of features and detailed usage examples, see the **Features** and **Commands** sections in [README.md](../README.md).
 
 Key capabilities include:
-- Google Calendar event and calendar management
+- Google Calendar event and calendar management (read, create, display)
+- Event creation with flexible time specification (all-day, timed events, duration-based)
+- Attendee management and event invitations
 - Secure OAuth2 authentication with token refresh
 - Configuration management with customizable defaults
 - Multiple output formats (table/JSON) with `--quiet` mode support

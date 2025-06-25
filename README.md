@@ -14,6 +14,7 @@ A command-line interface for Google Calendar operations. Manage your Google Cale
 ## Features
 
 - 📅 **Read Google Calendar events** - List and view detailed event information
+- ✏️ **Create calendar events** - Add new events with flexible time options, attendees, and locations
 - 📋 **Manage multiple calendars** - Access all your Google calendars
 - 🔐 **Secure OAuth2 authentication** - One-time setup with automatic token refresh
 - 💻 **Terminal-friendly output** - Clean table format or JSON for scripting
@@ -70,7 +71,7 @@ When you run gcal-commander for the first time, it will:
 
 1. Open your default browser for Google OAuth authentication
 2. Ask you to sign in to your Google account
-3. Request permission to access your Google Calendar (read-only)
+3. Request permission to access your Google Calendar
 4. Save the authentication token automatically
 
 ```bash
@@ -94,6 +95,12 @@ gcal events list my-calendar@gmail.com
 
 # Show detailed information about an event
 gcal events show <event-id>
+
+# Create a new event
+gcal events create "Team Meeting" --start "2024-01-15T14:00:00" --duration 60
+
+# Create an all-day event
+gcal events create "Conference" --start "2024-01-15" --all-day
 
 # Limit number of events and time range
 gcal events list --max-results 5 --days 7
@@ -155,6 +162,7 @@ gcal-commander provides several commands to interact with Google Calendar:
 ### Event Management  
 - **[`gcal events list`](docs/events-list.md)** - List upcoming calendar events
 - **[`gcal events show`](docs/events-show.md)** - Show detailed event information
+- **[`gcal events create`](docs/events-create.md)** - Create new calendar events with flexible scheduling options
 
 ### Configuration
 - **[`gcal config`](docs/config.md)** - Manage global configuration settings
