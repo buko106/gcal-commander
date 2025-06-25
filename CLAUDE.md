@@ -14,7 +14,8 @@ For daily development work, refer to `.claude/core.md` which contains:
 
 Additional documentation is available in `.claude/` directory and should be read when needed:
 
-- **Feature development**: Read `.claude/features.md` for current features, testing practices, and problem-solving methodology
+- **Feature development**: Read `.claude/features.md` for current features and problem-solving methodology
+- **Test-driven development**: Read `.claude/tdd.md` for TDD practices, Red-Green-Refactor cycle, and CLI testing patterns
 - **Release/process work**: Read `.claude/processes.md` for release workflow, pre-commit hooks, and setup requirements
 
 ## Auto-Loading Instructions
@@ -22,7 +23,7 @@ Additional documentation is available in `.claude/` directory and should be read
 When working on tasks that require deeper context:
 
 1. **For new features or major changes**: Also read `.claude/features.md`
-2. **For testing or quality work**: Review testing sections in `.claude/features.md`
+2. **For testing or quality work**: Review `.claude/tdd.md` for comprehensive TDD practices
 3. **For release or CI/CD work**: Also read `.claude/processes.md`
 4. **For authentication or API work**: Check Google Calendar integration details in `.claude/features.md`
 
@@ -36,7 +37,7 @@ When working on tasks that require deeper context:
 ## Development Workflow
 
 1. Read `.claude/core.md` for architecture patterns
-2. Follow TDD practices from `.claude/features.md`
+2. Follow TDD practices from `.claude/tdd.md`
 3. Use oclif logging methods (never console.log)
 4. Separate stdout (data) from stderr (status messages)
 5. Run tests after changes: `npm test`
