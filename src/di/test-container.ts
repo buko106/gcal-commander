@@ -3,6 +3,9 @@ import { container, DependencyContainer } from 'tsyringe';
 
 import { IAuthService, ICalendarService } from '../interfaces/services';
 import { MockAuthService, MockCalendarService } from '../test-utils/mock-services';
+import { setContainerProvider } from './container-provider';
+import { ProductionContainerProvider } from './production-container-provider';
+import { TestContainerProvider } from './test-container-provider';
 import { TOKENS } from './tokens';
 
 let testContainer: DependencyContainer | null = null;
@@ -30,6 +33,9 @@ export function setupTestContainer(): {
     useValue: mockCalendarService,
   });
 
+  // Set the test container provider
+  setContainerProvider(new TestContainerProvider());
+
   return { mockAuthService, mockCalendarService };
 }
 
@@ -42,6 +48,9 @@ export function cleanupTestContainer(): void {
     testContainer.clearInstances();
     testContainer = null;
   }
+  
+  // Restore production container provider
+  setContainerProvider(new ProductionContainerProvider());
 }
 
 /**

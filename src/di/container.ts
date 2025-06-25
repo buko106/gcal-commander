@@ -4,6 +4,8 @@ import { container } from 'tsyringe';
 import { IAuthService, ICalendarService } from '../interfaces/services';
 import { AuthService } from '../services/auth';
 import { CalendarService } from '../services/calendar';
+import { setContainerProvider } from './container-provider';
+import { ProductionContainerProvider } from './production-container-provider';
 import { TOKENS } from './tokens';
 
 // Container setup
@@ -18,7 +20,8 @@ export function setupContainer(): void {
   });
 }
 
-// Initialize container
+// Initialize container and set production provider
 setupContainer();
+setContainerProvider(new ProductionContainerProvider());
 
 export { container } from 'tsyringe';

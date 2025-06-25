@@ -1,7 +1,6 @@
 import { Command, Flags } from '@oclif/core';
 
-import { container } from './di/container';
-import { getTestContainer } from './di/test-container';
+import { getContainerProvider } from './di/container-provider';
 import { TOKENS } from './di/tokens';
 import { IAuthService, ICalendarService } from './interfaces/services';
 
@@ -69,11 +68,6 @@ protected authService!: IAuthService;
   }
 
   private getContainer() {
-    // Use test container if available, otherwise use production container
-    try {
-      return getTestContainer();
-    } catch {
-      return container;
-    }
+    return getContainerProvider().getContainer();
   }
 }
