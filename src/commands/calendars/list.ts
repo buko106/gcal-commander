@@ -1,4 +1,4 @@
-import { Flags } from '@oclif/core';
+// import { Flags } from '@oclif/core';
 import { calendar_v3 as calendarV3 } from 'googleapis';
 
 import { BaseCommand } from '../../base-command';
@@ -11,16 +11,10 @@ static examples = [
   ];
 static flags = {
     ...BaseCommand.baseFlags,
-    format: Flags.string({
-      char: 'f',
-      default: 'table',
-      description: 'Output format',
-      options: ['table', 'json'],
-    }),
   };
 
   public async run(): Promise<void> {
-    const { flags } = await this.parse(CalendarsList);
+    await this.parse(CalendarsList);
 
     try {
       this.logStatus('Authenticating with Google Calendar...');
@@ -34,8 +28,8 @@ static flags = {
         return;
       }
 
-      if (flags.format === 'json') {
-        this.logJson(calendars);
+      if (this.format === 'json' || this.format === 'pretty-json') {
+        this.outputJson(calendars);
       } else {
         this.displayCalendarsTable(calendars);
       }

@@ -43,6 +43,82 @@ describe('config', () => {
       const { stdout } = await runCommand('config list --format json');
       expect(stdout.trim()).to.equal('{}');
     });
+
+    it('supports pretty-json format', async () => {
+      const { stdout } = await runCommand('config list --format pretty-json');
+      expect(stdout.trim()).to.equal('{}');
+    });
+
+    it('outputs formatted JSON when config has data with --format pretty-json', async () => {
+      // First set some config values
+      await runCommand('config set defaultCalendar test@example.com');
+      await runCommand('config set events.maxResults 25');
+      
+      const { stdout } = await runCommand('config list --format pretty-json');
+      
+      // Should be valid JSON
+      expect(() => JSON.parse(stdout)).to.not.throw();
+      const config = JSON.parse(stdout);
+      
+      expect(config).to.have.property('defaultCalendar', 'test@example.com');
+      expect(config).to.have.property('events');
+      expect(config.events).to.have.property('maxResults', 25);
+      
+      // Should be formatted (with indentation)
+      expect(stdout).to.contain('\n  ');
+      expect(stdout.trim().split('\n').length).to.be.greaterThan(1);
+      
+      // Should start with object bracket and proper indentation
+      expect(stdout.trim()).to.match(/^{\s*\n\s+"/);
+    });
+
+    it('outputs minified JSON with --format json', async () => {
+      // Set some config values first
+      await runCommand('config set defaultCalendar test@example.com');
+      await runCommand('config set events.format table');
+      
+      const { stdout } = await runCommand('config list --format json');
+      
+      // Should be valid JSON
+      expect(() => JSON.parse(stdout)).to.not.throw();
+      const config = JSON.parse(stdout);
+      
+      expect(config).to.have.property('defaultCalendar', 'test@example.com');
+      expect(config.events).to.have.property('format', 'table');
+      
+      // Should be minified (no indentation)
+      expect(stdout).to.not.contain('\n  ');
+      expect(stdout.trim().split('\n')).to.have.length(1);
+    });
+
+    it('produces same data in json and pretty-json formats', async () => {
+      // Set some config values first
+      await runCommand('config set defaultCalendar test@example.com');
+      await runCommand('config set events.days 14');
+      
+      const { stdout: jsonOutput } = await runCommand('config list --format json');
+      const { stdout: prettyJsonOutput } = await runCommand('config list --format pretty-json');
+      
+      // Both should be valid JSON
+      expect(() => JSON.parse(jsonOutput)).to.not.throw();
+      expect(() => JSON.parse(prettyJsonOutput)).to.not.throw();
+      
+      // Parse both outputs
+      const jsonConfig = JSON.parse(jsonOutput);
+      const prettyJsonConfig = JSON.parse(prettyJsonOutput);
+      
+      // Should contain exactly the same data
+      expect(jsonConfig).to.deep.equal(prettyJsonConfig);
+      expect(jsonConfig).to.have.property('defaultCalendar', 'test@example.com');
+      expect(prettyJsonConfig.events).to.have.property('days', 14);
+      
+      // But the string representations should be different
+      expect(jsonOutput).to.not.equal(prettyJsonOutput);
+      
+      // json should be minified, pretty-json should be formatted
+      expect(jsonOutput).to.not.contain('\n  ');
+      expect(prettyJsonOutput).to.contain('\n  ');
+    });
   });
 
   describe('config set', () => {

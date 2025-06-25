@@ -35,12 +35,6 @@ static flags = {
       default: false,
       description: 'Skip confirmation prompt for reset',
     }),
-    format: Flags.string({
-      char: 'f',
-      default: 'table',
-      description: 'Output format',
-      options: ['table', 'json'],
-    }),
   };
 
   public async run(): Promise<void> {
@@ -54,7 +48,7 @@ static flags = {
       }
 
       case 'list': {
-        await this.handleList(configService, flags.format);
+        await this.handleList(configService);
         break;
       }
 
@@ -92,11 +86,11 @@ static flags = {
     }
   }
 
-  private async handleList(configService: ConfigService, format: string): Promise<void> {
+  private async handleList(configService: ConfigService): Promise<void> {
     const config = await configService.list();
     
-    if (format === 'json') {
-      this.logResult(JSON.stringify(config, null, 2));
+    if (this.format === 'json' || this.format === 'pretty-json') {
+      this.outputJson(config);
     } else {
       this.logStatus('Current configuration:');
       this.logStatus(`Config file: ${configService.getConfigPath()}`);

@@ -208,6 +208,34 @@ describe('calendars list output', () => {
       expect(calendars[0]).to.have.property('id', 'primary');
       expect(calendars[0]).to.have.property('summary', 'Primary Calendar');
       expect(calendars[1]).to.have.property('id', 'secondary@example.com');
+      
+      // Should be minified (no indentation)
+      expect(stdout).to.not.contain('\n  ');
+      expect(stdout.trim().split('\n')).to.have.length(1);
+    });
+
+    it('should output formatted JSON with --format pretty-json', async () => {
+      const { stderr, stdout } = await runCommand('calendars list --format pretty-json');
+
+      expect(stderr).to.contain('Authenticating with Google Calendar...');
+      expect(stderr).to.contain('Fetching calendars...');
+      
+      // Should be valid JSON
+      expect(() => JSON.parse(stdout)).to.not.throw();
+      
+      const calendars = JSON.parse(stdout);
+      expect(Array.isArray(calendars)).to.be.true;
+      expect(calendars).to.have.length(2);
+      expect(calendars[0]).to.have.property('id', 'primary');
+      expect(calendars[0]).to.have.property('summary', 'Primary Calendar');
+      expect(calendars[1]).to.have.property('id', 'secondary@example.com');
+      
+      // Should be formatted (with indentation)
+      expect(stdout).to.contain('\n  ');
+      expect(stdout.trim().split('\n').length).to.be.greaterThan(1);
+      
+      // Should start with array bracket and proper indentation
+      expect(stdout.trim()).to.match(/^\[\s*\n\s+{/);
     });
 
     it('should output table format by default', async () => {

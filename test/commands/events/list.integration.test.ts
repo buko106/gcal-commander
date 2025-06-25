@@ -269,6 +269,71 @@ describe('events list integration', () => {
 
       expect(secondEvent.summary).to.equal('All Day Event');
       expect(secondEvent.start.date).to.equal('2024-06-26');
+
+      // Should be minified JSON (no indentation)
+      expect(jsonOutput).to.not.contain('\n  ');
+      expect(jsonOutput.trim().split('\n')).to.have.length(1);
+    });
+
+    it('should produce formatted JSON with --format pretty-json', async () => {
+      const { stderr, stdout } = await runCommand('events list --format pretty-json');
+
+      // Status messages still go to stderr
+      expect(stderr).to.contain('Authenticating with Google Calendar...');
+      expect(stderr).to.contain('Fetching events from');
+
+      // Should be valid JSON
+      expect(() => JSON.parse(stdout)).to.not.throw();
+      const events = JSON.parse(stdout);
+      expect(events).to.have.length(2);
+
+      // Verify data integrity
+      const firstEvent = events.find((event: any) => event.id === 'test-event-1'); // eslint-disable-line @typescript-eslint/no-explicit-any
+      const secondEvent = events.find((event: any) => event.id === 'test-event-2'); // eslint-disable-line @typescript-eslint/no-explicit-any
+
+      expect(firstEvent).to.exist;
+      expect(firstEvent.summary).to.equal('Test Meeting');
+      expect(firstEvent.location).to.equal('Meeting Room 1');
+      expect(firstEvent.attendees).to.have.length(2);
+
+      expect(secondEvent).to.exist;
+      expect(secondEvent.summary).to.equal('All Day Event');
+
+      // Should be formatted JSON (with indentation)
+      expect(stdout).to.contain('\n  ');
+      expect(stdout.trim().split('\n').length).to.be.greaterThan(1);
+      
+      // Should start with array bracket and proper indentation
+      expect(stdout.trim()).to.match(/^\[\s*\n\s+{/);
+
+      // No status messages should contaminate JSON output
+      expect(stdout).to.not.contain('Authenticating');
+      expect(stdout).to.not.contain('Fetching');
+    });
+
+    it('should produce same data in json and pretty-json formats', async () => {
+      const { stdout: jsonOutput } = await runCommand('events list --format json');
+      const { stdout: prettyJsonOutput } = await runCommand('events list --format pretty-json');
+
+      // Both should be valid JSON
+      expect(() => JSON.parse(jsonOutput)).to.not.throw();
+      expect(() => JSON.parse(prettyJsonOutput)).to.not.throw();
+
+      // Parse both outputs
+      const jsonEvents = JSON.parse(jsonOutput);
+      const prettyJsonEvents = JSON.parse(prettyJsonOutput);
+
+      // Should contain exactly the same data
+      expect(jsonEvents).to.deep.equal(prettyJsonEvents);
+      expect(jsonEvents).to.have.length(2);
+      expect(prettyJsonEvents).to.have.length(2);
+
+      // But the string representations should be different
+      expect(jsonOutput).to.not.equal(prettyJsonOutput);
+      
+      // json should be minified, pretty-json should be formatted
+      expect(jsonOutput).to.not.contain('\n  ');
+      expect(prettyJsonOutput).to.contain('\n  ');
     });
 
     it('should produce valid JSON even with complex event data', async () => {

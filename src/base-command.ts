@@ -5,8 +5,16 @@ import { AuthService } from './services/auth';
 import { CalendarService } from './services/calendar';
 import { ServiceRegistry } from './services/service-registry';
 
+export type OutputFormat = 'json' | 'pretty-json' | 'table';
+
 export abstract class BaseCommand extends Command {
   static baseFlags = {
+    format: Flags.string({
+      char: 'f',
+      default: 'table',
+      description: 'Output format',
+      options: ['json', 'pretty-json', 'table'],
+    }),
     quiet: Flags.boolean({
       char: 'q',
       default: false,
@@ -15,11 +23,13 @@ export abstract class BaseCommand extends Command {
   };
 protected authService!: IAuthService;
   protected calendarService!: ICalendarService;
+  protected format: OutputFormat = 'table';
   protected quiet = false;
 
   async init(): Promise<void> {
     await super.init();
     const { flags } = await this.parse(this.constructor as typeof BaseCommand);
+    this.format = flags.format as OutputFormat;
     this.quiet = flags.quiet;
 
     // Initialize services using ServiceRegistry
@@ -55,6 +65,16 @@ protected authService!: IAuthService;
   protected logStatus(message: string): void {
     if (!this.quiet) {
       this.logToStderr(message);
+    }
+  }
+
+  protected outputJson(data: unknown): void {
+    if (this.format === 'pretty-json') {
+      this.logResult(JSON.stringify(data, null, 2));
+    } else if (this.format === 'json') {
+      this.logResult(JSON.stringify(data));
+    } else {
+      this.logJson(data);
     }
   }
 }

@@ -40,6 +40,15 @@ describe('events list', () => {
     }
   })
 
+  it('accepts pretty-json format', async () => {
+    try {
+      await runCommand('events list --format pretty-json')
+    } catch (error) {
+      // Command should parse flags correctly even if authentication fails
+      expect(String(error)).to.not.contain('Unknown flag')
+    }
+  })
+
   it('accepts table format', async () => {
     try {
       await runCommand('events list --format table')

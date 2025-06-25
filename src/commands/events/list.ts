@@ -1,7 +1,7 @@
 import { Args, Flags } from '@oclif/core';
 import { calendar_v3 as calendarV3 } from 'googleapis';
 
-import { BaseCommand } from '../../base-command';
+import { BaseCommand, OutputFormat } from '../../base-command';
 import { ConfigService } from '../../services/config';
 
 export default class EventsList extends BaseCommand {
@@ -24,12 +24,6 @@ static flags = {
       char: 'd',
       default: 30,
       description: 'Number of days to look ahead',
-    }),
-    format: Flags.string({
-      char: 'f',
-      default: 'table',
-      description: 'Output format',
-      options: ['table', 'json'],
     }),
     'max-results': Flags.integer({
       char: 'n',
@@ -55,11 +49,11 @@ static flags = {
       // Apply config defaults for other settings
       const configMaxResults = await configService.get<number>('events.maxResults') || 10;
       const configDays = await configService.get<number>('events.days') || 30;
-      const configFormat = await configService.get<'json' | 'table'>('events.format') || 'table';
+      const configFormat = await configService.get<OutputFormat>('events.format') || 'table';
       
       const maxResults = flags['max-results'] || configMaxResults;
       const days = flags.days || configDays;
-      const format = flags.format || configFormat;
+      const format = this.format === 'table' ? configFormat : this.format;
 
       const timeMin = new Date().toISOString();
       const timeMax = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
@@ -77,8 +71,8 @@ static flags = {
         return;
       }
 
-      if (format === 'json') {
-        this.logJson(events);
+      if (format === 'json' || format === 'pretty-json') {
+        this.outputJson(events);
       } else {
         this.displayEventsTable(events);
       }

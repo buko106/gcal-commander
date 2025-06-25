@@ -23,12 +23,6 @@ static flags = {
       default: 'primary',
       description: 'Calendar ID where the event is located',
     }),
-    format: Flags.string({
-      char: 'f',
-      default: 'table',
-      description: 'Output format',
-      options: ['table', 'json'],
-    }),
   };
 
   public async run(): Promise<void> {
@@ -41,8 +35,8 @@ static flags = {
       this.logStatus(`Fetching event details...`);
       const event = await this.calendarService.getEvent(args.eventId, flags.calendar);
 
-      if (flags.format === 'json') {
-        this.logJson(event);
+      if (this.format === 'json' || this.format === 'pretty-json') {
+        this.outputJson(event);
       } else {
         this.displayEventDetails(event);
       }

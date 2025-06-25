@@ -8,7 +8,7 @@ export interface Config extends Record<string, unknown> {
   defaultCalendar?: string;
   events?: {
     days?: number;
-    format?: 'json' | 'table';
+    format?: 'json' | 'pretty-json' | 'table';
     maxResults?: number;
   };
 }
@@ -106,8 +106,8 @@ export class ConfigService {
       }
 
       case 'events.format': {
-        if (value !== 'table' && value !== 'json') {
-          return { error: 'events.format must be either "table" or "json"', valid: false };
+        if (value !== 'table' && value !== 'json' && value !== 'pretty-json') {
+          return { error: 'events.format must be one of "table", "json", or "pretty-json"', valid: false };
         }
 
         break;
