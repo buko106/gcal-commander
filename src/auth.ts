@@ -4,7 +4,10 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 
-const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
+const SCOPES = [
+  'https://www.googleapis.com/auth/calendar.events',
+  'https://www.googleapis.com/auth/calendar.readonly'
+];
 const TOKEN_PATH = join(homedir(), '.gcal-commander', 'token.json');
 const CREDENTIALS_PATH = join(homedir(), '.gcal-commander', 'credentials.json');
 
@@ -75,6 +78,7 @@ export async function getCalendarAuth(): Promise<CalendarAuth> {
   const client = await authorize();
   return { client };
 }
+
 
 export function getCredentialsPath(): string {
   return CREDENTIALS_PATH;

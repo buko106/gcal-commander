@@ -1,6 +1,6 @@
 import { calendar_v3 as calendarV3 } from 'googleapis';
 
-import { AuthResult, IAuthService, ICalendarService, ListEventsParams } from '../interfaces/services';
+import { AuthResult, CreateEventParams, IAuthService, ICalendarService, ListEventsParams } from '../interfaces/services';
 
 export class MockAuthService implements IAuthService {
   async getCalendarAuth(): Promise<AuthResult> {
@@ -50,6 +50,24 @@ export class MockCalendarService implements ICalendarService {
         summary: 'Secondary Calendar',
       },
     ];
+  }
+
+  async createEvent(params: CreateEventParams): Promise<calendarV3.Schema$Event> {
+    const newEvent: calendarV3.Schema$Event = {
+      description: params.description,
+      end: params.end,
+      id: `mock-event-${Date.now()}`,
+      location: params.location,
+      start: params.start,
+      summary: params.summary,
+    };
+
+    if (params.attendees?.length) {
+      newEvent.attendees = params.attendees.map(email => ({ email }));
+    }
+
+    this.mockEvents.push(newEvent);
+    return newEvent;
   }
 
   async getEvent(eventId: string, _calendarId: string): Promise<calendarV3.Schema$Event> {

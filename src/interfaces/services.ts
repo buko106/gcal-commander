@@ -7,7 +7,25 @@ export interface ListEventsParams {
   timeMin: string;
 }
 
+export interface CreateEventParams {
+  attendees?: string[];
+  calendarId: string;
+  description?: string;
+  end: CalendarDateTime;
+  location?: string;
+  sendUpdates?: 'all' | 'externalOnly' | 'none';
+  start: CalendarDateTime;
+  summary: string;
+}
+
+export interface CalendarDateTime {
+  date?: string;      // YYYY-MM-DD for all-day events
+  dateTime?: string;  // RFC3339 timestamp
+  timeZone?: string;
+}
+
 export interface ICalendarService {
+  createEvent(params: CreateEventParams): Promise<calendarV3.Schema$Event>;
   getEvent(eventId: string, calendarId: string): Promise<calendarV3.Schema$Event>;
   listCalendars(): Promise<calendarV3.Schema$CalendarListEntry[]>;
   listEvents(params: ListEventsParams): Promise<calendarV3.Schema$Event[]>;

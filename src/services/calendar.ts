@@ -1,65 +1,144 @@
 import { calendar_v3 as calendarV3, google } from 'googleapis';
+import { unlink } from 'node:fs/promises';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
 
-import { IAuthService, ICalendarService, ListEventsParams } from '../interfaces/services';
+import { CreateEventParams, IAuthService, ICalendarService, ListEventsParams } from '../interfaces/services';
 
 export class CalendarService implements ICalendarService {
   private calendar: calendarV3.Calendar | null = null;
+  private hasReauthenticated = false;
 
   constructor(private authService: IAuthService) {}
 
-  async getEvent(eventId: string, calendarId = 'primary'): Promise<calendarV3.Schema$Event> {
-    await this.ensureInitialized();
-    try {
-      const response = await this.calendar!.events.get({
-        calendarId,
-        eventId,
-      });
+  async createEvent(params: CreateEventParams): Promise<calendarV3.Schema$Event> {
+    return this.withRetryOnScopeError(async () => {
+      await this.ensureInitialized();
+      
+      const eventResource: calendarV3.Schema$Event = {
+        description: params.description,
+        end: params.end,
+        location: params.location,
+        start: params.start,
+        summary: params.summary,
+      };
 
-      return response.data;
-    } catch (error) {
-      throw new Error(`Failed to get event: ${error}`);
-    }
+      if (params.attendees?.length) {
+        eventResource.attendees = params.attendees.map(email => ({ email }));
+      }
+
+      try {
+        const response = await this.calendar!.events.insert({
+          calendarId: params.calendarId,
+          requestBody: eventResource,
+          sendUpdates: params.sendUpdates || 'none',
+        });
+
+        return response.data;
+      } catch (error) {
+        throw new Error(`Failed to create event: ${error}`);
+      }
+    });
+  }
+
+  async getEvent(eventId: string, calendarId = 'primary'): Promise<calendarV3.Schema$Event> {
+    return this.withRetryOnScopeError(async () => {
+      await this.ensureInitialized();
+      try {
+        const response = await this.calendar!.events.get({
+          calendarId,
+          eventId,
+        });
+
+        return response.data;
+      } catch (error) {
+        throw new Error(`Failed to get event: ${error}`);
+      }
+    });
   }
 
   async listCalendars(): Promise<calendarV3.Schema$CalendarListEntry[]> {
-    await this.ensureInitialized();
-    try {
-      const response = await this.calendar!.calendarList.list();
-      return response.data.items || [];
-    } catch (error) {
-      throw new Error(`Failed to list calendars: ${error}`);
-    }
+    return this.withRetryOnScopeError(async () => {
+      await this.ensureInitialized();
+      try {
+        const response = await this.calendar!.calendarList.list();
+        return response.data.items || [];
+      } catch (error) {
+        throw new Error(`Failed to list calendars: ${error}`);
+      }
+    });
   }
 
   async listEvents(params: ListEventsParams): Promise<calendarV3.Schema$Event[]> {
-    await this.ensureInitialized();
-    const {
-      calendarId,
-      maxResults,
-      timeMax,
-      timeMin,
-    } = params;
-
-    try {
-      const response = await this.calendar!.events.list({
+    return this.withRetryOnScopeError(async () => {
+      await this.ensureInitialized();
+      const {
         calendarId,
         maxResults,
-        orderBy: 'startTime',
-        singleEvents: true,
         timeMax,
         timeMin,
-      });
+      } = params;
 
-      return response.data.items || [];
-    } catch (error) {
-      throw new Error(`Failed to list events: ${error}`);
+      try {
+        const response = await this.calendar!.events.list({
+          calendarId,
+          maxResults,
+          orderBy: 'startTime',
+          singleEvents: true,
+          timeMax,
+          timeMin,
+        });
+
+        return response.data.items || [];
+      } catch (error) {
+        throw new Error(`Failed to list events: ${error}`);
+      }
+    });
+  }
+
+  private async deleteTokenAndReinitialize(): Promise<void> {
+    const TOKEN_PATH = join(homedir(), '.gcal-commander', 'token.json');
+    try {
+      await unlink(TOKEN_PATH);
+      console.error('Deleted saved token. Re-authenticating with updated permissions...');
+    } catch {
+      // Token file might not exist, which is fine
     }
+    
+    this.calendar = null;
+    this.hasReauthenticated = true;
+    await this.ensureInitialized();
   }
 
   private async ensureInitialized(): Promise<void> {
     if (!this.calendar) {
       const auth = await this.authService.getCalendarAuth();
       this.calendar = google.calendar({ auth: auth.client, version: 'v3' });
+    }
+  }
+
+  private isScopeError(error: unknown): boolean {
+    const errorString = String(error);
+    return (
+      errorString.includes('insufficient authentication scopes') ||
+      errorString.includes('Request had insufficient authentication scopes') ||
+      errorString.includes('access_denied') ||
+      errorString.includes('scope') ||
+      errorString.includes('401') ||
+      errorString.includes('403')
+    );
+  }
+
+  private async withRetryOnScopeError<T>(operation: () => Promise<T>): Promise<T> {
+    try {
+      return await operation();
+    } catch (error) {
+      if (this.isScopeError(error) && !this.hasReauthenticated) {
+        await this.deleteTokenAndReinitialize();
+        return operation();
+      }
+
+      throw error;
     }
   }
 }
