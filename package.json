@@ -11,7 +11,9 @@
     "@google-cloud/local-auth": "^3.0.1",
     "@oclif/core": "^4",
     "@oclif/plugin-help": "^6",
-    "googleapis": "^150.0.1"
+    "googleapis": "^150.0.1",
+    "reflect-metadata": "^0.2.2",
+    "tsyringe": "^4.10.0"
   },
   "devDependencies": {
     "@eslint/compat": "^1",

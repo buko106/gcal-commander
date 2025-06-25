@@ -1,20 +1,19 @@
 import { runCommand } from '@oclif/test';
 import { expect } from 'chai';
 
-import { ServiceRegistry } from '../../../src/services/service-registry';
-import { MockAuthService, MockCalendarService } from '../../../src/test-utils/mock-services';
+import { cleanupTestContainer, setupTestContainer } from '../../../src/di/test-container';
+import { MockCalendarService } from '../../../src/test-utils/mock-services';
 
 describe('events show output', () => {
   let mockCalendarService: MockCalendarService;
 
   beforeEach(() => {
-    mockCalendarService = new MockCalendarService();
-    ServiceRegistry.registerMock('AuthService', new MockAuthService());
-    ServiceRegistry.registerMock('CalendarService', mockCalendarService);
+    const mocks = setupTestContainer();
+    mockCalendarService = mocks.mockCalendarService;
   });
 
   afterEach(() => {
-    ServiceRegistry.clearMocks();
+    cleanupTestContainer();
   });
 
   describe('format output tests', () => {

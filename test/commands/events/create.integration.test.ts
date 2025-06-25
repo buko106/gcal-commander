@@ -1,20 +1,15 @@
 import { runCommand } from '@oclif/test';
 import { expect } from 'chai';
 
-import { ServiceRegistry } from '../../../src/services/service-registry';
-import { MockAuthService, MockCalendarService } from '../../../src/test-utils/mock-services';
+import { cleanupTestContainer, setupTestContainer } from '../../../src/di/test-container';
 
 describe('events create integration', () => {
-  let mockCalendarService: MockCalendarService;
-
   beforeEach(() => {
-    mockCalendarService = new MockCalendarService();
-    ServiceRegistry.registerMock('AuthService', new MockAuthService());
-    ServiceRegistry.registerMock('CalendarService', mockCalendarService);
+    setupTestContainer();
   });
 
   afterEach(() => {
-    ServiceRegistry.clearMocks();
+    cleanupTestContainer();
   });
 
   describe('basic event creation', () => {

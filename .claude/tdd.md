@@ -129,33 +129,40 @@ it('produces clean JSON for piping', async () => {
 ### Quality Assurance
 This approach ensures robust, maintainable code and prevents regressions while making it easy to identify and fix issues quickly.
 
-## ServiceRegistry Mock System
+## TSyringe Dependency Injection System
 
 ### Overview
-The project uses a hybrid dependency injection system via `ServiceRegistry` that seamlessly switches between real and mock services based on environment detection.
+The project uses TSyringe for type-safe dependency injection with proper separation between production and test environments through container isolation.
 
-### ServiceRegistry Architecture
+### TSyringe Architecture
 ```typescript
-// Automatic environment detection
-ServiceRegistry.get('CalendarService', () => new CalendarService(auth));
+// Type-safe service resolution
+container.resolve<ICalendarService>(TOKENS.CalendarService);
 
-// In test mode (NODE_ENV === 'test'), returns registered mocks
-// In production, returns the default factory result
+// Production uses registered services via @injectable decorators
+// Test mode uses child containers with mock service registrations
 ```
 
 ### Key Components
 
-#### 1. ServiceRegistry (`src/services/service-registry.ts`)
-- **Environment Detection**: Uses `process.env.NODE_ENV === 'test'` to enable mocking
-- **Mock Storage**: Static Map to store mock services by string keys
-- **Safety**: Only allows mock registration in test environment
+#### 1. Container Setup (`src/di/container.ts`)
+- **Service Registration**: Uses `@injectable` decorators and token-based registration
+- **Type Safety**: Full TypeScript support with interface-based service tokens
+- **Production Container**: Registers real services using `useClass` patterns
 - **Methods**:
-  - `registerMock<T>(name: string, service: T)`: Register mock service
-  - `get<T>(name, defaultFactory)`: Get service (mock or real)
-  - `clearMocks()`: Clear all registered mocks
-  - `testMode`: Check if running in test mode
+  - `setupContainer()`: Initializes production service registrations
+  - `container.resolve<T>(token)`: Type-safe service resolution
 
-#### 2. Mock Services (`src/test-utils/mock-services.ts`)
+#### 2. Test Container (`src/di/test-container.ts`)
+- **Container Isolation**: Creates child containers for test environments
+- **Mock Registration**: Registers mock services with `useValue` pattern
+- **Test Safety**: Proper cleanup prevents test interference
+- **Methods**:
+  - `setupTestContainer()`: Creates isolated test container with mocks
+  - `cleanupTestContainer()`: Cleans up test container instances
+  - `getTestContainer()`: Gets current test container instance
+
+#### 3. Mock Services (`src/test-utils/mock-services.ts`)
 - **MockAuthService**: Provides fake authentication without API calls
 - **MockCalendarService**: Simulates Google Calendar API with controllable data
 - **Interface Compliance**: Implement same interfaces as real services
@@ -169,13 +176,12 @@ describe('command integration', () => {
   let mockCalendarService: MockCalendarService;
 
   beforeEach(() => {
-    mockCalendarService = new MockCalendarService();
-    ServiceRegistry.registerMock('AuthService', new MockAuthService());
-    ServiceRegistry.registerMock('CalendarService', mockCalendarService);
+    const mocks = setupTestContainer();
+    mockCalendarService = mocks.mockCalendarService;
   });
 
   afterEach(() => {
-    ServiceRegistry.clearMocks();
+    cleanupTestContainer();
   });
 
   // Tests using mockCalendarService helper methods
@@ -302,10 +308,10 @@ const complexEvent = {
 
 ### Integration Testing Workflow
 
-1. **Setup**: Register mock services in `beforeEach()`
+1. **Setup**: Create isolated test container with `setupTestContainer()` in `beforeEach()`
 2. **Configure**: Set up test-specific data using mock helper methods
-3. **Execute**: Run command with `runCommand()`
+3. **Execute**: Run command with `runCommand()` (BaseCommand automatically uses test container)
 4. **Verify**: Check both stdout/stderr separation and data accuracy
-5. **Cleanup**: Clear mocks in `afterEach()` to prevent test interference
+5. **Cleanup**: Clean up test container with `cleanupTestContainer()` in `afterEach()`
 
-This mock system enables comprehensive testing without external API dependencies while maintaining realistic service interactions.
+This TSyringe-based system enables comprehensive testing without external API dependencies while maintaining type safety and proper dependency injection patterns.
