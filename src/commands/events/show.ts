@@ -2,6 +2,7 @@ import { Args, Flags } from '@oclif/core';
 import { calendar_v3 as calendarV3 } from 'googleapis';
 
 import { BaseCommand } from '../../base-command';
+import { DateFormatter } from '../../utils/date-formatter';
 
 export default class EventsShow extends BaseCommand {
   static args = {
@@ -115,26 +116,16 @@ static flags = {
 
   private displayTimeInfo(event: calendarV3.Schema$Event): void {
     if (event.start) {
-      const startTime = event.start.dateTime || event.start.date;
-      if (startTime) {
-        const startDate = new Date(startTime);
-        if (event.start.dateTime) {
-          this.logResult(`Start: ${startDate.toLocaleString()}`);
-        } else {
-          this.logResult(`Start: ${startDate.toLocaleDateString()} (All day)`);
-        }
+      const startFormatted = DateFormatter.formatShowEventTime(event.start, 'Start');
+      if (startFormatted) {
+        this.logResult(startFormatted);
       }
     }
     
     if (event.end) {
-      const endTime = event.end.dateTime || event.end.date;
-      if (endTime) {
-        const endDate = new Date(endTime);
-        if (event.end.dateTime) {
-          this.logResult(`End: ${endDate.toLocaleString()}`);
-        } else {
-          this.logResult(`End: ${endDate.toLocaleDateString()} (All day)`);
-        }
+      const endFormatted = DateFormatter.formatShowEventTime(event.end, 'End');
+      if (endFormatted) {
+        this.logResult(endFormatted);
       }
     }
   }

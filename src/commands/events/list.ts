@@ -3,6 +3,7 @@ import { calendar_v3 as calendarV3 } from 'googleapis';
 
 import { BaseCommand, OutputFormat } from '../../base-command';
 import { ConfigService } from '../../services/config';
+import { DateFormatter } from '../../utils/date-formatter';
 
 export default class EventsList extends BaseCommand {
   static args = {
@@ -85,27 +86,23 @@ static flags = {
     this.logResult(`\nUpcoming Events (${events.length} found):\n`);
     
     for (const [index, event] of events.entries()) {
-      const start = event.start?.dateTime || event.start?.date;
-      const startDate = start ? new Date(start) : null;
       const summary = event.summary || '(No title)';
       const location = event.location ? ` @ ${event.location}` : '';
       
-      if (startDate) {
-        const dateStr = startDate.toLocaleDateString();
-        const timeStr = event.start?.dateTime 
-          ? startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          : 'All day';
-        
-        this.logResult(`${index + 1}. ${summary}`);
-        this.logResult(`   ${dateStr} • ${timeStr}${location}`);
-        if (event.description) {
-          const description = event.description.length > 100 
-            ? event.description.slice(0, 100) + '...'
-            : event.description;
-          this.logResult(`   ${description}`);
-        }
+      if (event.start) {
+        const timeInfo = DateFormatter.formatListEventTime(event);
+        if (timeInfo) {
+          this.logResult(`${index + 1}. ${summary}`);
+          this.logResult(`   ${timeInfo.dateStr} • ${timeInfo.timeStr}${location}`);
+          if (event.description) {
+            const description = event.description.length > 100 
+              ? event.description.slice(0, 100) + '...'
+              : event.description;
+            this.logResult(`   ${description}`);
+          }
 
-        this.logResult('');
+          this.logResult('');
+        }
       }
     }
   }
