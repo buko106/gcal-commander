@@ -2,41 +2,92 @@
 
 ## Repository Structure
 
+> **⚠️ MAINTENANCE REQUIREMENT**: This structure must be updated whenever directories or files are added/removed/moved. When making structural changes, always update this section to reflect the current state.
+
 ```
 gcal-commander/
-├── .github/              # GitHub Actions workflows
-│   └── workflows/
-│       └── release.yml   # Automated release workflow
-├── bin/                  # CLI executable entry point
-├── src/                  # TypeScript source code
-│   ├── commands/        # CLI command implementations
-│   │   ├── calendars/   # Calendar-related commands
-│   │   │   └── list.ts # List calendars command
-│   │   ├── events/     # Event-related commands
-│   │   │   ├── list.ts # List events command (supports config defaults)
-│   │   │   └── show.ts # Show event details command
-│   │   ├── config.ts   # Configuration management command
-│   │   └── hello/      # Example commands (can be removed)
-│   ├── services/       # Business logic services
-│   │   ├── calendar.ts # Google Calendar API wrapper
-│   │   └── config.ts   # Configuration service
-│   ├── auth.ts        # OAuth2 authentication handling
-│   ├── base-command.ts # Base command class with --quiet flag support
-│   └── index.ts       # Main entry point
-├── test/               # Test files (mirrors src/ structure)
-│   ├── commands/      # Command tests
-│   │   ├── config.test.ts # Config command tests
-│   │   └── quiet.test.ts  # --quiet flag behavior tests
-│   ├── services/      # Service tests
-│   └── tsconfig.json # Test-specific TypeScript config
-├── dist/              # Compiled JavaScript output (generated)
-├── .husky/           # Git hooks (husky)
-├── .releaserc.json     # semantic-release configuration
-├── lint-staged.config.js # lint-staged configuration
-├── package.json       # Project configuration and dependencies
-├── tsconfig.json     # TypeScript configuration
-├── eslint.config.mjs # ESLint configuration
-└── CLAUDE.md         # This file
+├── .claude/                    # Claude Code documentation and settings
+│   ├── core.md                # Core architecture and patterns
+│   ├── features.md            # This file - features and specifications
+│   ├── processes.md           # Release workflow and processes
+│   ├── settings.local.json    # Local Claude Code settings
+│   └── tdd.md                 # Test-driven development practices
+├── .github/                   # GitHub Actions workflows
+│   └── workflows/             # CI/CD automation
+├── .husky/                    # Git hooks configuration (husky)
+│   └── _/                     # Husky internal files
+├── .vscode/                   # VS Code workspace settings
+│   └── launch.json           # Debug configuration
+├── bin/                       # CLI executable entry points
+│   ├── dev.js               # Development entry point
+│   └── run.js               # Production entry point
+├── docs/                      # Command documentation
+│   ├── calendars-list.md     # gcal calendars list documentation
+│   ├── config.md             # gcal config documentation
+│   ├── events-list.md        # gcal events list documentation
+│   └── events-show.md        # gcal events show documentation
+├── src/                       # TypeScript source code
+│   ├── commands/             # CLI command implementations
+│   │   ├── calendars/        # Calendar-related commands
+│   │   │   └── list.ts      # List calendars command
+│   │   ├── events/          # Event-related commands
+│   │   │   ├── list.ts      # List events command (supports config defaults)
+│   │   │   └── show.ts      # Show event details command
+│   │   ├── config.ts        # Configuration management command
+│   │   └── hello/           # Example commands (legacy, can be removed)
+│   │       ├── index.ts     # Hello command
+│   │       └── world.ts     # Hello world subcommand
+│   ├── interfaces/          # TypeScript interfaces
+│   │   └── services.ts      # Service interface definitions
+│   ├── services/            # Business logic services
+│   │   ├── auth.ts          # Authentication service
+│   │   ├── calendar.ts      # Google Calendar API wrapper
+│   │   ├── config.ts        # Configuration service
+│   │   └── service-registry.ts # Service dependency injection
+│   ├── test-utils/          # Testing utilities
+│   │   └── mock-services.ts # Mock service implementations
+│   ├── utils/               # Utility functions
+│   ├── auth.ts              # OAuth2 authentication handling (legacy)
+│   ├── base-command.ts      # Base command class with --quiet flag support
+│   └── index.ts             # Main entry point
+├── test/                      # Test files (mirrors src/ structure)
+│   ├── commands/             # Command tests
+│   │   ├── calendars/       # Calendar command tests
+│   │   │   ├── list.integration.test.ts # Integration tests
+│   │   │   ├── list.output.test.ts      # Output format tests
+│   │   │   └── list.test.ts             # Unit tests
+│   │   ├── events/          # Event command tests
+│   │   │   ├── list.integration.test.ts # Integration tests
+│   │   │   ├── list.test.ts             # Unit tests
+│   │   │   └── show.test.ts             # Show command tests
+│   │   ├── hello/           # Hello command tests (legacy)
+│   │   │   ├── index.test.ts
+│   │   │   └── world.test.ts
+│   │   ├── config.test.ts   # Config command tests
+│   │   └── quiet.test.ts    # --quiet flag behavior tests
+│   ├── services/            # Service tests
+│   │   └── calendar.test.ts # Calendar service tests
+│   ├── test-data/           # Test data fixtures
+│   │   └── calendar-test-data.ts # Calendar API response fixtures
+│   ├── test-helpers/        # Test helper functions
+│   │   └── calendar-test-helpers.ts # Calendar testing utilities
+│   ├── utils/               # Utility test helpers
+│   └── tsconfig.json       # Test-specific TypeScript config
+├── dist/                      # Compiled JavaScript output (generated, gitignored)
+├── node_modules/             # Dependencies (generated, gitignored)
+├── .mocharc.json             # Mocha test configuration
+├── .prettierrc.json          # Prettier formatting configuration
+├── .releaserc.json           # semantic-release configuration
+├── CHANGELOG.md              # Auto-generated changelog
+├── CLAUDE.md                 # Claude Code project instructions
+├── LICENSE                   # MIT license
+├── README.md                 # Project documentation and usage guide
+├── eslint.config.mjs         # ESLint configuration
+├── lint-staged.config.js     # lint-staged configuration
+├── package-lock.json         # NPM dependency lock file
+├── package.json              # Project configuration and dependencies
+├── tsconfig.json             # TypeScript configuration
+└── tsconfig.tsbuildinfo      # TypeScript build cache (generated)
 ```
 
 ## Google Calendar Integration
@@ -52,38 +103,35 @@ gcal-commander/
 
 Uses `@oclif/test` with `runCommand()` helper to test CLI commands end-to-end. Tests verify command output using Chai expectations.
 
-## Current Features (v0.1.0)
+## Current Features
 
-### Available Commands
-- `gcal calendars list` - List all accessible Google calendars
-- `gcal events list [calendar]` - List upcoming events (default: configurable)
-- `gcal events show <eventId>` - Show detailed event information
-- `gcal config <subcommand>` - Manage global configuration settings
+For a complete list of features and detailed usage examples, see the **Features** and **Commands** sections in [README.md](../README.md).
 
-### Configuration Management
-- `gcal config set <key> <value>` - Set configuration value
-- `gcal config get <key>` - Get configuration value
-- `gcal config list` - List all configuration
-- `gcal config unset <key>` - Remove configuration value
-- `gcal config reset --confirm` - Reset all configuration
-
-### Configurable Settings
-- `defaultCalendar` - Default calendar for events list (default: "primary")
-- `events.maxResults` - Default maximum events (1-100, default: 10)
-- `events.format` - Default output format ("table"|"json", default: "table")
-- `events.days` - Default days ahead (1-365, default: 30)
-
-### Global Command Options
-- `--quiet, -q` - Suppress non-essential output (status messages, progress indicators)
-- `--format json|table` - Output format (overrides config)
-- `--max-results N` - Maximum events to return (overrides config)
-- `--days N` - Number of days to look ahead (overrides config)
+Key capabilities include:
+- Google Calendar event and calendar management
+- Secure OAuth2 authentication with token refresh
+- Configuration management with customizable defaults
+- Multiple output formats (table/JSON) with `--quiet` mode support
 
 ## Development Guidelines
 
-- **Repository Structure Updates**: When adding/removing directories or files, always update the Repository Structure section in this file to keep it current
-- **README Updates**: When adding new commands or changing command options, always update the README.md file with usage examples and documentation
-- **Architecture Updates**: When making significant architectural changes (new services, major feature additions), update the Architecture section in .claude/core.md
+### Critical Maintenance Requirements
+
+- **🔄 Repository Structure Updates**: **MANDATORY** - Any time directories or files are added/removed/moved, the Repository Structure section above must be updated immediately. This includes:
+  - New command files in `src/commands/`
+  - New test files in `test/`
+  - New service or utility files
+  - Configuration or documentation files
+  - Build output changes
+- **📖 README Synchronization**: When adding new commands or changing command options, always update the README.md file with usage examples and documentation
+- **🏗️ Architecture Documentation**: When making significant architectural changes (new services, major feature additions), update the Architecture section in `.claude/core.md`
+
+### Documentation Maintenance Workflow
+
+1. **Before making structural changes**: Review current Repository Structure section
+2. **During development**: Note any new files/directories being created
+3. **After implementation**: Update Repository Structure section to reflect all changes
+4. **Verification**: Ensure the documentation matches the actual file system structure
 
 ### Test-Driven Development
 
