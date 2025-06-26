@@ -87,6 +87,7 @@
     "posttest": "npm run lint",
     "prepack": "oclif readme",
     "test": "mocha --forbid-only \"test/**/*.test.ts\"",
+    "test:file": "mocha --forbid-only",
     "version": "oclif readme && git add README.md"
   },
   "types": "dist/index.d.ts"

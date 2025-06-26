@@ -53,21 +53,24 @@
 ```bash
 # Example workflow for new features
 1. Write utility/service tests first
-   npm test -- --grep "UtilityName"
+   npm run test:file test/services/utility.test.ts
    
 2. Implement utility/service functionality
-   npm test -- --grep "UtilityName"
+   npm run test:file test/services/utility.test.ts
    
 3. Write command tests
-   npm test -- --grep "CommandName"
+   npm run test:file test/commands/command-name.test.ts
    
 4. Implement command functionality
-   npm test -- --grep "CommandName"
+   npm run test:file test/commands/command-name.test.ts
    
-5. Run full test suite
+5. Run related test files together
+   npm run test:file "test/commands/command-name*.test.ts"
+   
+6. Run full test suite
    npm test
    
-6. Fix any integration issues
+7. Fix any integration issues
    npm test
 ```
 
