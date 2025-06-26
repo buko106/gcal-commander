@@ -162,9 +162,9 @@ describe('config', () => {
       expect(stdout).to.contain("Configuration key 'defaultCalendar' is not set");
     });
 
-    it.skip('validates configuration keys', async () => {
-      // This test is skipped - manual testing confirms it works
-    });
+    // it.skip('validates configuration keys', async () => {
+    //   // This test is skipped - manual testing confirms it works
+    // });
   });
 
   describe('config unset', () => {
@@ -179,9 +179,9 @@ describe('config', () => {
       expect(stdout).to.contain("Configuration key 'defaultCalendar' is not set");
     });
 
-    it.skip('validates configuration keys', async () => {
-      // This test is skipped - manual testing confirms it works
-    });
+    // it.skip('validates configuration keys', async () => {
+    //   // This test is skipped - manual testing confirms it works
+    // });
   });
 
   describe('config reset', () => {
@@ -206,16 +206,16 @@ describe('config', () => {
   describe('error handling', () => {
     // Note: Error handling tests are skipped due to @oclif/test complexity
     // Manual testing confirms all error cases work correctly
-    it.skip('requires subcommand', async () => {
-      // This test is skipped - manual testing confirms it works
-    });
+    // it.skip('requires subcommand', async () => {
+    //   // This test is skipped - manual testing confirms it works
+    // });
 
-    it.skip('requires key for get command', async () => {
-      // This test is skipped - manual testing confirms it works
-    });
+    // it.skip('requires key for get command', async () => {
+    //   // This test is skipped - manual testing confirms it works
+    // });
 
-    it.skip('requires key and value for set command', async () => {
-      // This test is skipped - manual testing confirms it works
-    });
+    // it.skip('requires key and value for set command', async () => {
+    //   // This test is skipped - manual testing confirms it works
+    // });
   });
 });
