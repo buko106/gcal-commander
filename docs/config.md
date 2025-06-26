@@ -38,9 +38,9 @@ gcal config <subcommand> [key] [value] [options]
 
 | Key | Description | Default | Valid Values |
 |-----|-------------|---------|--------------|
-| `events.maxResults` | Default maximum events to return | `10` | `1-100` |
+| `events.maxResults` | Default maximum events to return | `10` | `1` or higher |
 | `events.format` | Default output format | `table` | `table`, `json`, `pretty-json` |
-| `events.days` | Default days to look ahead | `30` | `1-365` |
+| `events.days` | Default days to look ahead | `30` | Any positive integer |
 
 ## Examples
 
@@ -176,8 +176,8 @@ gcal events list personal@gmail.com
 Configuration values are validated when set:
 
 - **Calendar IDs**: Not validated until first use
-- **Numeric ranges**: `maxResults` (1-100), `days` (1-365)
-- **Enums**: `format` must be "table" or "json"
+- **Numeric ranges**: `maxResults` (minimum 1), `days` (any positive integer)
+- **Enums**: `format` must be "table", "json", or "pretty-json"
 - **Invalid values**: Command will show error and current valid options
 
 ## Impact on Commands

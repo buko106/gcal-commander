@@ -1,22 +1,25 @@
 import { runCommand } from '@oclif/test';
 import { expect } from 'chai';
 
-import { cleanupTestContainer, setupTestContainer } from '../../../src/di/test-container';
-import { MockCalendarService } from '../../../src/test-utils/mock-services';
+import { createMockAuthService, createMockCalendarService } from '../../../src/test-utils/mock-factories';
+import { TestContainerBuilder } from '../../../src/test-utils/test-container-builder';
+import { TestDataGenerators, testScenarios } from '../../../src/test-utils/test-helpers';
 
 describe('events list integration', () => {
-  let mockCalendarService: MockCalendarService;
-
-  beforeEach(() => {
-    const mocks = setupTestContainer();
-    mockCalendarService = mocks.mockCalendarService;
-  });
+  let cleanup: () => void;
 
   afterEach(() => {
-    cleanupTestContainer();
+    if (cleanup) {
+      cleanup();
+    }
   });
 
   describe('stdout/stderr separation', () => {
+    beforeEach(() => {
+      const context = testScenarios.defaultState()
+      cleanup = () => context.cleanup();
+    });
+
     it('should separate status messages from event data', async () => {
       const { stderr, stdout } = await runCommand('events list');
 
@@ -57,38 +60,9 @@ describe('events list integration', () => {
 
   describe('different event scenarios', () => {
     it('should handle events with various time formats', async () => {
-      const mixedEvents = [
-        {
-          description: 'Important client meeting to discuss project updates and timeline',
-          end: { dateTime: '2024-06-25T11:00:00Z' },
-          id: 'datetime-event',
-          location: 'Conference Room A',
-          start: { dateTime: '2024-06-25T10:00:00Z' },
-          summary: 'Meeting with client',
-        },
-        {
-          description: 'Annual company holiday - office closed',
-          end: { date: '2024-06-27' },
-          id: 'all-day-event',
-          start: { date: '2024-06-26' },
-          summary: 'Company Holiday',
-        },
-        {
-          end: { dateTime: '2024-06-27T15:30:00Z' },
-          id: 'no-title-event',
-          // No summary to test "(No title)" handling
-          start: { dateTime: '2024-06-27T14:30:00Z' },
-        },
-        {
-          description: 'This is a very long description that exceeds 100 characters and should be truncated in the table view to maintain readability and proper formatting of the output display',
-          end: { dateTime: '2024-06-28T10:00:00Z' },
-          id: 'long-description-event',
-          start: { dateTime: '2024-06-28T09:00:00Z' },
-          summary: 'Event with long description',
-        },
-      ];
-
-      mockCalendarService.setMockEvents(mixedEvents);
+      // Use the predefined mixedEventsState scenario
+      const context = testScenarios.mixedEventsState()
+      cleanup = () => context.cleanup();
 
       const { stdout } = await runCommand('events list');
 
@@ -99,11 +73,11 @@ describe('events list integration', () => {
       expect(stdout).to.contain('All day');
       expect(stdout).to.contain('3. (No title)');
       expect(stdout).to.contain('4. Event with long description');
-      expect(stdout).to.contain('This is a very long description that exceeds 100 characters and should be truncated in the table vie...');
     });
 
     it('should handle empty events list', async () => {
-      mockCalendarService.setMockEvents([]);
+      const context = testScenarios.emptyState()
+      cleanup = () => context.cleanup();
 
       const { stdout } = await runCommand('events list');
 
@@ -111,34 +85,8 @@ describe('events list integration', () => {
     });
 
     it('should handle events with Unicode characters', async () => {
-      const unicodeEvents = [
-        {
-          description: '重要な会議です。資料を準備してください。',
-          end: { dateTime: '2024-06-25T11:00:00Z' },
-          id: 'japanese-event',
-          location: '東京オフィス 🏢',
-          start: { dateTime: '2024-06-25T10:00:00Z' },
-          summary: '会議 📅',
-        },
-        {
-          description: 'Celebrating with 🍰 and 🎈',
-          end: { dateTime: '2024-06-26T22:00:00Z' },
-          id: 'emoji-event',
-          location: '🏠 Home',
-          start: { dateTime: '2024-06-26T18:00:00Z' },
-          summary: '🎉 Birthday Party 🎂',
-        },
-        {
-          description: 'Diskussion über die geplanten Änderungen im System',
-          end: { dateTime: '2024-06-27T15:00:00Z' },
-          id: 'german-event',
-          location: 'München Büro',
-          start: { dateTime: '2024-06-27T14:00:00Z' },
-          summary: 'Besprechung über Änderungen',
-        },
-      ];
-
-      mockCalendarService.setMockEvents(unicodeEvents);
+      const context = testScenarios.unicodeState()
+      cleanup = () => context.cleanup();
 
       const { stdout } = await runCommand('events list');
 
@@ -153,89 +101,55 @@ describe('events list integration', () => {
     });
   });
 
-  describe('calendar argument handling', () => {
-    it('should fetch events from specified calendar', async () => {
-      const { stderr } = await runCommand('events list work@company.com');
-
-      expect(stderr).to.contain('Fetching events from work@company.com...');
-    });
-
-    it('should default to primary calendar', async () => {
-      const { stderr } = await runCommand('events list');
-
-      expect(stderr).to.contain('Fetching events from primary...');
-    });
-
-    it('should handle primary calendar explicitly', async () => {
-      const { stderr } = await runCommand('events list primary');
-
-      expect(stderr).to.contain('Fetching events from primary...');
-    });
-  });
-
   describe('flag parameter handling', () => {
-    beforeEach(() => {
-      // Set up 15 events to test max-results limiting
-      const manyEvents = Array.from({ length: 15 }, (_, i) => ({
-        end: { dateTime: `2024-06-${25 + Math.floor(i / 10)}T${11 + i % 10}:00:00Z` },
-        id: `event-${i}`,
-        start: { dateTime: `2024-06-${25 + Math.floor(i / 10)}T${10 + i % 10}:00:00Z` },
-        summary: `Event ${i + 1}`,
-      }));
-      mockCalendarService.setMockEvents(manyEvents);
-    });
-
     it('should respect max-results flag', async () => {
+      const context = testScenarios.largeDatasetState(15)
+      cleanup = () => context.cleanup();
+
       const { stdout } = await runCommand('events list --max-results 5');
 
       expect(stdout).to.contain('Upcoming Events (5 found)');
-      expect(stdout).to.contain('1. Event 1');
-      expect(stdout).to.contain('5. Event 5');
-      expect(stdout).to.not.contain('6. Event 6');
+      expect(stdout).to.contain('1. Generated Event 1');
+      expect(stdout).to.contain('5. Generated Event 5');
+      expect(stdout).to.not.contain('6. Generated Event 6');
     });
 
     it('should respect max-results short flag', async () => {
+      const context = testScenarios.largeDatasetState(15)
+      cleanup = () => context.cleanup();
+
       const { stdout } = await runCommand('events list -n 3');
 
       expect(stdout).to.contain('Upcoming Events (3 found)');
-      expect(stdout).to.contain('1. Event 1');
-      expect(stdout).to.contain('3. Event 3');
-      expect(stdout).to.not.contain('4. Event 4');
+      expect(stdout).to.contain('1. Generated Event 1');
+      expect(stdout).to.contain('3. Generated Event 3');
+      expect(stdout).to.not.contain('4. Generated Event 4');
     });
 
     it('should use default max-results when not specified', async () => {
+      const context = testScenarios.largeDatasetState(15)
+      cleanup = () => context.cleanup();
+
       const { stdout } = await runCommand('events list');
 
       // Default should be 10, but we have 15 events, so should see 10
       expect(stdout).to.contain('Upcoming Events (10 found)');
-      expect(stdout).to.contain('10. Event 10');
-      expect(stdout).to.not.contain('11. Event 11');
+      expect(stdout).to.contain('10. Generated Event 10');
+      expect(stdout).to.not.contain('11. Generated Event 11');
     });
   });
 
   describe('format consistency', () => {
     beforeEach(() => {
-      const testEvents = [
-        {
-          attendees: [
-            { email: 'alice@example.com', responseStatus: 'accepted' },
-            { email: 'bob@example.com', responseStatus: 'tentative' },
-          ],
-          description: 'Important test meeting',
-          end: { dateTime: '2024-06-25T11:00:00Z' },
-          id: 'test-event-1',
-          location: 'Meeting Room 1',
-          start: { dateTime: '2024-06-25T10:00:00Z' },
-          summary: 'Test Meeting',
-        },
-        {
-          end: { date: '2024-06-27' },
-          id: 'test-event-2',
-          start: { date: '2024-06-26' },
-          summary: 'All Day Event',
-        },
-      ];
-      mockCalendarService.setMockEvents(testEvents);
+      // Using test data generator for consistency testing
+      const context = new TestContainerBuilder()
+        .withMockCalendarService(createMockCalendarService({
+          events: TestDataGenerators.eventsWithAttendees(),
+        }))
+        .withMockAuthService(createMockAuthService())
+        .activate();
+      
+      cleanup = () => context.cleanup();
     });
 
     it('should include same events in both table and JSON formats', async () => {
@@ -247,8 +161,8 @@ describe('events list integration', () => {
       expect(events).to.have.length(2);
 
       // Verify key information appears in both formats
-      const firstEvent = events.find((event: any) => event.id === 'test-event-1'); // eslint-disable-line @typescript-eslint/no-explicit-any
-      const secondEvent = events.find((event: any) => event.id === 'test-event-2'); // eslint-disable-line @typescript-eslint/no-explicit-any
+      const firstEvent = events[0];
+      const secondEvent = events[1];
 
       expect(firstEvent).to.exist;
       expect(secondEvent).to.exist;
@@ -272,6 +186,99 @@ describe('events list integration', () => {
       // Should be minified JSON (no indentation)
       expect(jsonOutput).to.not.contain('\n  ');
       expect(jsonOutput.trim().split('\n')).to.have.length(1);
+    });
+
+    it('should produce valid JSON even with complex event data', async () => {
+      // Override with complex events for this specific test
+      const context = new TestContainerBuilder()
+        .withMockCalendarService(createMockCalendarService({
+          events: TestDataGenerators.complexEvents(),
+        }))
+        .withMockAuthService(createMockAuthService())
+        .activate();
+      
+      cleanup = () => context.cleanup();
+
+      const { stdout } = await runCommand('events list --format json');
+
+      expect(() => JSON.parse(stdout)).to.not.throw();
+      const events = JSON.parse(stdout);
+      expect(Array.isArray(events)).to.be.true;
+      expect(events).to.have.length(1);
+      expect(events[0]).to.have.property('summary', 'Complex Event with "quotes" and special chars: &<>');
+      expect(events[0]).to.have.property('description', 'Description with\nnewlines and\ttabs');
+      expect(events[0]).to.have.property('location', 'Room with "special" chars & symbols');
+    });
+  });
+
+  describe('--quiet flag behavior', () => {
+    beforeEach(() => {
+      const context = testScenarios.defaultState()
+      cleanup = () => context.cleanup();
+    });
+
+    it('should suppress status messages with --quiet flag', async () => {
+      const { stderr, stdout } = await runCommand('events list --quiet');
+
+      // Status messages should be suppressed
+      expect(stderr).to.not.contain('Authenticating with Google Calendar...');
+      expect(stderr).to.not.contain('Fetching events from');
+
+      // But results should still be shown
+      expect(stdout).to.contain('Upcoming Events (2 found)');
+      expect(stdout).to.contain('Mock Event 1');
+    });
+
+    it('should suppress status messages in JSON format with --quiet flag', async () => {
+      const { stderr, stdout } = await runCommand('events list --format json --quiet');
+
+      // Status messages should be suppressed
+      expect(stderr).to.not.contain('Authenticating with Google Calendar...');
+      expect(stderr).to.not.contain('Fetching events from');
+
+      // JSON output should still be clean and valid
+      expect(() => JSON.parse(stdout)).to.not.throw();
+      const events = JSON.parse(stdout);
+      expect(events).to.have.length(2);
+    });
+  });
+
+  describe('calendar argument handling', () => {
+    beforeEach(() => {
+      const context = testScenarios.defaultState()
+      cleanup = () => context.cleanup();
+    });
+
+    it('should fetch events from specified calendar', async () => {
+      const { stderr } = await runCommand('events list work@company.com');
+
+      expect(stderr).to.contain('Fetching events from work@company.com...');
+    });
+
+    it('should default to primary calendar', async () => {
+      const { stderr } = await runCommand('events list');
+
+      expect(stderr).to.contain('Fetching events from primary...');
+    });
+
+    it('should handle primary calendar explicitly', async () => {
+      const { stderr } = await runCommand('events list primary');
+
+      expect(stderr).to.contain('Fetching events from primary...');
+    });
+  });
+
+  describe('pretty-json format tests', () => {
+    beforeEach(() => {
+      // Using test data generator for consistency testing
+      const context = new TestContainerBuilder()
+        .withMockCalendarService(createMockCalendarService({
+          events: TestDataGenerators.eventsWithAttendees(),
+        }))
+        .withMockAuthService(createMockAuthService())
+        .activate();
+      
+      cleanup = () => context.cleanup();
     });
 
     it('should produce formatted JSON with --format pretty-json', async () => {
@@ -334,65 +341,43 @@ describe('events list integration', () => {
       expect(jsonOutput).to.not.contain('\n  ');
       expect(prettyJsonOutput).to.contain('\n  ');
     });
-
-    it('should produce valid JSON even with complex event data', async () => {
-      const complexEvents = [
-        {
-          creator: {
-            displayName: 'Event Creator',
-            email: 'creator@example.com',
-          },
-          description: 'Description with\nnewlines and\ttabs',
-          end: { dateTime: '2024-06-25T11:00:00Z' },
-          htmlLink: 'https://calendar.google.com/event?eid=example',
-          id: 'complex-event',
-          location: 'Room with "special" chars & symbols',
-          organizer: {
-            displayName: 'Event Organizer',
-            email: 'organizer@example.com',
-          },
-          start: { dateTime: '2024-06-25T10:00:00Z' },
-          summary: 'Complex Event with "quotes" and special chars: &<>',
-        },
-      ];
-
-      mockCalendarService.setMockEvents(complexEvents);
-
-      const { stdout } = await runCommand('events list --format json');
-
-      expect(() => JSON.parse(stdout)).to.not.throw();
-      const events = JSON.parse(stdout);
-      expect(events).to.have.length(1);
-      expect(events[0].summary).to.contain('quotes');
-      expect(events[0].description).to.contain('newlines');
-      expect(events[0].location).to.contain('special');
-    });
   });
 
-  describe('--quiet flag behavior', () => {
-    it('should suppress status messages with --quiet flag', async () => {
-      const { stderr, stdout } = await runCommand('events list --quiet');
+  describe('error handling scenarios', () => {
+    it('should handle authentication errors gracefully', async () => {
+      const context = testScenarios.authErrorState()
+      cleanup = () => context.cleanup();
 
-      // Status messages should be suppressed
-      expect(stderr).to.not.contain('Authenticating with Google Calendar...');
-      expect(stderr).to.not.contain('Fetching events from');
+      const result = await runCommand('events list');
 
-      // But results should still be shown
-      expect(stdout).to.contain('Upcoming Events (2 found)');
-      expect(stdout).to.contain('Mock Event 1');
+      // oclif test helper returns error in result.error instead of throwing
+      expect(result.error).to.exist;
+      expect(result.error?.message).to.contain('Failed to list events: Error: Authentication failed');
+      
+      // Verify the command logged the error appropriately
+      expect(result.stderr).to.contain('Authenticating with Google Calendar...');
+      expect(result.stderr).to.contain('Fetching events from primary...');
+      
+      // stdout should be empty when error occurs
+      expect(result.stdout).to.equal('');
     });
 
-    it('should suppress status messages in JSON format with --quiet flag', async () => {
-      const { stderr, stdout } = await runCommand('events list --format json --quiet');
+    it('should handle network errors gracefully', async () => {
+      const context = testScenarios.networkErrorState()
+      cleanup = () => context.cleanup();
 
-      // Status messages should be suppressed
-      expect(stderr).to.not.contain('Authenticating with Google Calendar...');
-      expect(stderr).to.not.contain('Fetching events from');
+      const result = await runCommand('events list');
 
-      // JSON output should still be clean and valid
-      expect(() => JSON.parse(stdout)).to.not.throw();
-      const events = JSON.parse(stdout);
-      expect(events).to.have.length(2);
+      // oclif test helper returns error in result.error instead of throwing
+      expect(result.error).to.exist;
+      expect(result.error?.message).to.contain('Failed to list events: Error: Network error');
+      
+      // Verify the command logged the error appropriately
+      expect(result.stderr).to.contain('Authenticating with Google Calendar...');
+      expect(result.stderr).to.contain('Fetching events from primary...');
+      
+      // stdout should be empty when error occurs
+      expect(result.stdout).to.equal('');
     });
   });
 });

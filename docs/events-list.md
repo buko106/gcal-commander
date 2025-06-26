@@ -100,8 +100,8 @@ Upcoming Events (2 found):
 
 ## Time Range and Limits
 
-- **Days Range**: 1-365 days from today
-- **Max Results**: 1-100 events per request
+- **Days Range**: Any positive integer (negative values look backward in time)
+- **Max Results**: Minimum of 1 event (enforced by Google Calendar API)
 - **Time Zone**: Events are displayed in your local timezone
 - **Past Events**: Only future/current events are shown
 
