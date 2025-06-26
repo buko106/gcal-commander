@@ -1,25 +1,27 @@
 import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 
+import {cleanupTestContainer, setupTestContainer} from '../../../src/di/test-container'
+
 describe('events list', () => {
+  beforeEach(() => {
+    setupTestContainer()
+  })
+
+  afterEach(() => {
+    cleanupTestContainer()
+  })
+
   it('shows authentication message in stderr', async () => {
-    try {
-      const {stderr} = await runCommand('events list')
-      expect(stderr).to.contain('Authenticating with Google Calendar...')
-    } catch (error) {
-      // Expected to fail without proper authentication setup
-      expect(String(error)).to.contain('Authentication failed')
-    }
+    const {stderr} = await runCommand('events list')
+    expect(stderr).to.contain('Authenticating with Google Calendar...')
+    expect(stderr).to.contain('Fetching events from')
   })
 
   it('accepts calendar argument', async () => {
-    try {
-      const {stderr} = await runCommand('events list my-calendar@gmail.com')
-      expect(stderr).to.contain('Authenticating with Google Calendar...')
-    } catch (error) {
-      // Expected to fail without proper authentication setup
-      expect(String(error)).to.contain('Authentication failed')
-    }
+    const {stderr} = await runCommand('events list my-calendar@gmail.com')
+    expect(stderr).to.contain('Authenticating with Google Calendar...')
+    expect(stderr).to.contain('Fetching events from')
   })
 
   it('accepts format flag', async () => {

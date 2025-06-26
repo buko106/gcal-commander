@@ -1,9 +1,8 @@
 import { Command, Flags } from '@oclif/core';
 
+import { getContainerProvider } from './di/container-provider';
+import { TOKENS } from './di/tokens';
 import { IAuthService, ICalendarService } from './interfaces/services';
-import { AuthService } from './services/auth';
-import { CalendarService } from './services/calendar';
-import { ServiceRegistry } from './services/service-registry';
 
 export type OutputFormat = 'json' | 'pretty-json' | 'table';
 
@@ -32,11 +31,8 @@ protected authService!: IAuthService;
     this.format = flags.format as OutputFormat;
     this.quiet = flags.quiet;
 
-    // Initialize services using ServiceRegistry
-    this.authService = ServiceRegistry.get<IAuthService>(
-      'AuthService',
-      () => new AuthService()
-    );
+    // Initialize services using TSyringe container
+    this.authService = this.getContainer().resolve<IAuthService>(TOKENS.AuthService);
   }
 
   /**
@@ -44,14 +40,7 @@ protected authService!: IAuthService;
    * Must be called by commands that need calendar access
    */
   protected async initCalendarService(): Promise<void> {
-    this.calendarService = ServiceRegistry.get<ICalendarService>(
-      'CalendarService',
-      () => 
-        // This is a factory that will be called synchronously
-        // We'll use a lazy initialization pattern in the service itself
-         new CalendarService(this.authService)
-      
-    );
+    this.calendarService = this.getContainer().resolve<ICalendarService>(TOKENS.CalendarService);
   }
 
   protected logError(message: string): never {
@@ -76,5 +65,9 @@ protected authService!: IAuthService;
     } else {
       this.logJson(data);
     }
+  }
+
+  private getContainer() {
+    return getContainerProvider().getContainer();
   }
 }

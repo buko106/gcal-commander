@@ -2,14 +2,17 @@ import { calendar_v3 as calendarV3, google } from 'googleapis';
 import { unlink } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
+import { inject, injectable } from 'tsyringe';
 
+import { TOKENS } from '../di/tokens';
 import { CreateEventParams, IAuthService, ICalendarService, ListEventsParams } from '../interfaces/services';
 
+@injectable()
 export class CalendarService implements ICalendarService {
   private calendar: calendarV3.Calendar | null = null;
   private hasReauthenticated = false;
 
-  constructor(private authService: IAuthService) {}
+  constructor(@inject(TOKENS.AuthService) private authService: IAuthService) {}
 
   async createEvent(params: CreateEventParams): Promise<calendarV3.Schema$Event> {
     return this.withRetryOnScopeError(async () => {

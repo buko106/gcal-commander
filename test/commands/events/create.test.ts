@@ -1,7 +1,17 @@
 import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 
+import {cleanupTestContainer, setupTestContainer} from '../../../src/di/test-container'
+
 describe('events create', () => {
+  beforeEach(() => {
+    setupTestContainer()
+  })
+
+  afterEach(() => {
+    cleanupTestContainer()
+  })
+
   it('requires summary argument', async () => {
     const result = await runCommand('events create')
     expect(result.error).to.exist
@@ -15,13 +25,9 @@ describe('events create', () => {
   })
 
   it('accepts required summary and start parameters', async () => {
-    try {
-      const {stderr} = await runCommand('events create "Test Event" --start "2024-01-15T14:00:00"')
-      expect(stderr).to.contain('Authenticating with Google Calendar...')
-    } catch (error) {
-      // Expected to fail without proper authentication setup
-      expect(String(error)).to.contain('Authentication failed')
-    }
+    const {stderr} = await runCommand('events create "Test Event" --start "2024-01-15T14:00:00"')
+    expect(stderr).to.contain('Authenticating with Google Calendar...')
+    expect(stderr).to.contain('Creating event...')
   })
 
   it('accepts end flag', async () => {

@@ -1,18 +1,16 @@
 import { runCommand } from '@oclif/test';
 import { expect } from 'chai';
 
-import { ServiceRegistry } from '../../src/services/service-registry';
-import { MockAuthService, MockCalendarService } from '../../src/test-utils/mock-services';
+import { cleanupTestContainer, setupTestContainer } from '../../src/di/test-container';
 
 describe('--quiet flag', () => {
   beforeEach(() => {
     // Set up mock services for testing
-    ServiceRegistry.registerMock('AuthService', new MockAuthService());
-    ServiceRegistry.registerMock('CalendarService', new MockCalendarService());
+    setupTestContainer();
   });
 
   afterEach(() => {
-    ServiceRegistry.clearMocks();
+    cleanupTestContainer();
   });
 
   it('should suppress status messages in events list command', async () => {

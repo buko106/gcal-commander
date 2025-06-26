@@ -1,7 +1,21 @@
 import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
 
+import { cleanupTestContainer, setupTestContainer } from '../../../src/di/test-container'
+import { MockCalendarService } from '../../../src/test-utils/mock-services'
+
 describe('events show', () => {
+  let mockCalendarService: MockCalendarService
+
+  beforeEach(() => {
+    const mocks = setupTestContainer()
+    mockCalendarService = mocks.mockCalendarService
+  })
+
+  afterEach(() => {
+    cleanupTestContainer()
+  })
+
   it('requires eventId argument', async () => {
     try {
       await runCommand('events show')
@@ -12,31 +26,45 @@ describe('events show', () => {
   })
 
   it('shows authentication message in stderr with eventId', async () => {
-    try {
-      const {stderr} = await runCommand('events show test-event-123')
-      expect(stderr).to.contain('Authenticating with Google Calendar...')
-    } catch (error) {
-      // Expected to fail without proper authentication setup
-      expect(String(error)).to.contain('Authentication failed')
+    // Set up a test event for the mock service
+    const testEvent = {
+      id: 'test-event-123',
+      summary: 'Test Event',
+      start: { dateTime: '2024-06-25T10:00:00+09:00' },
+      end: { dateTime: '2024-06-25T11:00:00+09:00' },
     }
+    mockCalendarService.setMockEvents([testEvent])
+
+    const {stderr} = await runCommand('events show test-event-123')
+    expect(stderr).to.contain('Authenticating with Google Calendar...')
   })
 
   it('accepts calendar flag', async () => {
-    try {
-      await runCommand('events show test-event-123 --calendar my-calendar@gmail.com')
-    } catch (error) {
-      // Command should parse flags correctly even if authentication fails
-      expect(String(error)).to.not.contain('Unknown flag')
+    // Set up a test event for the mock service
+    const testEvent = {
+      id: 'test-event-123',
+      summary: 'Test Event',
+      start: { dateTime: '2024-06-25T10:00:00+09:00' },
+      end: { dateTime: '2024-06-25T11:00:00+09:00' },
     }
+    mockCalendarService.setMockEvents([testEvent])
+
+    const {stderr} = await runCommand('events show test-event-123 --calendar my-calendar@gmail.com')
+    expect(stderr).to.contain('Authenticating with Google Calendar...')
   })
 
   it('accepts format flag', async () => {
-    try {
-      await runCommand('events show test-event-123 --format json')
-    } catch (error) {
-      // Command should parse flags correctly even if authentication fails
-      expect(String(error)).to.not.contain('Unknown flag')
+    // Set up a test event for the mock service
+    const testEvent = {
+      id: 'test-event-123',
+      summary: 'Test Event',
+      start: { dateTime: '2024-06-25T10:00:00+09:00' },
+      end: { dateTime: '2024-06-25T11:00:00+09:00' },
     }
+    mockCalendarService.setMockEvents([testEvent])
+
+    const {stderr} = await runCommand('events show test-event-123 --format json')
+    expect(stderr).to.contain('Authenticating with Google Calendar...')
   })
 
   it('rejects invalid format', async () => {
@@ -49,11 +77,16 @@ describe('events show', () => {
   })
 
   it('accepts pretty-json format', async () => {
-    try {
-      await runCommand('events show test-event-123 --format pretty-json')
-    } catch (error) {
-      // Command should parse flags correctly even if authentication fails
-      expect(String(error)).to.not.contain('Unknown flag')
+    // Set up a test event for the mock service
+    const testEvent = {
+      id: 'test-event-123',
+      summary: 'Test Event',
+      start: { dateTime: '2024-06-25T10:00:00+09:00' },
+      end: { dateTime: '2024-06-25T11:00:00+09:00' },
     }
+    mockCalendarService.setMockEvents([testEvent])
+
+    const {stderr} = await runCommand('events show test-event-123 --format pretty-json')
+    expect(stderr).to.contain('Authenticating with Google Calendar...')
   })
 })
