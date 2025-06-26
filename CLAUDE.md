@@ -31,17 +31,21 @@ When working on tasks that require deeper context:
 
 - **Tech Stack**: oclif CLI framework + TypeScript + Google Calendar API
 - **Commands**: `npm test`, `npm run test:file [file(s)]`, `npm run lint`, `npm run build`
-- **Entry Point**: `./bin/run.js` or `gcal` command
+- **Entry Points**: 
+  - **Development**: `./bin/dev.js` (uses TypeScript source files directly with ts-node)
+  - **Production**: `./bin/run.js` or `gcal` (uses compiled JavaScript from dist/)
 - **Base Class**: All commands extend `BaseCommand` with `--quiet` flag support
 - **ESLint**: Uses flat config format (`eslint.config.mjs`) with oclif presets and perfectionist rules
 
 ## Development Workflow
 
 1. Read `.claude/core.md` for architecture patterns
-2. Follow TDD practices from `.claude/tdd.md`
-3. Use oclif logging methods (never console.log)
-4. Separate stdout (data) from stderr (status messages)
-5. Run tests after changes: `npm test`
+2. **Use development mode for active development**: `./bin/dev.js COMMAND` (instant TypeScript changes without build)
+3. Follow TDD practices from `.claude/tdd.md`
+4. Use oclif logging methods (never console.log)
+5. Separate stdout (data) from stderr (status messages)
+6. Run tests after changes: `npm test`
+7. **Use production mode for final testing**: `npm run build && ./bin/run.js COMMAND`
 
 ## Special Commands
 
