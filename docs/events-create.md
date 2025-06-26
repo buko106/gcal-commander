@@ -27,7 +27,7 @@ gcal events create <summary> [options]
 | `--description` | | Event description | - |
 | `--attendees` | | Comma-separated list of attendee emails | - |
 | `--send-updates` | | Send event invitations (all/externalOnly/none) | `none` |
-| `--format` | `-f` | Output format (table or json) | `table` |
+| `--format` | `-f` | Output format (table, json, or pretty-json) | `table` |
 | `--quiet` | `-q` | Suppress status messages | `false` |
 
 ## Time Specification

@@ -12,7 +12,7 @@ gcal calendars list [options]
 
 | Flag | Short | Description | Default |
 |------|-------|-------------|---------|
-| `--format` | `-f` | Output format (table or json) | `table` |
+| `--format` | `-f` | Output format (table, json, or pretty-json) | `table` |
 | `--quiet` | `-q` | Suppress status messages | `false` |
 
 ## Examples
@@ -34,11 +34,19 @@ gcal calendars list --quiet
 
 **Table Format (default):**
 ```
-Calendar ID                    Summary
-────────────────────────────────────────────────────────
-primary                        John Doe
-work@company.com              Work Calendar
-family@gmail.com              Family Events
+Available Calendars (3 found):
+
+1. John Doe (Primary)
+   ID: primary
+   Access: owner
+
+2. Work Calendar
+   ID: work@company.com
+   Access: owner
+
+3. Family Events
+   ID: family@gmail.com
+   Access: reader
 ```
 
 **JSON Format:**

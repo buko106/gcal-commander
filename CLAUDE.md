@@ -2,51 +2,38 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Core Documentation
+
+### Daily Development
+@.claude/core.md
+Essential information for daily development work including project overview, commands, architecture patterns, and oclif best practices.
+
+### Test-Driven Development
+@.claude/tdd-workflow.md
+Red-Green-Refactor micro-cycle workflow with practical commands and CLI testing patterns.
+
+### Dependency Injection & Testing
+@.claude/di.md
+Project-specific DI container setup for integration tests with mock services.
+
+### Release Process
+@.claude/release-flow.md
+Automated release workflow using semantic-release, conventional commits, and GitHub Actions.
+
 ## Quick Reference
 
-For daily development work, refer to `.claude/core.md` which contains:
-- Project overview and tech stack
-- Essential development commands
-- Architecture and framework patterns
-- oclif best practices and logging conventions
-
-## Context-Sensitive Documentation
-
-Additional documentation is available in `.claude/` directory and should be read when needed:
-
-- **Feature development**: Read `.claude/features.md` for current features and problem-solving methodology
-- **Test-driven development**: Read `.claude/tdd.md` for TDD practices, Red-Green-Refactor cycle, and CLI testing patterns
-- **Release/process work**: Read `.claude/processes.md` for release workflow, pre-commit hooks, and setup requirements
-
-## Auto-Loading Instructions
-
-When working on tasks that require deeper context:
-
-1. **For new features or major changes**: Also read `.claude/features.md`
-2. **For testing or quality work**: Review `.claude/tdd.md` for comprehensive TDD practices
-3. **For release or CI/CD work**: Also read `.claude/processes.md`
-4. **For authentication or API work**: Check Google Calendar integration details in `.claude/features.md`
-
-## Essential Daily Information
-
 - **Tech Stack**: oclif CLI framework + TypeScript + Google Calendar API
-- **Commands**: `npm test`, `npm run test:file [file(s)]`, `npm run lint`, `npm run build`
-- **Entry Points**: 
-  - **Development**: `./bin/dev.js` (uses TypeScript source files directly with ts-node)
-  - **Production**: `./bin/run.js` or `gcal` (uses compiled JavaScript from dist/)
-- **Base Class**: All commands extend `BaseCommand` with `--quiet` flag support
-- **ESLint**: Uses flat config format (`eslint.config.mjs`) with oclif presets and perfectionist rules
+- **Development**: `./bin/dev.js COMMAND` (instant TypeScript changes)
+- **Production**: `./bin/run.js COMMAND` (requires build)
+- **Tests**: `npm test` or `npm run test:file [pattern]`
+- **Linting**: `npm run lint`
 
 ## Development Workflow
 
-1. Read `.claude/core.md` for architecture patterns
-2. **Use development mode for active development**: `./bin/dev.js COMMAND` (instant TypeScript changes without build)
-3. Follow TDD practices from `.claude/tdd.md`
-4. Use oclif logging methods (never console.log)
-5. Separate stdout (data) from stderr (status messages)
-6. Run tests after changes: `npm test`
-7. **Use production mode for final testing**: `npm run build && ./bin/run.js COMMAND`
+1. Use development mode: `./bin/dev.js COMMAND`
+2. Follow TDD micro-cycle from @.claude/tdd-workflow.md
+3. Use oclif logging methods (never console.log)
+4. Separate stdout (data) from stderr (status messages)
+5. Run tests and lint before commits
+6. Follow conventional commit format for releases
 
-## Special Commands
-
-- **`remember`**: When user says "remember", add the information to appropriate CLAUDE.md or `.claude/*.md` files based on content type (core/features/processes)

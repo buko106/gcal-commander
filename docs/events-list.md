@@ -19,7 +19,7 @@ gcal events list [calendar] [options]
 | Flag | Short | Description | Default |
 |------|-------|-------------|---------|
 | `--days` | `-d` | Number of days to look ahead (1-365) | `30` |
-| `--format` | `-f` | Output format (table or json) | `table` |
+| `--format` | `-f` | Output format (table, json, or pretty-json) | `table` |
 | `--max-results` | `-n` | Maximum number of events to return (1-100) | `10` |
 | `--quiet` | `-q` | Suppress status messages | `false` |
 
@@ -71,10 +71,14 @@ gcal events list  # Uses work@company.com for 14 days
 
 **Table Format (default):**
 ```
-Event ID          Summary                    Start                   End
-────────────────────────────────────────────────────────────────────────────
-abc123           Team Meeting               2024-01-15 09:00        2024-01-15 10:00
-def456           Project Review             2024-01-16 14:00        2024-01-16 15:30
+Upcoming Events (2 found):
+
+1. Team Meeting
+   Mon Jan 15 • 9:00 AM - 10:00 AM
+   Weekly team sync meeting
+
+2. Project Review
+   Tue Jan 16 • 2:00 PM - 3:30 PM @ Conference Room A
 ```
 
 **JSON Format:**
