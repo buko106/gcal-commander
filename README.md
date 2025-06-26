@@ -187,8 +187,14 @@ We welcome contributions to gcal-commander! This project embraces AI-assisted de
 
 1. Fork and clone the repository
 2. Install dependencies: `npm install`
-3. Make your changes
-4. Run tests: `npm test`
+3. **Development workflow**:
+   - **For active development**: Use `./bin/dev.js COMMAND` to run commands directly from TypeScript source files (no build required)
+   - **For final testing**: Use `npm run build && ./bin/run.js COMMAND` to test the production build
+4. Make your changes and run tests: `npm test`
 5. Submit a pull request
+
+**CLI Execution Modes:**
+- `./bin/dev.js` - Development mode (TypeScript source files with ts-node, instant changes)
+- `./bin/run.js` - Production mode (compiled JavaScript from dist/, requires build)
 
 The project uses Husky + lint-staged for automatic code quality checks before commits.

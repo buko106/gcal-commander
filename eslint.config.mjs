@@ -15,4 +15,11 @@ export default [
       'perfectionist/sort-objects': 'off',
     },
   },
+  {
+    files: ['bin/dev.js'],
+    rules: {
+      'n/no-unpublished-require': 'off',
+      'n/no-missing-require': 'off',
+    },
+  },
 ]

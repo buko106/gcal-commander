@@ -1,5 +1,13 @@
-#!/usr/bin/env -S node --loader ts-node/esm --disable-warning=ExperimentalWarning
+#!/usr/bin/env node
+/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable unicorn/prefer-module */
 
-import {execute} from '@oclif/core'
+// Register ts-node for TypeScript support in development
+require('ts-node/register');
 
-await execute({development: true, dir: import.meta.url})
+// Initialize DI container before running commands
+require('../src/di/container');
+
+const {execute} = require('@oclif/core');
+
+execute({development: true, dir: __dirname});
