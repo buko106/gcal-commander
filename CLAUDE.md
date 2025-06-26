@@ -33,6 +33,7 @@ When working on tasks that require deeper context:
 - **Commands**: `npm test`, `npm run lint`, `npm run build`
 - **Entry Point**: `./bin/run.js` or `gcal` command
 - **Base Class**: All commands extend `BaseCommand` with `--quiet` flag support
+- **ESLint**: Uses flat config format (`eslint.config.mjs`) with oclif presets and perfectionist rules
 
 ## Development Workflow
 

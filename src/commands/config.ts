@@ -4,7 +4,7 @@ import { BaseCommand } from '../base-command';
 import { ConfigService } from '../services/config';
 
 export default class Config extends BaseCommand {
-  /* eslint-disable perfectionist/sort-objects */
+   
   static args = {
     subcommand: Args.string({
       description: 'Config subcommand',
@@ -20,7 +20,6 @@ export default class Config extends BaseCommand {
       required: false,
     }),
   };
-  /* eslint-enable perfectionist/sort-objects */
 static description = 'Manage global configuration settings';
 static examples = [
     '<%= config.bin %> <%= command.id %> set defaultCalendar my-work@gmail.com',
