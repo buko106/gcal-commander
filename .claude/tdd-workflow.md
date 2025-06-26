@@ -66,6 +66,52 @@ npm test
 - [ ] Flag parsing and validation
 
 ### Essential Test Pattern
+
+**IMPORTANT: Use V2 Mock System for new tests**
+For all new test cases, use the v2 mock system documented in `@MIGRATION_GUIDE_V2_MOCKS.md`. The old pattern below is for reference only.
+
+#### V2 Pattern (Recommended for new tests)
+```typescript
+import { createMockCalendarService } from '../../src/test-utils/mock-factories';
+import { TestContainerBuilder } from '../../src/test-utils/test-container-builder';
+import { testScenarios } from '../../src/test-utils/test-helpers';
+
+describe('command name (v2)', () => {
+  let cleanup: () => void;
+
+  afterEach(() => {
+    if (cleanup) {
+      cleanup();
+    }
+  });
+
+  it('should separate status from data output', async () => {
+    const context = new TestContainerBuilder()
+      .withMockCalendarService(createMockCalendarService({
+        events: [{ id: 'test', summary: 'Test Event' }]
+      }))
+      .withDefaultMocks()
+      .activate();
+    
+    cleanup = () => context.cleanup();
+
+    const {stderr, stdout} = await runCommand('command --format json');
+    expect(stderr).to.contain('Status message');
+    expect(stdout).to.not.contain('Status message');
+    expect(() => JSON.parse(stdout)).to.not.throw();
+  });
+
+  it('should handle predefined scenarios', async () => {
+    const context = testScenarios.unicodeState();
+    cleanup = () => context.cleanup();
+
+    const {stdout} = await runCommand('command');
+    expect(stdout).to.contain('Expected output');
+  });
+});
+```
+
+#### Legacy Pattern (for reference)
 ```typescript
 describe('command name', () => {
   beforeEach(() => {
@@ -101,6 +147,41 @@ npm run build
 ```
 
 ### Integration Test Setup
+
+**IMPORTANT: Use V2 Mock System for new integration tests**
+
+#### V2 Integration Test Pattern (Recommended)
+```typescript
+import { createMockCalendarService } from '../../src/test-utils/mock-factories';
+import { TestContainerBuilder } from '../../src/test-utils/test-container-builder';
+import { testScenarios } from '../../src/test-utils/test-helpers';
+
+// Using TestContainerBuilder for explicit configuration
+beforeEach(() => {
+  const context = new TestContainerBuilder()
+    .withMockCalendarService(createMockCalendarService({
+      events: [...testEvents]
+    }))
+    .withDefaultMocks()
+    .activate();
+  
+  cleanup = () => context.cleanup();
+});
+
+afterEach(() => {
+  if (cleanup) {
+    cleanup();
+  }
+});
+
+// Or using predefined scenarios
+beforeEach(() => {
+  const context = testScenarios.largeDatasetState(15);
+  cleanup = () => context.cleanup();
+});
+```
+
+#### Legacy Integration Test Pattern (for reference)
 ```typescript
 // Standard pattern for integration tests
 beforeEach(() => {
@@ -117,7 +198,32 @@ afterEach(() => {
 
 ## Common Test Data Patterns
 
-### Mock Service Data
+**IMPORTANT: Use V2 Mock System test data generators**
+
+### V2 Mock Service Data (Recommended)
+```typescript
+import { TEST_EVENTS, generateTestEvents } from '../../src/test-utils/test-data-defaults';
+import { TestDataGenerators } from '../../src/test-utils/test-helpers';
+
+// Use predefined test events
+const detailedEvent = TEST_EVENTS.DETAILED_EVENT;
+const unicodeEvent = TEST_EVENTS.UNICODE_EVENT;
+const allDayEvent = TEST_EVENTS.ALL_DAY_EVENT;
+
+// Use test data generators
+const eventsWithAttendees = TestDataGenerators.eventsWithAttendees(3);
+const complexEvents = TestDataGenerators.complexEvents();
+
+// Generate multiple events
+const manyEvents = generateTestEvents(15);
+
+// Create custom mock service
+const mockService = createMockCalendarService({
+  events: [TEST_EVENTS.DETAILED_EVENT, ...generateTestEvents(5)]
+});
+```
+
+### Legacy Mock Service Data (for reference)
 ```typescript
 // Comprehensive test event
 const testEvent = {
