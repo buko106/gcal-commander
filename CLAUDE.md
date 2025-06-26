@@ -37,6 +37,3 @@ Automated release workflow using semantic-release, conventional commits, and Git
 5. Run tests and lint before commits
 6. Follow conventional commit format for releases
 
-## Special Commands
-
-- **`remember`**: Add information to appropriate `.claude/*.md` files based on content type
