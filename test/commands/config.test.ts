@@ -1,35 +1,42 @@
 import { runCommand } from '@oclif/test';
 import { expect } from 'chai';
-import { rm } from 'node:fs/promises';
-import { homedir } from 'node:os';
+import { rm, mkdtemp } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-const TEST_CONFIG_DIR = join(homedir(), '.gcal-commander-test');
+import { cleanupTestContainer, setupTestContainer } from '../../src/di/test-container';
+import { ConfigService } from '../../src/services/config';
+
+let TEST_CONFIG_DIR: string;
 
 describe('config', () => {
   beforeEach(async () => {
-    // Clean up test config directory
+    // Initialize test container with mocks
+    setupTestContainer();
+    
+    // Create unique temp directory for each test
+    TEST_CONFIG_DIR = await mkdtemp(join(tmpdir(), 'gcal-commander-test-'));
+    
+    // Set environment variable to use test config path
+    process.env.GCAL_COMMANDER_CONFIG_PATH = join(TEST_CONFIG_DIR, 'config.json');
+    
+    // Reset ConfigService singleton for each test
+    ConfigService.resetInstance();
+  });
+
+  afterEach(async () => {
+    // Clean up test container
+    cleanupTestContainer();
+    
+    // Clean up temp directory
     try {
       await rm(TEST_CONFIG_DIR, { force: true, recursive: true });
     } catch {
       // Ignore errors if directory doesn't exist
     }
     
-    // Reset the actual config file used by tests
-    try {
-      await runCommand('config reset --confirm');
-    } catch {
-      // Ignore if reset fails (no config to reset)
-    }
-  });
-
-  afterEach(async () => {
-    // Clean up after each test
-    try {
-      await rm(TEST_CONFIG_DIR, { force: true, recursive: true });
-    } catch {
-      // Ignore errors if directory doesn't exist
-    }
+    // Clean up environment variable
+    delete process.env.GCAL_COMMANDER_CONFIG_PATH;
   });
 
   describe('config list', () => {

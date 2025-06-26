@@ -2,7 +2,12 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
-const CONFIG_PATH = join(homedir(), '.gcal-commander', 'config.json');
+const getConfigPath = (): string => {
+  if (process.env.GCAL_COMMANDER_CONFIG_PATH) {
+    return process.env.GCAL_COMMANDER_CONFIG_PATH;
+  }
+  return join(homedir(), '.gcal-commander', 'config.json');
+};
 
 export interface Config extends Record<string, unknown> {
   defaultCalendar?: string;
@@ -32,13 +37,18 @@ export class ConfigService {
     return ConfigService.instance;
   }
 
+  // For testing purposes only
+  public static resetInstance(): void {
+    ConfigService.instance = new ConfigService();
+  }
+
   public async get<T>(key: string): Promise<T | undefined> {
     await this.load();
     return this.getNestedValue(this.config, key) as T;
   }
 
   public getConfigPath(): string {
-    return CONFIG_PATH;
+    return getConfigPath();
   }
 
   public getValidKeys(): readonly string[] {
@@ -54,7 +64,7 @@ export class ConfigService {
     if (this.loaded) return;
 
     try {
-      const content = await readFile(CONFIG_PATH, 'utf8');
+      const content = await readFile(getConfigPath(), 'utf8');
       this.config = JSON.parse(content);
     } catch {
       // If file doesn't exist or is invalid, use empty config
@@ -70,9 +80,10 @@ export class ConfigService {
   }
 
   public async save(): Promise<void> {
-    const configDir = join(homedir(), '.gcal-commander');
+    const configPath = getConfigPath();
+    const configDir = join(configPath, '..');
     await mkdir(configDir, { recursive: true });
-    await writeFile(CONFIG_PATH, JSON.stringify(this.config, null, 2), 'utf8');
+    await writeFile(configPath, JSON.stringify(this.config, null, 2), 'utf8');
   }
 
   public async set(key: string, value: unknown): Promise<void> {
