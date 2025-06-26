@@ -1,7 +1,7 @@
 import { calendar_v3 as calendarV3 } from 'googleapis';
 
-import { createMockCalendarService, MockCalendarService } from './mock-factories';
-import { createTestContainer, createTestContainerWithCalendarService, TestContainerContext } from './test-container-builder';
+import { createMockAuthService, createMockCalendarService, MockCalendarService } from './mock-factories';
+import { createTestContainer, createTestContainerWithCalendarService, TestContainerBuilder, TestContainerContext } from './test-container-builder';
 import { generateTestEvents, TEST_EVENTS } from './test-data-defaults';
 
 /**
@@ -76,20 +76,34 @@ export const testScenarios = {
   /**
    * Authentication error scenario
    */
-  authErrorState: () => createTestContainerWithCalendarService(
-    createMockCalendarService({
-      shouldThrowError: 'auth',
-    })
-  ),
+  authErrorState() {
+    const context = new TestContainerBuilder()
+      .withMockCalendarService(createMockCalendarService({
+        shouldThrowError: 'auth',
+      }))
+      .withMockAuthService(createMockAuthService({
+        shouldThrowError: 'auth',
+      }))
+      .activate();
+    
+    return context;
+  },
 
   /**
    * Network error scenario
    */
-  networkErrorState: () => createTestContainerWithCalendarService(
-    createMockCalendarService({
-      shouldThrowError: 'network',
-    })
-  ),
+  networkErrorState() {
+    const context = new TestContainerBuilder()
+      .withMockCalendarService(createMockCalendarService({
+        shouldThrowError: 'network',
+      }))
+      .withMockAuthService(createMockAuthService({
+        shouldThrowError: 'network',
+      }))
+      .activate();
+    
+    return context;
+  },
 };
 
 /**

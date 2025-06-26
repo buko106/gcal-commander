@@ -244,40 +244,40 @@ describe('events list integration (v2 pattern)', () => {
   });
 
   describe('error handling scenarios', () => {
-    it.skip('should handle authentication errors gracefully', async () => {
+    it('should handle authentication errors gracefully', async () => {
       const context = testScenarios.authErrorState()
       cleanup = () => context.cleanup();
 
-      try {
-        await runCommand('events list');
-        expect.fail('Should have thrown an error');
-      } catch (error: unknown) {
-        // oclif test framework wraps errors - check the error message or exit code
-        const errorMessage = (error as Error)?.message || String(error);
-        expect(errorMessage).to.satisfy((msg: string) => 
-          msg.includes('Authentication failed') || 
-          msg.includes('EEXIT: 1') ||
-          msg.includes('Process exited with code 1')
-        );
-      }
+      const result = await runCommand('events list');
+
+      // oclif test helper returns error in result.error instead of throwing
+      expect(result.error).to.exist;
+      expect(result.error?.message).to.contain('Failed to list events: Error: Authentication failed');
+      
+      // Verify the command logged the error appropriately
+      expect(result.stderr).to.contain('Authenticating with Google Calendar...');
+      expect(result.stderr).to.contain('Fetching events from primary...');
+      
+      // stdout should be empty when error occurs
+      expect(result.stdout).to.equal('');
     });
 
-    it.skip('should handle network errors gracefully', async () => {
+    it('should handle network errors gracefully', async () => {
       const context = testScenarios.networkErrorState()
       cleanup = () => context.cleanup();
 
-      try {
-        await runCommand('events list');
-        expect.fail('Should have thrown an error');
-      } catch (error: unknown) {
-        // oclif test framework wraps errors - check the error message or exit code
-        const errorMessage = (error as Error)?.message || String(error);
-        expect(errorMessage).to.satisfy((msg: string) => 
-          msg.includes('Network error') || 
-          msg.includes('EEXIT: 1') ||
-          msg.includes('Process exited with code 1')
-        );
-      }
+      const result = await runCommand('events list');
+
+      // oclif test helper returns error in result.error instead of throwing
+      expect(result.error).to.exist;
+      expect(result.error?.message).to.contain('Failed to list events: Error: Network error');
+      
+      // Verify the command logged the error appropriately
+      expect(result.stderr).to.contain('Authenticating with Google Calendar...');
+      expect(result.stderr).to.contain('Fetching events from primary...');
+      
+      // stdout should be empty when error occurs
+      expect(result.stdout).to.equal('');
     });
   });
 });
