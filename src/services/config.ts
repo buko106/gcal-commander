@@ -6,6 +6,7 @@ const getConfigPath = (): string => {
   if (process.env.GCAL_COMMANDER_CONFIG_PATH) {
     return process.env.GCAL_COMMANDER_CONFIG_PATH;
   }
+
   return join(homedir(), '.gcal-commander', 'config.json');
 };
 
