@@ -19,7 +19,7 @@ gcal events show <event-id> [options]
 | Flag | Short | Description | Default |
 |------|-------|-------------|---------|
 | `--calendar` | `-c` | Calendar ID where the event is located | `primary` |
-| `--format` | `-f` | Output format (table or json) | `table` |
+| `--format` | `-f` | Output format (table, json, or pretty-json) | `table` |
 | `--quiet` | `-q` | Suppress status messages | `false` |
 
 ## Examples
@@ -65,16 +65,25 @@ gcal events list --format json | jq '.[] | {id, summary}'
 
 **Table Format (default):**
 ```
-Property      Value
-────────────────────────────────────────
-ID            abc123def456
-Summary       Team Meeting
-Description   Weekly team sync meeting
-Start         2024-01-15 09:00:00
-End           2024-01-15 10:00:00
-Location      Conference Room A
-Attendees     john@company.com, jane@company.com
-Status        confirmed
+=== Event Details ===
+
+Title: Team Meeting
+ID: abc123def456
+Description: Weekly team sync meeting
+Location: Conference Room A
+Status: confirmed
+Start: Mon Jan 15, 2024 • 9:00 AM
+End: Mon Jan 15, 2024 • 10:00 AM 
+Creator: John Doe
+Organizer: Jane Smith
+
+Attendees:
+  1. john@company.com (accepted)
+  2. jane@company.com (tentative)
+
+Google Calendar Link: https://calendar.google.com/event?eid=...
+Created: 1/10/2024, 8:30:00 AM
+Last Updated: 1/12/2024, 3:45:00 PM
 ```
 
 **JSON Format:**

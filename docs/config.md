@@ -22,7 +22,7 @@ gcal config <subcommand> [key] [value] [options]
 
 | Flag | Description |
 |------|-------------|
-| `--format` | Output format for list/get (table or json) |
+| `--format` | Output format for list/get (table, json, or pretty-json) |
 | `--confirm` | Skip confirmation prompt for reset |
 | `--quiet` | Suppress status messages |
 
@@ -39,7 +39,7 @@ gcal config <subcommand> [key] [value] [options]
 | Key | Description | Default | Valid Values |
 |-----|-------------|---------|--------------|
 | `events.maxResults` | Default maximum events to return | `10` | `1-100` |
-| `events.format` | Default output format | `table` | `table`, `json` |
+| `events.format` | Default output format | `table` | `table`, `json`, `pretty-json` |
 | `events.days` | Default days to look ahead | `30` | `1-365` |
 
 ## Examples
