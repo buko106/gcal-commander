@@ -2,7 +2,7 @@ import { runCommand } from '@oclif/test';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 
-import type { IAuthService, ICalendarService, IPromptService } from '../../src/interfaces/services';
+import type { IAuthService, ICalendarService, II18nService, IPromptService } from '../../src/interfaces/services';
 
 import { TestContainerFactory } from '../../src/test-utils/mock-factories/test-container-factory';
 
@@ -10,16 +10,52 @@ describe('init command', () => {
   let mockPromptService: IPromptService & sinon.SinonStubbedInstance<IPromptService>;
   let mockAuthService: IAuthService & sinon.SinonStubbedInstance<IAuthService>;
   let mockCalendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
+  let mockI18nService: II18nService & sinon.SinonStubbedInstance<II18nService>;
 
   beforeEach(() => {
     const { mocks } = TestContainerFactory.create();
     mockPromptService = mocks.promptService;
     mockAuthService = mocks.authService;
     mockCalendarService = mocks.calendarService;
+    mockI18nService = mocks.i18nService;
   });
 
   afterEach(() => {
     TestContainerFactory.cleanup();
+  });
+
+  describe('language selection', () => {
+    it('should prompt for language selection before authentication', async () => {
+      mockPromptService.select.resolves('ja');
+      mockPromptService.confirm.resolves(true);
+
+      await runCommand('init');
+
+      expect(mockPromptService.select.called).to.be.true;
+      expect(mockPromptService.select.getCall(0).args[0]).to.contain('language');
+      expect(mockI18nService.changeLanguage.called).to.be.true;
+      expect(mockI18nService.changeLanguage.getCall(0).args[0]).to.equal('ja');
+    });
+
+    it('should set English as default when user selects English', async () => {
+      mockPromptService.select.resolves('en');
+      mockPromptService.confirm.resolves(false);
+
+      await runCommand('init');
+
+      expect(mockI18nService.changeLanguage.called).to.be.true;
+      expect(mockI18nService.changeLanguage.getCall(0).args[0]).to.equal('en');
+    });
+
+    it('should initialize i18n service before language selection', async () => {
+      mockPromptService.select.resolves('en');
+      mockPromptService.confirm.resolves(false);
+
+      await runCommand('init');
+
+      expect(mockI18nService.init.called).to.be.true;
+      expect(mockI18nService.init.calledBefore(mockI18nService.changeLanguage)).to.be.true;
+    });
   });
 
   it('should display confirmation message when user confirms', async () => {

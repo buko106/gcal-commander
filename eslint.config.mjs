@@ -51,6 +51,7 @@ export default [
     files: ['src/services/i18n.ts'],
     rules: {
       'no-restricted-imports': 'off',
+      'import/no-named-as-default-member': 'off',
     },
   },
 ]

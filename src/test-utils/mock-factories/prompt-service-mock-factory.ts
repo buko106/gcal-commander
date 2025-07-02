@@ -6,7 +6,9 @@ export interface PromptServiceMockOptions {
   confirmResponse?: boolean;
   errors?: {
     confirm?: Error;
+    select?: Error;
   };
+  selectResponse?: string;
 }
 
 /**
@@ -20,6 +22,7 @@ export class PromptServiceMockFactory {
   static create(options: PromptServiceMockOptions = {}): IPromptService & sinon.SinonStubbedInstance<IPromptService> {
     const mock = {
       confirm: sinon.stub(),
+      select: sinon.stub(),
     } as IPromptService & sinon.SinonStubbedInstance<IPromptService>;
 
     // Configure confirm behavior
@@ -27,6 +30,13 @@ export class PromptServiceMockFactory {
       mock.confirm.rejects(options.errors.confirm);
     } else {
       mock.confirm.resolves(options.confirmResponse ?? true);
+    }
+
+    // Configure select behavior
+    if (options.errors?.select) {
+      mock.select.rejects(options.errors.select);
+    } else {
+      mock.select.resolves(options.selectResponse ?? 'en');
     }
 
     return mock;
