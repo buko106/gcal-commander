@@ -2,7 +2,7 @@ import { Command, Flags } from '@oclif/core';
 
 import { getContainerProvider } from './di/container-provider';
 import { TOKENS } from './di/tokens';
-import { IAuthService, ICalendarService } from './interfaces/services';
+import { IAuthService, ICalendarService, IConfigService } from './interfaces/services';
 
 export type OutputFormat = 'json' | 'pretty-json' | 'table';
 
@@ -22,6 +22,7 @@ export abstract class BaseCommand extends Command {
   };
 protected authService!: IAuthService;
   protected calendarService!: ICalendarService;
+  protected configService!: IConfigService;
   protected format: OutputFormat = 'table';
   protected quiet = false;
 
@@ -37,6 +38,7 @@ protected authService!: IAuthService;
 
     // Initialize services using TSyringe container
     this.authService = this.getContainer().resolve<IAuthService>(TOKENS.AuthService);
+    this.configService = this.getContainer().resolve<IConfigService>(TOKENS.ConfigService);
   }
 
   /**

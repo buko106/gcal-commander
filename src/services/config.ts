@@ -1,26 +1,11 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { homedir } from 'node:os';
-import { join } from 'node:path';
+import { inject, injectable } from 'tsyringe';
 
-const getConfigPath = (): string => {
-  if (process.env.GCAL_COMMANDER_CONFIG_PATH) {
-    return process.env.GCAL_COMMANDER_CONFIG_PATH;
-  }
+import { TOKENS } from '../di/tokens';
+import { IConfigStorage } from '../interfaces/config-storage';
+import { Config, IConfigService } from '../interfaces/services';
 
-  return join(homedir(), '.gcal-commander', 'config.json');
-};
-
-export interface Config extends Record<string, unknown> {
-  defaultCalendar?: string;
-  events?: {
-    days?: number;
-    format?: 'json' | 'pretty-json' | 'table';
-    maxResults?: number;
-  };
-}
-
-export class ConfigService {
-  private static instance: ConfigService;
+@injectable()
+export class ConfigService implements IConfigService {
   private static readonly VALID_KEYS = [
     'defaultCalendar',
     'events.maxResults',
@@ -30,18 +15,9 @@ export class ConfigService {
   private config: Config = {};
   private loaded = false;
 
-  public static getInstance(): ConfigService {
-    if (!ConfigService.instance) {
-      ConfigService.instance = new ConfigService();
-    }
-
-    return ConfigService.instance;
-  }
-
-  // For testing purposes only
-  public static resetInstance(): void {
-    ConfigService.instance = new ConfigService();
-  }
+  constructor(
+    @inject(TOKENS.ConfigStorage) private readonly configStorage: IConfigStorage,
+  ) {}
 
   public async get<T>(key: string): Promise<T | undefined> {
     await this.load();
@@ -49,7 +25,7 @@ export class ConfigService {
   }
 
   public getConfigPath(): string {
-    return getConfigPath();
+    return this.configStorage.getConfigPath();
   }
 
   public getValidKeys(): readonly string[] {
@@ -65,8 +41,15 @@ export class ConfigService {
     if (this.loaded) return;
 
     try {
-      const content = await readFile(getConfigPath(), 'utf8');
-      this.config = JSON.parse(content);
+      const configPath = this.configStorage.getConfigPath();
+      const exists = await this.configStorage.exists(configPath);
+      
+      if (exists) {
+        const content = await this.configStorage.read(configPath);
+        this.config = JSON.parse(content);
+      } else {
+        this.config = {};
+      }
     } catch {
       // If file doesn't exist or is invalid, use empty config
       this.config = {};
@@ -81,10 +64,9 @@ export class ConfigService {
   }
 
   public async save(): Promise<void> {
-    const configPath = getConfigPath();
-    const configDir = join(configPath, '..');
-    await mkdir(configDir, { recursive: true });
-    await writeFile(configPath, JSON.stringify(this.config, null, 2), 'utf8');
+    const configPath = this.configStorage.getConfigPath();
+    const content = JSON.stringify(this.config, null, 2);
+    await this.configStorage.write(configPath, content);
   }
 
   public async set(key: string, value: unknown): Promise<void> {

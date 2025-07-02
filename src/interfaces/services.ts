@@ -57,3 +57,26 @@ export interface II18nService {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t(key: string, options?: any): string;
 }
+
+export interface Config extends Record<string, unknown> {
+  defaultCalendar?: string;
+  events?: {
+    days?: number;
+    format?: 'json' | 'pretty-json' | 'table';
+    maxResults?: number;
+  };
+}
+
+export interface IConfigService {
+  get<T>(key: string): Promise<T | undefined>;
+  getConfigPath(): string;
+  getValidKeys(): readonly string[];
+  list(): Promise<Config>;
+  load(): Promise<void>;
+  reset(): Promise<void>;
+  save(): Promise<void>;
+  set(key: string, value: unknown): Promise<void>;
+  unset(key: string): Promise<void>;
+  validateKey(key: string): boolean;
+  validateValue(key: string, value: unknown): { error?: string; valid: boolean; };
+}

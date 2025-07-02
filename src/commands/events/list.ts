@@ -2,7 +2,6 @@ import { Args, Flags } from '@oclif/core';
 import { calendar_v3 as calendarV3 } from 'googleapis';
 
 import { BaseCommand, OutputFormat } from '../../base-command';
-import { ConfigService } from '../../services/config';
 import { DateFormatter } from '../../utils/date-formatter';
 
 export default class EventsList extends BaseCommand {
@@ -41,16 +40,14 @@ static flags = {
       await this.initCalendarService();
 
       // Get configuration values
-      const configService = ConfigService.getInstance();
-      
       // Determine calendar to use: explicit CLI arg > config > default 'primary'
-      const defaultCalendar = await configService.get<string>('defaultCalendar');
+      const defaultCalendar = await this.configService.get<string>('defaultCalendar');
       const calendarId = args.calendar === 'primary' ? (defaultCalendar || 'primary') : args.calendar;
       
       // Apply config defaults for other settings
-      const configMaxResults = await configService.get<number>('events.maxResults') || 10;
-      const configDays = await configService.get<number>('events.days') || 30;
-      const configFormat = await configService.get<OutputFormat>('events.format') || 'table';
+      const configMaxResults = await this.configService.get<number>('events.maxResults') || 10;
+      const configDays = await this.configService.get<number>('events.days') || 30;
+      const configFormat = await this.configService.get<OutputFormat>('events.format') || 'table';
       
       const maxResults = flags['max-results'] || configMaxResults;
       const days = flags.days || configDays;
