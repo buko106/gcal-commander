@@ -167,6 +167,9 @@ gcal-commander provides several commands to interact with Google Calendar:
 ### Configuration
 - **[`gcal config`](docs/config.md)** - Manage global configuration settings
 
+### Setup & Authentication
+- **[`gcal init`](docs/init.md)** - Verify Google Calendar authentication setup
+
 ### Help
 - **`gcal help`** - Display help for any command
 

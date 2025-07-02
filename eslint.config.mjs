@@ -13,6 +13,17 @@ export default [
   {
     rules: {
       'perfectionist/sort-objects': 'off',
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@inquirer/prompts',
+              message: 'Use src/services/prompt.ts instead of direct @inquirer/prompts import',
+            },
+          ],
+        },
+      ],
     },
   },
   {
@@ -20,6 +31,12 @@ export default [
     rules: {
       'n/no-unpublished-require': 'off',
       'n/no-missing-require': 'off',
+    },
+  },
+  {
+    files: ['src/services/prompt.ts'],
+    rules: {
+      'no-restricted-imports': 'off',
     },
   },
 ]

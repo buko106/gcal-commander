@@ -39,6 +39,7 @@ Built on oclif CLI framework:
 - **Services**: 
   - `src/services/calendar.ts` wraps Google Calendar API calls
   - `src/services/config.ts` manages user configuration in JSON format
+  - `src/services/prompt.ts` provides InquirerPromptService for CLI interactions
 - **Tests**: Mirror command structure in `test/commands/` using Mocha and Chai
 - **CLI Entry**: 
   - `bin/run.js` points to built commands in `dist/commands/` (production)
@@ -118,3 +119,20 @@ Common oclif features to leverage:
 - Error handling with proper exit codes
 - Command help generation
 - Plugin architecture for extensibility
+
+## Interactive Prompts
+
+### @inquirer/prompts Usage
+
+Always use @inquirer/prompts through the InquirerPromptService:
+
+```typescript
+// ✅ Correct: Use InquirerPromptService
+import { container } from '../di/container';
+const promptService = container.get('promptService');
+const answer = await promptService.confirm('Continue?');
+
+// ❌ Incorrect: Direct @inquirer/prompts usage
+import { confirm } from '@inquirer/prompts';
+const answer = await confirm({ message: 'Continue?' });
+```

@@ -12,7 +12,7 @@ gcal events list [calendar] [options]
 
 | Argument | Description | Default |
 |----------|-------------|---------|
-| `calendar` | Calendar ID to list events from | `primary` (or configured default) |
+| `calendar` | Calendar ID to list events from | `primary` |
 
 ## Options
 

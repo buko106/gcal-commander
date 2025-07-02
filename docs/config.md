@@ -22,7 +22,6 @@ gcal config <subcommand> [key] [value] [options]
 
 | Flag | Description |
 |------|-------------|
-| `--format` | Output format for list/get (table, json, or pretty-json) |
 | `--confirm` | Skip confirmation prompt for reset |
 | `--quiet` | Suppress status messages |
 
@@ -84,7 +83,7 @@ gcal config get events.format
 # View all settings in table format
 gcal config list
 
-# View all settings in JSON format
+# View all settings in JSON format (automatically detected based on --format flag in global command options)
 gcal config list --format json
 
 # Reset all configuration (with confirmation)

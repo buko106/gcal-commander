@@ -7,13 +7,15 @@ import { ProductionContainerProvider } from '../../di/production-container-provi
 import { setTestContainer } from '../../di/test-container';
 import { TestContainerProvider } from '../../di/test-container-provider';
 import { TOKENS } from '../../di/tokens';
-import { IAuthService, ICalendarService } from '../../interfaces/services';
-import { MockAuthService } from '../mock-services';
+import { IAuthService, ICalendarService, IPromptService } from '../../interfaces/services';
+import { AuthServiceMockFactory, AuthServiceMockOptions } from './auth-service-mock-factory';
 import { CalendarServiceMockFactory, CalendarServiceMockOptions } from './calendar-service-mock-factory';
+import { PromptServiceMockFactory, PromptServiceMockOptions } from './prompt-service-mock-factory';
 
 export interface TestContainerOptions {
-  authService?: IAuthService;
+  authService?: AuthServiceMockOptions;
   calendarService?: CalendarServiceMockOptions;
+  promptService?: PromptServiceMockOptions;
 }
 
 /**
@@ -45,8 +47,9 @@ export class TestContainerFactory {
   static create(options: TestContainerOptions = {}): {
     container: DependencyContainer;
     mocks: {
-      authService: IAuthService;
+      authService: IAuthService & sinon.SinonStubbedInstance<IAuthService>;
       calendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
+      promptService: IPromptService & sinon.SinonStubbedInstance<IPromptService>;
     };
   } {
     // Clean up any existing container
@@ -59,8 +62,9 @@ export class TestContainerFactory {
     setTestContainer(this.currentContainer);
 
     // Create mocks
+    const authServiceMock = AuthServiceMockFactory.create(options.authService);
     const calendarServiceMock = CalendarServiceMockFactory.create(options.calendarService);
-    const authServiceMock = options.authService || new MockAuthService();
+    const promptServiceMock = PromptServiceMockFactory.create(options.promptService);
 
     // Register mocks in container
     this.currentContainer.register<ICalendarService>(TOKENS.CalendarService, {
@@ -71,14 +75,19 @@ export class TestContainerFactory {
       useValue: authServiceMock,
     });
 
+    this.currentContainer.register<IPromptService>(TOKENS.PromptService, {
+      useValue: promptServiceMock,
+    });
+
     // Set the test container provider
     setContainerProvider(new TestContainerProvider());
 
     return {
       container: this.currentContainer,
       mocks: {
-        calendarService: calendarServiceMock,
         authService: authServiceMock,
+        calendarService: calendarServiceMock,
+        promptService: promptServiceMock,
       },
     };
   }
@@ -89,8 +98,9 @@ export class TestContainerFactory {
   static createSuccessful(options: TestContainerOptions = {}): {
     container: DependencyContainer;
     mocks: {
-      authService: IAuthService;
+      authService: IAuthService & sinon.SinonStubbedInstance<IAuthService>;
       calendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
+      promptService: IPromptService & sinon.SinonStubbedInstance<IPromptService>;
     };
   } {
     const calendarOptions = options.calendarService || {};

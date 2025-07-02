@@ -9,6 +9,7 @@
   "bugs": "https://github.com/buko106/gcal-commander/issues",
   "dependencies": {
     "@google-cloud/local-auth": "^3.0.1",
+    "@inquirer/prompts": "^7.6.0",
     "@oclif/core": "^4",
     "@oclif/plugin-help": "^6",
     "googleapis": "^150.0.1",
