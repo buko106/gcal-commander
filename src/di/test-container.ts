@@ -11,6 +11,14 @@ import { TOKENS } from './tokens';
 let testContainer: DependencyContainer | null = null;
 
 /**
+ * Set the test container instance (for use by TestContainerFactory)
+ * @internal
+ */
+export function setTestContainer(container: DependencyContainer): void {
+  testContainer = container;
+}
+
+/**
  * Setup test container with mocks
  * Should be called in beforeEach of test files
  */
