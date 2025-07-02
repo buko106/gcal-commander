@@ -2,7 +2,7 @@ import { runCommand } from '@oclif/test';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 
-import type { IAuthService, ICalendarService, II18nService, IPromptService } from '../../src/interfaces/services';
+import type { IAuthService, ICalendarService, IConfigService, II18nService, IPromptService } from '../../src/interfaces/services';
 
 import { TestContainerFactory } from '../../src/test-utils/mock-factories/test-container-factory';
 
@@ -11,6 +11,8 @@ describe('init command', () => {
   let mockAuthService: IAuthService & sinon.SinonStubbedInstance<IAuthService>;
   let mockCalendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
   let mockI18nService: II18nService & sinon.SinonStubbedInstance<II18nService>;
+  let mockConfigService: IConfigService;
+  let configServiceSpy: sinon.SinonSpy;
 
   beforeEach(() => {
     const { mocks } = TestContainerFactory.create();
@@ -18,9 +20,12 @@ describe('init command', () => {
     mockAuthService = mocks.authService;
     mockCalendarService = mocks.calendarService;
     mockI18nService = mocks.i18nService;
+    mockConfigService = mocks.configService;
+    configServiceSpy = sinon.spy(mockConfigService, 'set');
   });
 
   afterEach(() => {
+    configServiceSpy?.restore();
     TestContainerFactory.cleanup();
   });
 
@@ -55,6 +60,17 @@ describe('init command', () => {
 
       expect(mockI18nService.init.called).to.be.true;
       expect(mockI18nService.init.calledBefore(mockI18nService.changeLanguage)).to.be.true;
+    });
+
+    it('should save selected language to config', async () => {
+      mockPromptService.select.resolves('ja');
+      mockPromptService.confirm.resolves(false);
+
+      await runCommand('init');
+
+      expect(configServiceSpy.called).to.be.true;
+      expect(configServiceSpy.getCall(0).args[0]).to.equal('language');
+      expect(configServiceSpy.getCall(0).args[1]).to.equal('ja');
     });
   });
 

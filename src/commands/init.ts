@@ -43,6 +43,7 @@ export default class Init extends BaseCommand {
     ]);
 
     await this.i18nService.changeLanguage(selectedLanguage);
+    await this.configService.set('language', selectedLanguage);
   }
 
   private async verifyAuthentication(): Promise<void> {
