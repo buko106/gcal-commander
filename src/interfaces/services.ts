@@ -51,8 +51,9 @@ export interface IPromptService {
 }
 
 export interface II18nService {
-  init(): Promise<void>;
-  t(key: string, options?: any): string;
   changeLanguage(language: string): Promise<void>;
   getAvailableLanguages(): string[];
+  init(): Promise<void>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  t(key: string, options?: any): string;
 }
