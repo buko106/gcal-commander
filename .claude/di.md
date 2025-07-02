@@ -2,25 +2,27 @@
 
 ## Test Setup Pattern
 
+### Current Approach: TestContainerFactory
+
 ```typescript
 // Standard setup for integration tests
-import { setupTestContainer, cleanupTestContainer } from '../src/di/test-container';
+import { TestContainerFactory } from '../src/test-utils/mock-factories/test-container-factory';
 
 describe('command integration test', () => {
-  let mockCalendarService: MockCalendarService;
+  let mockCalendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
 
   beforeEach(() => {
-    const mocks = setupTestContainer();
-    mockCalendarService = mocks.mockCalendarService;
+    const { mocks } = TestContainerFactory.create();
+    mockCalendarService = mocks.calendarService;
   });
 
   afterEach(() => {
-    cleanupTestContainer();
+    TestContainerFactory.cleanup();
   });
 
   it('should work with custom test data', async () => {
-    // Set up test-specific data
-    mockCalendarService.setMockEvents([
+    // Configure mock behavior for test
+    mockCalendarService.listEvents.resolves([
       { id: '1', summary: 'Test Event 📅' }
     ]);
 
@@ -30,12 +32,29 @@ describe('command integration test', () => {
 });
 ```
 
+### Legacy Pattern (Deprecated)
+
+```typescript
+// ⚠️ DEPRECATED: Use TestContainerFactory.create() instead
+import { setupTestContainer, cleanupTestContainer } from '../src/di/test-container';
+```
+
 ## Available Mock Services
 
-- **MockCalendarService**: `setMockEvents()`, `setMockCalendars()`
-- **MockAuthService**: Fake authentication (no setup required)
+TestContainerFactory provides Sinon-stubbed mock services:
+
+- **mockCalendarService**: Stubbed ICalendarService with methods like `listEvents.resolves()`, `createEvent.resolves()`
+- **mockAuthService**: Stubbed IAuthService with methods like `getCalendarAuth.resolves()`
+- **mockPromptService**: Stubbed IPromptService with methods like `confirm.resolves()`
+
+### Factory Methods
+
+- **`TestContainerFactory.create(options?)`**: Create container with custom mock configurations
+- **`TestContainerFactory.createSuccessful(options?)`**: Create container with successful default behaviors
+- **`TestContainerFactory.cleanup()`**: Clean up test container (use in afterEach)
 
 ## Common Issues
 
-- **Mock data not applied**: Set data after `setupTestContainer()`
-- **Test interference**: Always use `cleanupTestContainer()` in `afterEach()`
+- **Mock behavior not applied**: Configure stubs after `TestContainerFactory.create()`
+- **Test interference**: Always use `TestContainerFactory.cleanup()` in `afterEach()`
+- **Stubbing errors**: Use Sinon syntax: `mockService.method.resolves(value)` or `mockService.method.rejects(error)`

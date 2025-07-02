@@ -21,6 +21,7 @@ export function setTestContainer(container: DependencyContainer): void {
 /**
  * Setup test container with mocks
  * Should be called in beforeEach of test files
+ * @deprecated Use TestContainerFactory.create() from test-container-factory instead
  */
 export function setupTestContainer(): {
   mockAuthService: MockAuthService;
@@ -50,6 +51,7 @@ export function setupTestContainer(): {
 /**
  * Clean up test container
  * Should be called in afterEach of test files
+ * @deprecated Use TestContainerFactory.cleanup() from test-container-factory instead
  */
 export function cleanupTestContainer(): void {
   if (testContainer) {
