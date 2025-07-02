@@ -1,10 +1,10 @@
-import type { IPromptService } from '../interfaces/services';
+import type { ICalendarService, IPromptService } from '../interfaces/services';
 
 import { BaseCommand } from '../base-command';
 import { TOKENS } from '../di/tokens';
 
 export default class Init extends BaseCommand {
-  static description = 'Initialize the application';
+  static description = 'Verify Google Calendar authentication setup';
   static examples = [
     '<%= config.bin %> <%= command.id %>',
   ];
@@ -13,6 +13,7 @@ export default class Init extends BaseCommand {
   async init(): Promise<void> {
     await super.init();
     this.promptService = this.getContainer().resolve<IPromptService>(TOKENS.PromptService);
+    this.calendarService = this.getContainer().resolve<ICalendarService>(TOKENS.CalendarService);
   }
 
   public async run(): Promise<void> {
@@ -31,14 +32,13 @@ export default class Init extends BaseCommand {
     try {
       this.logStatus('Verifying Google Calendar authentication...');
       
-      // Initialize calendar service and test authentication by making a simple API call
-      await this.initCalendarService();
+      // Test authentication by making a simple API call
       await this.calendarService.listCalendars();
       
       this.logResult('Authentication successful!');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      this.logResult(`Authentication failed: ${errorMessage}`);
+      this.logResult(`Authentication failed: ${errorMessage}\nTry running the command again or check your Google Calendar API credentials.`);
     }
   }
 }
