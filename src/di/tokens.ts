@@ -2,4 +2,5 @@
 export const TOKENS = {
   AuthService: 'AuthService',
   CalendarService: 'CalendarService',
+  PromptService: 'PromptService',
 } as const;

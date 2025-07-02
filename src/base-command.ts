@@ -25,6 +25,10 @@ protected authService!: IAuthService;
   protected format: OutputFormat = 'table';
   protected quiet = false;
 
+  protected getContainer() {
+    return getContainerProvider().getContainer();
+  }
+
   async init(): Promise<void> {
     await super.init();
     const { flags } = await this.parse(this.constructor as typeof BaseCommand);
@@ -65,9 +69,5 @@ protected authService!: IAuthService;
     } else {
       this.logJson(data);
     }
-  }
-
-  private getContainer() {
-    return getContainerProvider().getContainer();
   }
 }

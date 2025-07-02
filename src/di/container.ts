@@ -1,9 +1,10 @@
 import 'reflect-metadata';
 import { container } from 'tsyringe';
 
-import { IAuthService, ICalendarService } from '../interfaces/services';
+import { IAuthService, ICalendarService, IPromptService } from '../interfaces/services';
 import { AuthService } from '../services/auth';
 import { CalendarService } from '../services/calendar';
+import { InquirerPromptService } from '../services/prompt';
 import { setContainerProvider } from './container-provider';
 import { ProductionContainerProvider } from './production-container-provider';
 import { TOKENS } from './tokens';
@@ -17,6 +18,10 @@ export function setupContainer(): void {
 
   container.register<ICalendarService>(TOKENS.CalendarService, {
     useClass: CalendarService,
+  });
+
+  container.register<IPromptService>(TOKENS.PromptService, {
+    useClass: InquirerPromptService,
   });
 }
 

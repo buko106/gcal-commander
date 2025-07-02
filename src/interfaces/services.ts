@@ -39,3 +39,7 @@ export interface AuthResult {
 export interface IAuthService {
   getCalendarAuth(): Promise<AuthResult>;
 }
+
+export interface IPromptService {
+  confirm(message: string, defaultValue?: boolean): Promise<boolean>;
+}
