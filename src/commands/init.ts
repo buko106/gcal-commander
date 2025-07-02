@@ -16,14 +16,29 @@ export default class Init extends BaseCommand {
   }
 
   public async run(): Promise<void> {
-    this.logStatus('Do you want to continue?');
+    this.logStatus('This will verify your Google Calendar authentication.');
     
-    const confirmed = await this.promptService.confirm('Do you want to continue?', true);
+    const confirmed = await this.promptService.confirm('Do you want to verify authentication?', true);
     
     if (confirmed) {
-      this.logResult('Input confirmed successfully!');
+      await this.verifyAuthentication();
     } else {
       this.logResult('Operation cancelled.');
+    }
+  }
+
+  private async verifyAuthentication(): Promise<void> {
+    try {
+      this.logStatus('Verifying Google Calendar authentication...');
+      
+      // Initialize calendar service and test authentication by making a simple API call
+      await this.initCalendarService();
+      await this.calendarService.listCalendars();
+      
+      this.logResult('Authentication successful!');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      this.logResult(`Authentication failed: ${errorMessage}`);
     }
   }
 }

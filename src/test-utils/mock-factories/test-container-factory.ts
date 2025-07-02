@@ -8,12 +8,12 @@ import { setTestContainer } from '../../di/test-container';
 import { TestContainerProvider } from '../../di/test-container-provider';
 import { TOKENS } from '../../di/tokens';
 import { IAuthService, ICalendarService, IPromptService } from '../../interfaces/services';
-import { MockAuthService } from '../mock-services';
+import { AuthServiceMockFactory, AuthServiceMockOptions } from './auth-service-mock-factory';
 import { CalendarServiceMockFactory, CalendarServiceMockOptions } from './calendar-service-mock-factory';
 import { PromptServiceMockFactory, PromptServiceMockOptions } from './prompt-service-mock-factory';
 
 export interface TestContainerOptions {
-  authService?: IAuthService;
+  authService?: AuthServiceMockOptions;
   calendarService?: CalendarServiceMockOptions;
   promptService?: PromptServiceMockOptions;
 }
@@ -47,7 +47,7 @@ export class TestContainerFactory {
   static create(options: TestContainerOptions = {}): {
     container: DependencyContainer;
     mocks: {
-      authService: IAuthService;
+      authService: IAuthService & sinon.SinonStubbedInstance<IAuthService>;
       calendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
       promptService: IPromptService & sinon.SinonStubbedInstance<IPromptService>;
     };
@@ -62,8 +62,8 @@ export class TestContainerFactory {
     setTestContainer(this.currentContainer);
 
     // Create mocks
+    const authServiceMock = AuthServiceMockFactory.create(options.authService);
     const calendarServiceMock = CalendarServiceMockFactory.create(options.calendarService);
-    const authServiceMock = options.authService || new MockAuthService();
     const promptServiceMock = PromptServiceMockFactory.create(options.promptService);
 
     // Register mocks in container
@@ -98,7 +98,7 @@ export class TestContainerFactory {
   static createSuccessful(options: TestContainerOptions = {}): {
     container: DependencyContainer;
     mocks: {
-      authService: IAuthService;
+      authService: IAuthService & sinon.SinonStubbedInstance<IAuthService>;
       calendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
       promptService: IPromptService & sinon.SinonStubbedInstance<IPromptService>;
     };
