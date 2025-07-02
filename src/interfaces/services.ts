@@ -40,6 +40,19 @@ export interface IAuthService {
   getCalendarAuth(): Promise<AuthResult>;
 }
 
+export interface SelectChoice {
+  name: string;
+  value: string;
+}
+
 export interface IPromptService {
   confirm(message: string, defaultValue?: boolean): Promise<boolean>;
+  select(message: string, choices: SelectChoice[]): Promise<string>;
+}
+
+export interface II18nService {
+  init(): Promise<void>;
+  t(key: string, options?: any): string;
+  changeLanguage(language: string): Promise<void>;
+  getAvailableLanguages(): string[];
 }

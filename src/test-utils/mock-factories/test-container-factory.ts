@@ -7,9 +7,10 @@ import { ProductionContainerProvider } from '../../di/production-container-provi
 import { setTestContainer } from '../../di/test-container';
 import { TestContainerProvider } from '../../di/test-container-provider';
 import { TOKENS } from '../../di/tokens';
-import { IAuthService, ICalendarService, IPromptService } from '../../interfaces/services';
+import { IAuthService, ICalendarService, II18nService, IPromptService } from '../../interfaces/services';
 import { AuthServiceMockFactory, AuthServiceMockOptions } from './auth-service-mock-factory';
 import { CalendarServiceMockFactory, CalendarServiceMockOptions } from './calendar-service-mock-factory';
+import { I18nServiceMockFactory } from './i18n-service-mock-factory';
 import { PromptServiceMockFactory, PromptServiceMockOptions } from './prompt-service-mock-factory';
 
 export interface TestContainerOptions {
@@ -49,6 +50,7 @@ export class TestContainerFactory {
     mocks: {
       authService: IAuthService & sinon.SinonStubbedInstance<IAuthService>;
       calendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
+      i18nService: II18nService & sinon.SinonStubbedInstance<II18nService>;
       promptService: IPromptService & sinon.SinonStubbedInstance<IPromptService>;
     };
   } {
@@ -64,6 +66,7 @@ export class TestContainerFactory {
     // Create mocks
     const authServiceMock = AuthServiceMockFactory.create(options.authService);
     const calendarServiceMock = CalendarServiceMockFactory.create(options.calendarService);
+    const i18nServiceMock = I18nServiceMockFactory.create();
     const promptServiceMock = PromptServiceMockFactory.create(options.promptService);
 
     // Register mocks in container
@@ -73,6 +76,10 @@ export class TestContainerFactory {
 
     this.currentContainer.register<IAuthService>(TOKENS.AuthService, {
       useValue: authServiceMock,
+    });
+
+    this.currentContainer.register<II18nService>(TOKENS.I18nService, {
+      useValue: i18nServiceMock,
     });
 
     this.currentContainer.register<IPromptService>(TOKENS.PromptService, {
@@ -87,6 +94,7 @@ export class TestContainerFactory {
       mocks: {
         authService: authServiceMock,
         calendarService: calendarServiceMock,
+        i18nService: i18nServiceMock,
         promptService: promptServiceMock,
       },
     };
@@ -100,6 +108,7 @@ export class TestContainerFactory {
     mocks: {
       authService: IAuthService & sinon.SinonStubbedInstance<IAuthService>;
       calendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
+      i18nService: II18nService & sinon.SinonStubbedInstance<II18nService>;
       promptService: IPromptService & sinon.SinonStubbedInstance<IPromptService>;
     };
   } {
