@@ -1,0 +1,14 @@
+{
+  "init": {
+    "description": "Google Calendar 認証設定の確認",
+    "examples": {
+      "basic": "gcal init"
+    },
+    "messages": {
+      "status": "Google Calendar の認証を確認します。",
+      "confirm": "認証を確認しますか？",
+      "success": "認証に成功しました！",
+      "cancelled": "操作がキャンセルされました。"
+    }
+  }
+}

@@ -2,7 +2,7 @@ import { Command, Flags } from '@oclif/core';
 
 import { getContainerProvider } from './di/container-provider';
 import { TOKENS } from './di/tokens';
-import { IAuthService, ICalendarService, IConfigService } from './interfaces/services';
+import { IAuthService, ICalendarService, IConfigService, II18nService } from './interfaces/services';
 
 export type OutputFormat = 'json' | 'pretty-json' | 'table';
 
@@ -23,6 +23,7 @@ export abstract class BaseCommand extends Command {
 protected authService!: IAuthService;
   protected calendarService!: ICalendarService;
   protected configService!: IConfigService;
+  protected i18nService!: II18nService;
   protected format: OutputFormat = 'table';
   protected quiet = false;
 
@@ -49,6 +50,17 @@ protected authService!: IAuthService;
     this.calendarService = this.getContainer().resolve<ICalendarService>(TOKENS.CalendarService);
   }
 
+  /**
+   * Initialize i18n service for translations
+   * Must be called by commands that need i18n support
+   */
+  protected async initI18nService(): Promise<void> {
+    if (!this.i18nService) {
+      this.i18nService = this.getContainer().resolve<II18nService>(TOKENS.I18nService);
+      await this.i18nService.init();
+    }
+  }
+
   protected logError(message: string): never {
     this.error(message);
   }
@@ -71,5 +83,13 @@ protected authService!: IAuthService;
     } else {
       this.logJson(data);
     }
+  }
+
+  protected t(key: string, options?: unknown): string {
+    if (!this.i18nService) {
+      throw new Error('I18n service not initialized. Call initI18nService() first.');
+    }
+
+    return this.i18nService.t(key, options);
   }
 }

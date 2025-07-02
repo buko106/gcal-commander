@@ -36,8 +36,8 @@ export class I18nService implements II18nService {
         backend: {
           loadPath: path.join(localesPath, '{{lng}}/{{ns}}.json'),
         },
-        ns: ['common'], // Default namespace
-        defaultNS: 'common',
+        ns: ['common', 'commands'], // Available namespaces
+        defaultNS: 'commands',
         interpolation: {
           escapeValue: false, // React already escapes values
         },

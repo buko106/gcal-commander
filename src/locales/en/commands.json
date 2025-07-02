@@ -1,0 +1,14 @@
+{
+  "init": {
+    "description": "Verify Google Calendar authentication setup",
+    "examples": {
+      "basic": "gcal init"
+    },
+    "messages": {
+      "status": "This will verify your Google Calendar authentication.",
+      "confirm": "Do you want to verify authentication?",
+      "success": "Authentication successful!",
+      "cancelled": "Operation cancelled."
+    }
+  }
+}

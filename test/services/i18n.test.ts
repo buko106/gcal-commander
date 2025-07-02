@@ -43,5 +43,26 @@ describe('I18nService', () => {
       await i18nService.changeLanguage('ja');
       expect(i18nService.t('common:yes')).to.equal('はい');
     });
+
+    it('should translate commands namespace keys', async () => {
+      await i18nService.init();
+      
+      const statusResult = i18nService.t('commands:init.messages.status');
+      const confirmResult = i18nService.t('commands:init.messages.confirm');
+      
+      expect(statusResult).to.equal('This will verify your Google Calendar authentication.');
+      expect(confirmResult).to.equal('Do you want to verify authentication?');
+    });
+
+    it('should translate commands to Japanese', async () => {
+      await i18nService.init();
+      await i18nService.changeLanguage('ja');
+      
+      const statusResult = i18nService.t('commands:init.messages.status');
+      const confirmResult = i18nService.t('commands:init.messages.confirm');
+      
+      expect(statusResult).to.equal('Google Calendar の認証を確認します。');
+      expect(confirmResult).to.equal('認証を確認しますか？');
+    });
   });
 });
