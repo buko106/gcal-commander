@@ -53,13 +53,14 @@ export interface IPromptService {
 export interface II18nService {
   changeLanguage(language: string): Promise<void>;
   getAvailableLanguages(): string[];
-  init(): Promise<void>;
+  init(language?: string): Promise<void>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t(key: string, options?: any): string;
 }
 
 export interface Config extends Record<string, unknown> {
   defaultCalendar?: string;
+  language?: string;
   events?: {
     days?: number;
     format?: 'json' | 'pretty-json' | 'table';

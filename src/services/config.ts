@@ -8,6 +8,7 @@ import { Config, IConfigService } from '../interfaces/services';
 export class ConfigService implements IConfigService {
   private static readonly VALID_KEYS = [
     'defaultCalendar',
+    'language',
     'events.maxResults',
     'events.format',
     'events.days',
@@ -90,6 +91,14 @@ export class ConfigService implements IConfigService {
       case 'defaultCalendar': {
         if (typeof value !== 'string') {
           return { error: 'defaultCalendar must be a string', valid: false };
+        }
+
+        break;
+      }
+
+      case 'language': {
+        if (typeof value !== 'string' || !['en', 'ja'].includes(value)) {
+          return { error: 'language must be one of "en" or "ja"', valid: false };
         }
 
         break;

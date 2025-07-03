@@ -20,8 +20,13 @@ export class I18nService implements II18nService {
     return ['en', 'ja'];
   }
 
-  async init(): Promise<void> {
+  async init(language?: string): Promise<void> {
     if (this.initialized) {
+      // If language is specified and different from current, change language
+      if (language && i18next.language !== language) {
+        await i18next.changeLanguage(language);
+      }
+
       return;
     }
 
@@ -32,7 +37,7 @@ export class I18nService implements II18nService {
     await i18next
       .use(Backend)
       .init({
-        lng: 'en', // Default language
+        lng: language || 'en', // Use provided language or default to English
         fallbackLng: 'en',
         preload: ['en', 'ja'], // Preload all supported languages
         backend: {
@@ -55,6 +60,6 @@ export class I18nService implements II18nService {
     }
 
     const result = i18next.t(key, options);
-    return typeof result === 'string' ? result : key;
+    return result as string;
   }
 }

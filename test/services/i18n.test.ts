@@ -14,6 +14,22 @@ describe('I18nService', () => {
       await i18nService.init();
       // Test passes if no error is thrown
     });
+
+    it('should initialize with specified language', async () => {
+      await i18nService.init('ja');
+      
+      // Should start with Japanese language
+      const translation = i18nService.t('common:yes');
+      expect(translation).to.equal('はい');
+    });
+
+    it('should default to English if no language specified', async () => {
+      await i18nService.init();
+      
+      // Should start with English language
+      const translation = i18nService.t('common:yes');
+      expect(translation).to.equal('Yes');
+    });
   });
 
   describe('#getAvailableLanguages', () => {

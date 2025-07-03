@@ -57,7 +57,17 @@ protected authService!: IAuthService;
   protected async initI18nService(): Promise<void> {
     if (!this.i18nService) {
       this.i18nService = this.getContainer().resolve<II18nService>(TOKENS.I18nService);
-      await this.i18nService.init();
+      
+      // Try to load saved language setting from config, fallback to undefined (English default)
+      let savedLanguage: string | undefined;
+      try {
+        savedLanguage = await this.configService.get<string>('language');
+      } catch {
+        // If config loading fails, use default language (English)
+        savedLanguage = undefined;
+      }
+      
+      await this.i18nService.init(savedLanguage);
     }
   }
 
