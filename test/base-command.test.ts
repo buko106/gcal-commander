@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 
 import type { II18nService } from '../src/interfaces/services';
+
 import { TestContainerFactory } from '../src/test-utils/mock-factories/test-container-factory';
 
 describe('BaseCommand i18n support', () => {

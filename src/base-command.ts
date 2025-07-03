@@ -23,8 +23,8 @@ export abstract class BaseCommand extends Command {
 protected authService!: IAuthService;
   protected calendarService!: ICalendarService;
   protected configService!: IConfigService;
-  protected i18nService!: II18nService;
   protected format: OutputFormat = 'table';
+  protected i18nService!: II18nService;
   protected quiet = false;
 
   protected getContainer() {

@@ -30,10 +30,12 @@ static flags = {
     const { args, flags } = await this.parse(EventsShow);
 
     try {
-      this.logStatus('Authenticating with Google Calendar...');
+      await this.initI18nService();
+      
+      this.logStatus(this.t('events.show.authenticating'));
       await this.initCalendarService();
 
-      this.logStatus(`Fetching event details...`);
+      this.logStatus(this.t('events.show.fetching'));
       const event = await this.calendarService.getEvent(args.eventId, flags.calendar);
 
       if (this.format === 'json' || this.format === 'pretty-json') {
@@ -42,50 +44,50 @@ static flags = {
         this.displayEventDetails(event);
       }
     } catch (error) {
-      this.logError(`Failed to show event: ${error}`);
+      this.logError(this.t('events.show.error', { error: String(error) }));
     }
   }
 
   private displayAdditionalInfo(event: calendarV3.Schema$Event): void {
     if (event.recurrence && event.recurrence.length > 0) {
-      this.logResult('\nRecurrence:');
+      this.logResult(`\n${this.t('events.show.labels.recurrence')}:`);
       for (const [index, rule] of event.recurrence.entries()) {
         this.logResult(`  ${index + 1}. ${rule}`);
       }
     }
     
     if (event.htmlLink) {
-      this.logResult(`\nGoogle Calendar Link: ${event.htmlLink}`);
+      this.logResult(`\n${this.t('events.show.labels.googleCalendarLink')}: ${event.htmlLink}`);
     }
     
     if (event.created) {
-      this.logResult(`Created: ${new Date(event.created).toLocaleString()}`);
+      this.logResult(`${this.t('events.show.labels.created')}: ${new Date(event.created).toLocaleString()}`);
     }
     
     if (event.updated) {
-      this.logResult(`Last Updated: ${new Date(event.updated).toLocaleString()}`);
+      this.logResult(`${this.t('events.show.labels.lastUpdated')}: ${new Date(event.updated).toLocaleString()}`);
     }
   }
 
   private displayBasicInfo(event: calendarV3.Schema$Event): void {
-    this.logResult(`Title: ${event.summary || '(No title)'}`);
-    this.logResult(`ID: ${event.id}`);
+    this.logResult(`${this.t('events.show.labels.title')}: ${event.summary || this.t('events.show.noTitle')}`);
+    this.logResult(`${this.t('events.show.labels.id')}: ${event.id}`);
     
     if (event.description) {
-      this.logResult(`Description: ${event.description}`);
+      this.logResult(`${this.t('events.show.labels.description')}: ${event.description}`);
     }
     
     if (event.location) {
-      this.logResult(`Location: ${event.location}`);
+      this.logResult(`${this.t('events.show.labels.location')}: ${event.location}`);
     }
     
     if (event.status) {
-      this.logResult(`Status: ${event.status}`);
+      this.logResult(`${this.t('events.show.labels.status')}: ${event.status}`);
     }
   }
 
   private displayEventDetails(event: calendarV3.Schema$Event): void {
-    this.logResult('\n=== Event Details ===\n');
+    this.logResult(`\n=== ${this.t('events.show.eventDetails')} ===\n`);
     
     this.displayBasicInfo(event);
     this.displayTimeInfo(event);
@@ -97,15 +99,15 @@ static flags = {
 
   private displayPeopleInfo(event: calendarV3.Schema$Event): void {
     if (event.creator) {
-      this.logResult(`Creator: ${event.creator.displayName || event.creator.email}`);
+      this.logResult(`${this.t('events.show.labels.creator')}: ${event.creator.displayName || event.creator.email}`);
     }
     
     if (event.organizer) {
-      this.logResult(`Organizer: ${event.organizer.displayName || event.organizer.email}`);
+      this.logResult(`${this.t('events.show.labels.organizer')}: ${event.organizer.displayName || event.organizer.email}`);
     }
     
     if (event.attendees && event.attendees.length > 0) {
-      this.logResult('\nAttendees:');
+      this.logResult(`\n${this.t('events.show.labels.attendees')}:`);
       for (const [index, attendee] of event.attendees.entries()) {
         const name = attendee.displayName || attendee.email;
         const status = attendee.responseStatus ? ` (${attendee.responseStatus})` : '';

@@ -20,6 +20,28 @@
       "tableHeader": "\n今後の予定 ({{count}}件):\n",
       "noTitle": "(タイトルなし)",
       "error": "予定の取得に失敗しました: {{error}}"
+    },
+    "show": {
+      "description": "特定のイベントの詳細情報を表示",
+      "authenticating": "Google Calendar で認証中...",
+      "fetching": "イベントの詳細を取得中...",
+      "error": "イベントの表示に失敗しました: {{error}}",
+      "eventDetails": "イベントの詳細",
+      "labels": {
+        "title": "タイトル",
+        "id": "ID",
+        "description": "説明",
+        "location": "場所",
+        "status": "ステータス",
+        "creator": "作成者",
+        "organizer": "主催者",
+        "attendees": "参加者",
+        "recurrence": "繰り返し",
+        "googleCalendarLink": "Google Calendar リンク",
+        "created": "作成日時",
+        "lastUpdated": "最終更新"
+      },
+      "noTitle": "(タイトルなし)"
     }
   }
 }
