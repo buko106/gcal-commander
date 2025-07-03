@@ -42,6 +42,22 @@
         "lastUpdated": "Last Updated"
       },
       "noTitle": "(No title)"
+    },
+    "create": {
+      "description": "Create a new calendar event",
+      "authenticating": "Authenticating with Google Calendar...",
+      "creating": "Creating event...",
+      "success": "Event created successfully!",
+      "labels": {
+        "title": "Title",
+        "id": "ID",
+        "date": "Date",
+        "start": "Start",
+        "end": "End",
+        "location": "Location",
+        "googleCalendarLink": "Google Calendar Link"
+      },
+      "noTitle": "(No title)"
     }
   },
   "calendars": {

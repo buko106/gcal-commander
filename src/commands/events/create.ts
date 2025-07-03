@@ -62,7 +62,8 @@ static flags = {
     const { args, flags } = await this.parse(EventsCreate);
 
     try {
-      this.logStatus('Authenticating with Google Calendar...');
+      await this.initI18nService();
+      this.logStatus(this.t('events.create.authenticating'));
       await this.initCalendarService();
 
       // Validate mutual exclusion of end and duration
@@ -99,7 +100,7 @@ static flags = {
         summary: args.summary,
       };
 
-      this.logStatus('Creating event...');
+      this.logStatus(this.t('events.create.creating'));
       const event = await this.calendarService.createEvent(createParams);
 
       if (this.format === 'json' || this.format === 'pretty-json') {
@@ -130,29 +131,29 @@ static flags = {
   }
 
   private displayEventCreated(event: calendarV3.Schema$Event): void {
-    this.logResult('Event created successfully!\n');
+    this.logResult(this.t('events.create.success') + '\n');
     
-    this.logResult(`Title: ${event.summary || '(No title)'}`);
-    this.logResult(`ID: ${event.id}`);
+    this.logResult(`${this.t('events.create.labels.title')}: ${event.summary || this.t('events.create.noTitle')}`);
+    this.logResult(`${this.t('events.create.labels.id')}: ${event.id}`);
     
     if (event.start) {
       if (event.start.date) {
-        this.logResult(`Date: ${new Date(event.start.date).toLocaleDateString()}`);
+        this.logResult(`${this.t('events.create.labels.date')}: ${new Date(event.start.date).toLocaleDateString()}`);
       } else if (event.start.dateTime) {
-        this.logResult(`Start: ${new Date(event.start.dateTime).toLocaleString()}`);
+        this.logResult(`${this.t('events.create.labels.start')}: ${new Date(event.start.dateTime).toLocaleString()}`);
       }
     }
     
     if (event.end && event.end.dateTime) {
-      this.logResult(`End: ${new Date(event.end.dateTime).toLocaleString()}`);
+      this.logResult(`${this.t('events.create.labels.end')}: ${new Date(event.end.dateTime).toLocaleString()}`);
     }
     
     if (event.location) {
-      this.logResult(`Location: ${event.location}`);
+      this.logResult(`${this.t('events.create.labels.location')}: ${event.location}`);
     }
     
     if (event.htmlLink) {
-      this.logResult(`Google Calendar Link: ${event.htmlLink}`);
+      this.logResult(`${this.t('events.create.labels.googleCalendarLink')}: ${event.htmlLink}`);
     }
     
     this.logResult('');

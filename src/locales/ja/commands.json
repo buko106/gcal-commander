@@ -42,6 +42,22 @@
         "lastUpdated": "最終更新"
       },
       "noTitle": "(タイトルなし)"
+    },
+    "create": {
+      "description": "新しいカレンダーイベントを作成",
+      "authenticating": "Google Calendar で認証中...",
+      "creating": "イベントを作成中...",
+      "success": "イベントが正常に作成されました！",
+      "labels": {
+        "title": "タイトル",
+        "id": "ID",
+        "date": "日付",
+        "start": "開始時刻",
+        "end": "終了時刻",
+        "location": "場所",
+        "googleCalendarLink": "Google Calendar リンク"
+      },
+      "noTitle": "(タイトルなし)"
     }
   },
   "calendars": {
