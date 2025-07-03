@@ -43,5 +43,16 @@
       },
       "noTitle": "(タイトルなし)"
     }
+  },
+  "calendars": {
+    "list": {
+      "description": "利用可能なカレンダーをすべて表示",
+      "authenticating": "Google Calendar で認証中...",
+      "fetching": "カレンダーを取得中...",
+      "noCalendarsFound": "カレンダーが見つかりませんでした。",
+      "tableHeader": "\n利用可能なカレンダー ({{count}}件):\n",
+      "noName": "(名前なし)",
+      "error": "カレンダーの取得に失敗しました: {{error}}"
+    }
   }
 }

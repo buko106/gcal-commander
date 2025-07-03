@@ -43,5 +43,16 @@
       },
       "noTitle": "(No title)"
     }
+  },
+  "calendars": {
+    "list": {
+      "description": "List all available calendars",
+      "authenticating": "Authenticating with Google Calendar...",
+      "fetching": "Fetching calendars...",
+      "noCalendarsFound": "No calendars found.",
+      "tableHeader": "\nAvailable Calendars ({{count}} found):\n",
+      "noName": "(No name)",
+      "error": "Failed to list calendars: {{error}}"
+    }
   }
 }
