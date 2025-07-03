@@ -8,7 +8,8 @@
       "status": "This will verify your Google Calendar authentication.",
       "confirm": "Do you want to verify authentication?",
       "success": "Authentication successful!",
-      "cancelled": "Operation cancelled."
+      "cancelled": "Operation cancelled.",
+      "verifying": "Verifying Google Calendar authentication..."
     }
   },
   "events": {

@@ -46,7 +46,7 @@ export default class Init extends BaseCommand {
 
   private async verifyAuthentication(): Promise<void> {
     try {
-      this.logStatus('Verifying Google Calendar authentication...');
+      this.logStatus(this.t('commands:init.messages.verifying'));
       
       // Test authentication by making a simple API call
       await this.calendarService.listCalendars();

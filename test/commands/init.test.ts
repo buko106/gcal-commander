@@ -28,6 +28,7 @@ describe('init command', () => {
     mockI18nService.t.withArgs('commands:init.messages.confirm').returns('Do you want to verify authentication?');
     mockI18nService.t.withArgs('commands:init.messages.cancelled').returns('Operation cancelled.');
     mockI18nService.t.withArgs('commands:init.messages.success').returns('Authentication successful!');
+    mockI18nService.t.withArgs('commands:init.messages.verifying').returns('Verifying Google Calendar authentication...');
   });
 
   afterEach(() => {
