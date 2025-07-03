@@ -176,13 +176,16 @@ static flags = {
 
   private validateConfigKey(key: string): void {
     if (!this.configService.validateKey(key)) {
-      this.logError(`Invalid configuration key: ${key}\nValid keys: ${this.configService.getValidKeys().join(', ')}`);
+      this.logError(this.t('commands:config.validation.invalidKey', { 
+        key, 
+        validKeys: this.configService.getValidKeys().join(', ') 
+      }));
     }
   }
 
   private validateKeyRequired(key: string | undefined, command: string): asserts key is string {
     if (!key) {
-      this.logError(`Key is required for ${command} command\nUsage: gcal config ${command} <key>`);
+      this.logError(this.t('commands:config.validation.keyRequired', { command }));
     }
   }
 }

@@ -95,6 +95,10 @@
       "confirmationMessage": "This will reset all configuration settings.",
       "useConfirmFlag": "Use --confirm flag to proceed: gcal config reset --confirm",
       "success": "All configuration settings have been reset"
+    },
+    "validation": {
+      "invalidKey": "Invalid configuration key: {{key}}\nValid keys: {{validKeys}}",
+      "keyRequired": "Key is required for {{command}} command\nUsage: gcal config {{command}} <key>"
     }
   }
 }

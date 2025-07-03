@@ -69,6 +69,22 @@ describe('config i18n integration', () => {
       expect(result.error).to.exist;
       expect(result.error?.message).to.include('Invalid number value for events.maxResults: not-a-number');
     });
+
+    it('should display invalid configuration key error in English', async () => {
+      const result = await runCommand(['config', 'get', 'invalid.key']);
+      
+      expect(result.error).to.exist;
+      expect(result.error?.message).to.include('Invalid configuration key: invalid.key');
+      expect(result.error?.message).to.include('Valid keys:');
+    });
+
+    it('should display missing key parameter error in English', async () => {
+      const result = await runCommand(['config', 'get']);
+      
+      expect(result.error).to.exist;
+      expect(result.error?.message).to.include('Key is required for get command');
+      expect(result.error?.message).to.include('Usage: gcal config get <key>');
+    });
   });
 
   describe('Japanese translation', () => {
@@ -135,6 +151,22 @@ describe('config i18n integration', () => {
       
       expect(result.error).to.exist;
       expect(result.error?.message).to.include('events.maxResults の数値が無効です: not-a-number');
+    });
+
+    it('should display invalid configuration key error in Japanese', async () => {
+      const result = await runCommand(['config', 'get', 'invalid.key']);
+      
+      expect(result.error).to.exist;
+      expect(result.error?.message).to.include('無効な設定キー: invalid.key');
+      expect(result.error?.message).to.include('有効なキー:');
+    });
+
+    it('should display missing key parameter error in Japanese', async () => {
+      const result = await runCommand(['config', 'get']);
+      
+      expect(result.error).to.exist;
+      expect(result.error?.message).to.include('get コマンドにはキーが必要です');
+      expect(result.error?.message).to.include('使用方法: gcal config get <key>');
     });
   });
 });

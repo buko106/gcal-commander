@@ -95,6 +95,10 @@
       "confirmationMessage": "すべての設定をリセットします。",
       "useConfirmFlag": "実行するには --confirm フラグを使用してください: gcal config reset --confirm",
       "success": "すべての設定がリセットされました"
+    },
+    "validation": {
+      "invalidKey": "無効な設定キー: {{key}}\n有効なキー: {{validKeys}}",
+      "keyRequired": "{{command}} コマンドにはキーが必要です\n使用方法: gcal config {{command}} <key>"
     }
   }
 }
