@@ -111,7 +111,7 @@ static flags = {
 
   private async handleSet(key?: string, value?: string): Promise<void> {
     if (!key || value === undefined) {
-      this.logError('Key and value are required for set command\nUsage: gcal config set <key> <value>');
+      this.logError(this.t('commands:config.set.keyAndValueRequired'));
     }
 
     this.validateConfigKey(key!);

@@ -83,7 +83,8 @@
       "noConfiguration": "No configuration set"
     },
     "set": {
-      "success": "Set {{key}} = {{value}}"
+      "success": "Set {{key}} = {{value}}",
+      "keyAndValueRequired": "Key and value are required for set command\nUsage: gcal config set <key> <value>"
     },
     "unset": {
       "keyNotSet": "Configuration key '{{key}}' is not set",

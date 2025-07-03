@@ -54,6 +54,14 @@ describe('config i18n integration', () => {
       expect(stdout).to.include('This will reset all configuration settings.');
       expect(stdout).to.include('Use --confirm flag to proceed: gcal config reset --confirm');
     });
+
+    it('should display config set validation error in English', async () => {
+      const result = await runCommand(['config', 'set']);
+      
+      expect(result.error).to.exist;
+      expect(result.error?.message).to.include('Key and value are required for set command');
+      expect(result.error?.message).to.include('Usage: gcal config set <key> <value>');
+    });
   });
 
   describe('Japanese translation', () => {
@@ -105,6 +113,14 @@ describe('config i18n integration', () => {
       
       expect(stdout).to.include('すべての設定をリセットします。');
       expect(stdout).to.include('実行するには --confirm フラグを使用してください: gcal config reset --confirm');
+    });
+
+    it('should display config set validation error in Japanese', async () => {
+      const result = await runCommand(['config', 'set']);
+      
+      expect(result.error).to.exist;
+      expect(result.error?.message).to.include('キーと値は set コマンドで必須です');
+      expect(result.error?.message).to.include('使用方法: gcal config set <key> <value>');
     });
   });
 });
