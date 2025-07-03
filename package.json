@@ -86,7 +86,7 @@
   },
   "repository": "buko106/gcal-commander",
   "scripts": {
-    "build": "shx rm -rf dist && tsc -b",
+    "build": "shx rm -rf dist && tsc -b && shx cp -r src/locales dist/locales",
     "lint": "eslint --cache",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "npm run lint",
