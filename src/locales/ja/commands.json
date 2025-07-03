@@ -69,7 +69,14 @@
       "noCalendarsFound": "カレンダーが見つかりませんでした。",
       "tableHeader": "\n利用可能なカレンダー ({{count}}件):\n",
       "noName": "(名前なし)",
-      "error": "カレンダーの取得に失敗しました: {{error}}"
+      "error": "カレンダーの取得に失敗しました: {{error}}",
+      "labels": {
+        "primary": "(メイン)",
+        "id": "ID:",
+        "access": "アクセス:",
+        "description": "説明:",
+        "color": "色:"
+      }
     }
   },
   "config": {

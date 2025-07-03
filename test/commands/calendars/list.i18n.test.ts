@@ -46,6 +46,32 @@ describe('calendars/list i18n integration', () => {
       
       expect(stdout).to.include('Available Calendars (2 found):');
     });
+
+    it('should display calendar labels in English', async () => {
+      const { mocks } = TestContainerFactory.create();
+      const realI18nService = new I18nService();
+      TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
+      
+      const mockCalendars = [
+        { 
+          id: 'primary', 
+          summary: 'My Calendar', 
+          accessRole: 'owner', 
+          primary: true,
+          description: 'Primary calendar',
+          backgroundColor: '#3174ad'
+        }
+      ];
+      mocks.calendarService.listCalendars.resolves(mockCalendars);
+
+      const { stdout } = await runCommand(['calendars:list']);
+      
+      expect(stdout).to.include('(Primary)');
+      expect(stdout).to.include('ID:');
+      expect(stdout).to.include('Access:');
+      expect(stdout).to.include('Description:');
+      expect(stdout).to.include('Color:');
+    });
   });
 
   describe('Japanese translation', () => {
@@ -91,6 +117,34 @@ describe('calendars/list i18n integration', () => {
       const { stdout } = await runCommand(['calendars:list']);
       
       expect(stdout).to.include('利用可能なカレンダー (2件):');
+    });
+
+    it('should display calendar labels in Japanese', async () => {
+      const { mocks } = TestContainerFactory.create();
+      const realI18nService = new I18nService();
+      await realI18nService.init();
+      await realI18nService.changeLanguage('ja');
+      TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
+      
+      const mockCalendars = [
+        { 
+          id: 'primary', 
+          summary: 'My Calendar', 
+          accessRole: 'owner', 
+          primary: true,
+          description: 'Primary calendar',
+          backgroundColor: '#3174ad'
+        }
+      ];
+      mocks.calendarService.listCalendars.resolves(mockCalendars);
+
+      const { stdout } = await runCommand(['calendars:list']);
+      
+      expect(stdout).to.include('(メイン)');
+      expect(stdout).to.include('ID:');
+      expect(stdout).to.include('アクセス:');
+      expect(stdout).to.include('説明:');
+      expect(stdout).to.include('色:');
     });
   });
 });

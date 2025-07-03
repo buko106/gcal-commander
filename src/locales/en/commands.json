@@ -69,7 +69,14 @@
       "noCalendarsFound": "No calendars found.",
       "tableHeader": "\nAvailable Calendars ({{count}} found):\n",
       "noName": "(No name)",
-      "error": "Failed to list calendars: {{error}}"
+      "error": "Failed to list calendars: {{error}}",
+      "labels": {
+        "primary": "(Primary)",
+        "id": "ID:",
+        "access": "Access:",
+        "description": "Description:",
+        "color": "Color:"
+      }
     }
   },
   "config": {

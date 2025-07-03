@@ -48,19 +48,19 @@ static flags = {
       const id = calendar.id || '';
       const description = calendar.description || '';
       const accessRole = calendar.accessRole || '';
-      const primary = calendar.primary ? ' (Primary)' : '';
+      const primary = calendar.primary ? ` ${this.t('commands:calendars.list.labels.primary')}` : '';
       const backgroundColor = calendar.backgroundColor || '';
       
       this.logResult(`${index + 1}. ${summary}${primary}`);
-      this.logResult(`   ID: ${id}`);
-      this.logResult(`   Access: ${accessRole}`);
+      this.logResult(`   ${this.t('commands:calendars.list.labels.id')} ${id}`);
+      this.logResult(`   ${this.t('commands:calendars.list.labels.access')} ${accessRole}`);
       
       if (description) {
-        this.logResult(`   Description: ${description}`);
+        this.logResult(`   ${this.t('commands:calendars.list.labels.description')} ${description}`);
       }
       
       if (backgroundColor) {
-        this.logResult(`   Color: ${backgroundColor}`);
+        this.logResult(`   ${this.t('commands:calendars.list.labels.color')} ${backgroundColor}`);
       }
       
       this.logResult('');
