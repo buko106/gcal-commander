@@ -54,5 +54,28 @@
       "noName": "(No name)",
       "error": "Failed to list calendars: {{error}}"
     }
+  },
+  "config": {
+    "description": "Manage global configuration settings",
+    "get": {
+      "keyNotSet": "Configuration key '{{key}}' is not set"
+    },
+    "list": {
+      "currentConfiguration": "Current configuration:",
+      "configFile": "Config file: {{path}}",
+      "noConfiguration": "No configuration set"
+    },
+    "set": {
+      "success": "Set {{key}} = {{value}}"
+    },
+    "unset": {
+      "keyNotSet": "Configuration key '{{key}}' is not set",
+      "success": "Unset {{key}}"
+    },
+    "reset": {
+      "confirmationMessage": "This will reset all configuration settings.",
+      "useConfirmFlag": "Use --confirm flag to proceed: gcal config reset --confirm",
+      "success": "All configuration settings have been reset"
+    }
   }
 }

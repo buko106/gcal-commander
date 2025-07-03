@@ -54,5 +54,28 @@
       "noName": "(名前なし)",
       "error": "カレンダーの取得に失敗しました: {{error}}"
     }
+  },
+  "config": {
+    "description": "グローバル設定の管理",
+    "get": {
+      "keyNotSet": "設定キー '{{key}}' は設定されていません"
+    },
+    "list": {
+      "currentConfiguration": "現在の設定:",
+      "configFile": "設定ファイル: {{path}}",
+      "noConfiguration": "設定がありません"
+    },
+    "set": {
+      "success": "{{key}} = {{value}} に設定しました"
+    },
+    "unset": {
+      "keyNotSet": "設定キー '{{key}}' は設定されていません",
+      "success": "{{key}} の設定を削除しました"
+    },
+    "reset": {
+      "confirmationMessage": "すべての設定をリセットします。",
+      "useConfirmFlag": "実行するには --confirm フラグを使用してください: gcal config reset --confirm",
+      "success": "すべての設定がリセットされました"
+    }
   }
 }

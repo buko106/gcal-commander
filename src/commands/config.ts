@@ -38,6 +38,8 @@ static flags = {
   public async run(): Promise<void> {
     const { args, flags } = await this.parse(Config);
 
+    await this.initI18nService();
+
     switch (args.subcommand) {
       case 'get': {
         await this.handleGet(args.key);
@@ -72,7 +74,7 @@ static flags = {
 
     const value = await this.configService.get(key);
     if (value === undefined) {
-      this.logResult(`Configuration key '${key}' is not set`);
+      this.logResult(this.t('config.get.keyNotSet', { key }));
     } else {
       this.logResult(`${key} = ${JSON.stringify(value)}`);
     }
@@ -84,12 +86,12 @@ static flags = {
     if (this.format === 'json' || this.format === 'pretty-json') {
       this.outputJson(config);
     } else {
-      this.logStatus('Current configuration:');
-      this.logStatus(`Config file: ${this.configService.getConfigPath()}`);
+      this.logStatus(this.t('config.list.currentConfiguration'));
+      this.logStatus(this.t('config.list.configFile', { path: this.configService.getConfigPath() }));
       this.logResult('');
       
       if (Object.keys(config).length === 0) {
-        this.logResult('No configuration set');
+        this.logResult(this.t('config.list.noConfiguration'));
       } else {
         this.printConfigTable(config);
       }
@@ -98,13 +100,13 @@ static flags = {
 
   private async handleReset(confirm: boolean): Promise<void> {
     if (!confirm) {
-      this.logResult('This will reset all configuration settings.');
-      this.logResult('Use --confirm flag to proceed: gcal config reset --confirm');
+      this.logResult(this.t('config.reset.confirmationMessage'));
+      this.logResult(this.t('config.reset.useConfirmFlag'));
       return;
     }
 
     await this.configService.reset();
-    this.logResult('All configuration settings have been reset');
+    this.logResult(this.t('config.reset.success'));
   }
 
   private async handleSet(key?: string, value?: string): Promise<void> {
@@ -131,7 +133,7 @@ static flags = {
     }
 
     await this.configService.set(key, parsedValue);
-    this.logResult(`Set ${key} = ${JSON.stringify(parsedValue)}`);
+    this.logResult(this.t('config.set.success', { key, value: JSON.stringify(parsedValue) }));
   }
 
   private async handleUnset(key?: string): Promise<void> {
@@ -140,12 +142,12 @@ static flags = {
 
     const currentValue = await this.configService.get(key);
     if (currentValue === undefined) {
-      this.logResult(`Configuration key '${key}' is not set`);
+      this.logResult(this.t('config.unset.keyNotSet', { key }));
       return;
     }
 
     await this.configService.unset(key);
-    this.logResult(`Unset ${key}`);
+    this.logResult(this.t('config.unset.success', { key }));
   }
 
   private printConfigTable(config: Record<string, unknown>): void {
