@@ -23,7 +23,8 @@ gcal config <subcommand> [key] [value] [options]
 | フラグ | 説明 |
 |--------|------|
 | `--confirm` | リセット時の確認プロンプトをスキップ |
-| `--quiet` | ステータスメッセージを非表示 |
+| `--format` | 出力形式（table、json、pretty-json） |
+| `--quiet` | 重要でない出力を非表示（ステータスメッセージ、進行状況表示） |
 
 ## 設定キー
 

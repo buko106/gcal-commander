@@ -12,7 +12,8 @@ gcal init [options]
 
 | Flag | Short | Description | Default |
 |------|-------|-------------|---------|
-| `--quiet` | `-q` | Suppress status messages | `false` |
+| `--format` | `-f` | Output format (table, json, or pretty-json) | `table` |
+| `--quiet` | `-q` | Suppress non-essential output (status messages, progress indicators) | `false` |
 
 ## Description
 

@@ -152,8 +152,9 @@ gcal config reset --confirm
 
 - `defaultCalendar` - Default calendar ID for `gcal events list` (defaults to "primary")
 - `events.maxResults` - Default maximum number of events (1-100, defaults to 10)
-- `events.format` - Default output format: "table" or "json" (defaults to "table")
+- `events.format` - Default output format: "table", "json", or "pretty-json" (defaults to "table")
 - `events.days` - Default number of days to look ahead (1-365, defaults to 30)
+- `language` - Interface language: "en" or "ja" (defaults to "en")
 
 Configuration is stored in `~/.gcal-commander/config.json` and can be edited manually.
 
@@ -206,3 +207,20 @@ We welcome contributions to gcal-commander! This project embraces AI-assisted de
 - `./bin/run.js` - Production mode (compiled JavaScript from dist/, requires build)
 
 The project uses Husky + lint-staged for automatic code quality checks before commits.
+
+## Language Support
+
+gcal-commander supports internationalization (i18n) and is available in English and Japanese:
+
+```bash
+# Switch to Japanese
+gcal config set language ja
+
+# Switch to English  
+gcal config set language en
+
+# View current language setting
+gcal config get language
+```
+
+All command output messages, error messages, and status messages will be displayed in the selected language.

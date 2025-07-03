@@ -23,7 +23,8 @@ gcal config <subcommand> [key] [value] [options]
 | Flag | Description |
 |------|-------------|
 | `--confirm` | Skip confirmation prompt for reset |
-| `--quiet` | Suppress status messages |
+| `--format` | Output format (table, json, or pretty-json) |
+| `--quiet` | Suppress non-essential output (status messages, progress indicators) |
 
 ## Configuration Keys
 

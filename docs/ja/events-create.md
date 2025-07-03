@@ -28,7 +28,7 @@ gcal events create <summary> [options]
 | `--attendees` | | 参加者メールアドレスのカンマ区切りリスト | - |
 | `--send-updates` | | イベント招待を送信（all/externalOnly/none） | `none` |
 | `--format` | `-f` | 出力形式（table、json、pretty-json） | `table` |
-| `--quiet` | `-q` | ステータスメッセージを非表示 | `false` |
+| `--quiet` | `-q` | 重要でない出力を非表示（ステータスメッセージ、進行状況表示） | `false` |
 
 ## 時間の指定
 

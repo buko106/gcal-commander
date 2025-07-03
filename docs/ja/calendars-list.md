@@ -13,7 +13,7 @@ gcal calendars list [options]
 | フラグ | 短縮形 | 説明 | デフォルト |
 |--------|--------|------|-----------|
 | `--format` | `-f` | 出力形式（table、json、pretty-json） | `table` |
-| `--quiet` | `-q` | ステータスメッセージを非表示 | `false` |
+| `--quiet` | `-q` | 重要でない出力を非表示（ステータスメッセージ、進行状況表示） | `false` |
 
 ## 例
 

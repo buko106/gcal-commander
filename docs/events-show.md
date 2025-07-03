@@ -20,7 +20,7 @@ gcal events show <event-id> [options]
 |------|-------|-------------|---------|
 | `--calendar` | `-c` | Calendar ID where the event is located | `primary` |
 | `--format` | `-f` | Output format (table, json, or pretty-json) | `table` |
-| `--quiet` | `-q` | Suppress status messages | `false` |
+| `--quiet` | `-q` | Suppress non-essential output (status messages, progress indicators) | `false` |
 
 ## Examples
 

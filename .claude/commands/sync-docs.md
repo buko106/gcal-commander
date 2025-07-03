@@ -1,3 +1,4 @@
 # sync-docs Command
 
-Please check the differences between README.md and documents under the docs/ directory against the current implementation, and update them to the latest version.
+1. Analyze the differences between the current implementation and README.md and documents under the docs/ directory, and update them to the latest information
+2. Translate and reflect the updated content to language-specific README.md and command documentation under docs/ directories

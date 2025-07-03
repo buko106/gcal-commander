@@ -147,8 +147,9 @@ gcal config reset --confirm
 
 - `defaultCalendar` - `gcal events list`のデフォルトカレンダーID（デフォルト："primary"）
 - `events.maxResults` - デフォルトの最大イベント数（1-100、デフォルト：10）
-- `events.format` - デフォルト出力形式："table"または"json"（デフォルト："table"）
+- `events.format` - デフォルト出力形式："table"、"json"、または"pretty-json"（デフォルト："table"）
 - `events.days` - デフォルトの先読み日数（1-365、デフォルト：30）
+- `language` - インターフェース言語："en"または"ja"（デフォルト："en"）
 
 設定は`~/.gcal-commander/config.json`に保存され、手動で編集することも可能です。
 
@@ -207,12 +208,14 @@ gcal-commanderへの貢献を歓迎します！このプロジェクトはAI支�
 gcal-commanderは国際化（i18n）をサポートしており、現在英語と日本語で利用可能です：
 
 ```bash
-# 初回セットアップ時に言語を選択
-gcal init
+# 日本語に切り替え
+gcal config set language ja
 
-# 設定で言語を変更
-gcal config set language ja  # 日本語
-gcal config set language en  # 英語
+# 英語に切り替え
+gcal config set language en
+
+# 現在の言語設定を確認
+gcal config get language
 ```
 
-コマンドの出力メッセージ、エラーメッセージ、ステータスメッセージが選択した言語で表示されます。
+すべてのコマンド出力メッセージ、エラーメッセージ、ステータスメッセージが選択した言語で表示されます。

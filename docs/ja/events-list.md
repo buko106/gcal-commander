@@ -21,7 +21,7 @@ gcal events list [calendar] [options]
 | `--days` | `-d` | 先読みする日数（1-365） | `30` |
 | `--format` | `-f` | 出力形式（table、json、pretty-json） | `table` |
 | `--max-results` | `-n` | 返却する最大イベント数（1-100） | `10` |
-| `--quiet` | `-q` | ステータスメッセージを非表示 | `false` |
+| `--quiet` | `-q` | 重要でない出力を非表示（ステータスメッセージ、進行状況表示） | `false` |
 
 ## 設定サポート
 

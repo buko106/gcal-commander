@@ -21,7 +21,7 @@ gcal events list [calendar] [options]
 | `--days` | `-d` | Number of days to look ahead (1-365) | `30` |
 | `--format` | `-f` | Output format (table, json, or pretty-json) | `table` |
 | `--max-results` | `-n` | Maximum number of events to return (1-100) | `10` |
-| `--quiet` | `-q` | Suppress status messages | `false` |
+| `--quiet` | `-q` | Suppress non-essential output (status messages, progress indicators) | `false` |
 
 ## Configuration Support
 

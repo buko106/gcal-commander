@@ -13,7 +13,7 @@ gcal calendars list [options]
 | Flag | Short | Description | Default |
 |------|-------|-------------|---------|
 | `--format` | `-f` | Output format (table, json, or pretty-json) | `table` |
-| `--quiet` | `-q` | Suppress status messages | `false` |
+| `--quiet` | `-q` | Suppress non-essential output (status messages, progress indicators) | `false` |
 
 ## Examples
 
