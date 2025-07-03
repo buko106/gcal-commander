@@ -2,7 +2,7 @@ import { Command, Flags } from '@oclif/core';
 
 import { getContainerProvider } from './di/container-provider';
 import { TOKENS } from './di/tokens';
-import { IAuthService, ICalendarService } from './interfaces/services';
+import { IAuthService, ICalendarService, IConfigService, II18nService } from './interfaces/services';
 
 export type OutputFormat = 'json' | 'pretty-json' | 'table';
 
@@ -22,7 +22,9 @@ export abstract class BaseCommand extends Command {
   };
 protected authService!: IAuthService;
   protected calendarService!: ICalendarService;
+  protected configService!: IConfigService;
   protected format: OutputFormat = 'table';
+  protected i18nService!: II18nService;
   protected quiet = false;
 
   protected getContainer() {
@@ -37,6 +39,7 @@ protected authService!: IAuthService;
 
     // Initialize services using TSyringe container
     this.authService = this.getContainer().resolve<IAuthService>(TOKENS.AuthService);
+    this.configService = this.getContainer().resolve<IConfigService>(TOKENS.ConfigService);
   }
 
   /**
@@ -45,6 +48,27 @@ protected authService!: IAuthService;
    */
   protected async initCalendarService(): Promise<void> {
     this.calendarService = this.getContainer().resolve<ICalendarService>(TOKENS.CalendarService);
+  }
+
+  /**
+   * Initialize i18n service for translations
+   * Must be called by commands that need i18n support
+   */
+  protected async initI18nService(): Promise<void> {
+    if (!this.i18nService) {
+      this.i18nService = this.getContainer().resolve<II18nService>(TOKENS.I18nService);
+      
+      // Try to load saved language setting from config, fallback to undefined (English default)
+      let savedLanguage: string | undefined;
+      try {
+        savedLanguage = await this.configService.get<string>('language');
+      } catch {
+        // If config loading fails, use default language (English)
+        savedLanguage = undefined;
+      }
+      
+      await this.i18nService.init(savedLanguage);
+    }
   }
 
   protected logError(message: string): never {
@@ -69,5 +93,13 @@ protected authService!: IAuthService;
     } else {
       this.logJson(data);
     }
+  }
+
+  protected t(key: string, options?: unknown): string {
+    if (!this.i18nService) {
+      throw new Error('I18n service not initialized. Call initI18nService() first.');
+    }
+
+    return this.i18nService.t(key, options);
   }
 }

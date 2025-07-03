@@ -21,6 +21,14 @@ export default [
               name: '@inquirer/prompts',
               message: 'Use src/services/prompt.ts instead of direct @inquirer/prompts import',
             },
+            {
+              name: 'i18next',
+              message: 'Use src/services/i18n.ts (I18nService) instead of direct i18next import',
+            },
+            {
+              name: 'i18next-fs-backend',
+              message: 'Use src/services/i18n.ts (I18nService) instead of direct i18next-fs-backend import',
+            },
           ],
         },
       ],
@@ -37,6 +45,13 @@ export default [
     files: ['src/services/prompt.ts'],
     rules: {
       'no-restricted-imports': 'off',
+    },
+  },
+  {
+    files: ['src/services/i18n.ts'],
+    rules: {
+      'no-restricted-imports': 'off',
+      'import/no-named-as-default-member': 'off',
     },
   },
 ]

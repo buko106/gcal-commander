@@ -19,8 +19,8 @@ export interface CreateEventParams {
 }
 
 export interface CalendarDateTime {
-  date?: string;      // YYYY-MM-DD for all-day events
-  dateTime?: string;  // RFC3339 timestamp
+  date?: string; // YYYY-MM-DD for all-day events
+  dateTime?: string; // RFC3339 timestamp
   timeZone?: string;
 }
 
@@ -40,6 +40,44 @@ export interface IAuthService {
   getCalendarAuth(): Promise<AuthResult>;
 }
 
+export interface SelectChoice {
+  name: string;
+  value: string;
+}
+
 export interface IPromptService {
   confirm(message: string, defaultValue?: boolean): Promise<boolean>;
+  select(message: string, choices: SelectChoice[]): Promise<string>;
+}
+
+export interface II18nService {
+  changeLanguage(language: string): Promise<void>;
+  getAvailableLanguages(): string[];
+  init(language?: string): Promise<void>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  t(key: string, options?: any): string;
+}
+
+export interface Config extends Record<string, unknown> {
+  defaultCalendar?: string;
+  events?: {
+    days?: number;
+    format?: 'json' | 'pretty-json' | 'table';
+    maxResults?: number;
+  };
+  language?: string;
+}
+
+export interface IConfigService {
+  get<T>(key: string): Promise<T | undefined>;
+  getConfigPath(): string;
+  getValidKeys(): readonly string[];
+  list(): Promise<Config>;
+  load(): Promise<void>;
+  reset(): Promise<void>;
+  save(): Promise<void>;
+  set(key: string, value: unknown): Promise<void>;
+  unset(key: string): Promise<void>;
+  validateKey(key: string): boolean;
+  validateValue(key: string, value: unknown): { error?: string; valid: boolean };
 }

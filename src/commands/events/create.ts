@@ -11,14 +11,14 @@ export default class EventsCreate extends BaseCommand {
       required: true,
     }),
   };
-static description = 'Create a new calendar event';
-static examples = [
+  static description = 'Create a new calendar event';
+  static examples = [
     '<%= config.bin %> <%= command.id %> "Team Meeting" --start "2024-01-15T14:00:00"',
     '<%= config.bin %> <%= command.id %> "Lunch" --start "2024-01-15T12:00:00" --duration 60',
     '<%= config.bin %> <%= command.id %> "Conference" --start "2024-01-15" --all-day',
     '<%= config.bin %> <%= command.id %> "Project Review" --start "2024-01-15T14:00:00" --end "2024-01-15T16:00:00" --location "Room A"',
   ];
-static flags = {
+  static flags = {
     ...BaseCommand.baseFlags,
     'all-day': Flags.boolean({
       description: 'Create all-day event',
@@ -39,7 +39,7 @@ static flags = {
       description: 'Duration in minutes (alternative to --end)',
     }),
     end: Flags.string({
-      char: 'e', 
+      char: 'e',
       description: 'End date/time (ISO format)',
     }),
     location: Flags.string({
@@ -62,17 +62,18 @@ static flags = {
     const { args, flags } = await this.parse(EventsCreate);
 
     try {
-      this.logStatus('Authenticating with Google Calendar...');
+      await this.initI18nService();
+      this.logStatus(this.t('events.create.authenticating'));
       await this.initCalendarService();
 
       // Validate mutual exclusion of end and duration
       if (flags.end && flags.duration) {
-        this.logError('Cannot specify both --end and --duration flags');
+        this.logError(this.t('events.create.errors.conflictingFlags'));
       }
 
       // Parse start time
       const startTime = this.parseDateTime(flags.start, flags['all-day']);
-      
+
       // Calculate end time
       let endTime: CalendarDateTime;
       if (flags.end) {
@@ -85,7 +86,7 @@ static flags = {
       }
 
       // Parse attendees
-      const attendees = flags.attendees ? flags.attendees.split(',').map(email => email.trim()) : undefined;
+      const attendees = flags.attendees ? flags.attendees.split(',').map((email) => email.trim()) : undefined;
 
       // Create event parameters
       const createParams: CreateEventParams = {
@@ -99,7 +100,7 @@ static flags = {
         summary: args.summary,
       };
 
-      this.logStatus('Creating event...');
+      this.logStatus(this.t('events.create.creating'));
       const event = await this.calendarService.createEvent(createParams);
 
       if (this.format === 'json' || this.format === 'pretty-json') {
@@ -108,17 +109,19 @@ static flags = {
         this.displayEventCreated(event);
       }
     } catch (error) {
-      this.logError(`Failed to create event: ${error}`);
+      this.logError(this.t('events.create.errors.failed', { error }));
     }
   }
 
   private calculateEndTime(startTime: CalendarDateTime, durationMinutes: number, isAllDay: boolean): CalendarDateTime {
-    if (isAllDay && // For all-day events, add 1 day
-      startTime.date) {
-        const startDate = new Date(startTime.date);
-        startDate.setDate(startDate.getDate() + 1);
-        return { date: startDate.toISOString().split('T')[0] };
-      }
+    if (
+      isAllDay && // For all-day events, add 1 day
+      startTime.date
+    ) {
+      const startDate = new Date(startTime.date);
+      startDate.setDate(startDate.getDate() + 1);
+      return { date: startDate.toISOString().split('T')[0] };
+    }
 
     if (startTime.dateTime) {
       const startDate = new Date(startTime.dateTime);
@@ -126,35 +129,35 @@ static flags = {
       return { dateTime: startDate.toISOString() };
     }
 
-    throw new Error('Invalid start time format');
+    throw new Error(this.t('events.create.errors.invalidStartTime'));
   }
 
   private displayEventCreated(event: calendarV3.Schema$Event): void {
-    this.logResult('Event created successfully!\n');
-    
-    this.logResult(`Title: ${event.summary || '(No title)'}`);
-    this.logResult(`ID: ${event.id}`);
-    
+    this.logResult(this.t('events.create.success') + '\n');
+
+    this.logResult(`${this.t('events.create.labels.title')}: ${event.summary || this.t('events.create.noTitle')}`);
+    this.logResult(`${this.t('events.create.labels.id')}: ${event.id}`);
+
     if (event.start) {
       if (event.start.date) {
-        this.logResult(`Date: ${new Date(event.start.date).toLocaleDateString()}`);
+        this.logResult(`${this.t('events.create.labels.date')}: ${new Date(event.start.date).toLocaleDateString()}`);
       } else if (event.start.dateTime) {
-        this.logResult(`Start: ${new Date(event.start.dateTime).toLocaleString()}`);
+        this.logResult(`${this.t('events.create.labels.start')}: ${new Date(event.start.dateTime).toLocaleString()}`);
       }
     }
-    
+
     if (event.end && event.end.dateTime) {
-      this.logResult(`End: ${new Date(event.end.dateTime).toLocaleString()}`);
+      this.logResult(`${this.t('events.create.labels.end')}: ${new Date(event.end.dateTime).toLocaleString()}`);
     }
-    
+
     if (event.location) {
-      this.logResult(`Location: ${event.location}`);
+      this.logResult(`${this.t('events.create.labels.location')}: ${event.location}`);
     }
-    
+
     if (event.htmlLink) {
-      this.logResult(`Google Calendar Link: ${event.htmlLink}`);
+      this.logResult(`${this.t('events.create.labels.googleCalendarLink')}: ${event.htmlLink}`);
     }
-    
+
     this.logResult('');
   }
 
@@ -162,7 +165,7 @@ static flags = {
     if (isAllDay) {
       // For all-day events, expect YYYY-MM-DD format
       if (!/^\d{4}-\d{2}-\d{2}$/.test(dateTimeString)) {
-        throw new Error('All-day events require date format YYYY-MM-DD');
+        throw new Error(this.t('events.create.errors.allDayDateFormat'));
       }
 
       return { date: dateTimeString };
@@ -172,12 +175,12 @@ static flags = {
     try {
       const date = new Date(dateTimeString);
       if (Number.isNaN(date.getTime())) {
-        throw new TypeError('Invalid date format');
+        throw new TypeError(this.t('events.create.errors.invalidDateFormat'));
       }
 
       return { dateTime: date.toISOString() };
     } catch {
-      throw new Error('Invalid date/time format. Expected ISO format (e.g., 2024-01-15T14:00:00)');
+      throw new Error(this.t('events.create.errors.invalidDateTimeFormat'));
     }
   }
 }

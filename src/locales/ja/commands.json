@@ -1,0 +1,120 @@
+{
+  "init": {
+    "description": "Google Calendar 認証設定の確認",
+    "examples": {
+      "basic": "gcal init"
+    },
+    "messages": {
+      "status": "Google Calendar の認証を確認します。",
+      "confirm": "認証を確認しますか？",
+      "success": "認証に成功しました！",
+      "cancelled": "操作がキャンセルされました。",
+      "verifying": "Google Calendar の認証を確認中...",
+      "authenticationFailed": "認証に失敗しました: {{error}}\nコマンドを再実行するか、Google Calendar API の認証情報をご確認ください。"
+    }
+  },
+  "events": {
+    "list": {
+      "description": "今後の予定一覧を表示",
+      "authenticating": "Google Calendar で認証中...",
+      "fetching": "{{calendarId}} から予定を取得中...",
+      "noEventsFound": "今後の予定は見つかりませんでした。",
+      "tableHeader": "\n今後の予定 ({{count}}件):\n",
+      "noTitle": "(タイトルなし)",
+      "error": "予定の取得に失敗しました: {{error}}"
+    },
+    "show": {
+      "description": "特定のイベントの詳細情報を表示",
+      "authenticating": "Google Calendar で認証中...",
+      "fetching": "イベントの詳細を取得中...",
+      "error": "イベントの表示に失敗しました: {{error}}",
+      "eventDetails": "イベントの詳細",
+      "labels": {
+        "title": "タイトル",
+        "id": "ID",
+        "description": "説明",
+        "location": "場所",
+        "status": "ステータス",
+        "creator": "作成者",
+        "organizer": "主催者",
+        "attendees": "参加者",
+        "recurrence": "繰り返し",
+        "googleCalendarLink": "Google Calendar リンク",
+        "created": "作成日時",
+        "lastUpdated": "最終更新"
+      },
+      "noTitle": "(タイトルなし)"
+    },
+    "create": {
+      "description": "新しいカレンダーイベントを作成",
+      "authenticating": "Google Calendar で認証中...",
+      "creating": "イベントを作成中...",
+      "success": "イベントが正常に作成されました！",
+      "labels": {
+        "title": "タイトル",
+        "id": "ID",
+        "date": "日付",
+        "start": "開始時刻",
+        "end": "終了時刻",
+        "location": "場所",
+        "googleCalendarLink": "Google Calendar リンク"
+      },
+      "noTitle": "(タイトルなし)",
+      "errors": {
+        "conflictingFlags": "--end と --duration フラグを同時に指定することはできません",
+        "failed": "イベントの作成に失敗しました: {{error}}",
+        "invalidStartTime": "開始時刻の形式が無効です",
+        "allDayDateFormat": "終日イベントには YYYY-MM-DD 形式の日付が必要です",
+        "invalidDateFormat": "日付の形式が無効です",
+        "invalidDateTimeFormat": "日付/時刻の形式が無効です。ISO形式（例：2024-01-15T14:00:00）を使用してください"
+      }
+    }
+  },
+  "calendars": {
+    "list": {
+      "description": "利用可能なカレンダーをすべて表示",
+      "authenticating": "Google Calendar で認証中...",
+      "fetching": "カレンダーを取得中...",
+      "noCalendarsFound": "カレンダーが見つかりませんでした。",
+      "tableHeader": "\n利用可能なカレンダー ({{count}}件):\n",
+      "noName": "(名前なし)",
+      "error": "カレンダーの取得に失敗しました: {{error}}",
+      "labels": {
+        "primary": "(メイン)",
+        "id": "ID:",
+        "access": "アクセス:",
+        "description": "説明:",
+        "color": "色:"
+      }
+    }
+  },
+  "config": {
+    "description": "グローバル設定の管理",
+    "get": {
+      "keyNotSet": "設定キー '{{key}}' は設定されていません"
+    },
+    "list": {
+      "currentConfiguration": "現在の設定:",
+      "configFile": "設定ファイル: {{path}}",
+      "noConfiguration": "設定がありません"
+    },
+    "set": {
+      "success": "{{key}} = {{value}} に設定しました",
+      "keyAndValueRequired": "キーと値は set コマンドで必須です\n使用方法: gcal config set <key> <value>",
+      "invalidNumberValue": "{{key}} の数値が無効です: {{value}}"
+    },
+    "unset": {
+      "keyNotSet": "設定キー '{{key}}' は設定されていません",
+      "success": "{{key}} の設定を削除しました"
+    },
+    "reset": {
+      "confirmationMessage": "すべての設定をリセットします。",
+      "useConfirmFlag": "実行するには --confirm フラグを使用してください: gcal config reset --confirm",
+      "success": "すべての設定がリセットされました"
+    },
+    "validation": {
+      "invalidKey": "無効な設定キー: {{key}}\n有効なキー: {{validKeys}}",
+      "keyRequired": "{{command}} コマンドにはキーが必要です\n使用方法: gcal config {{command}} <key>"
+    }
+  }
+}

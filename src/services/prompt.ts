@@ -1,12 +1,19 @@
-import { confirm } from '@inquirer/prompts';
+import { confirm, select } from '@inquirer/prompts';
 
-import { IPromptService } from '../interfaces/services';
+import { IPromptService, SelectChoice } from '../interfaces/services';
 
 export class InquirerPromptService implements IPromptService {
   public async confirm(message: string, defaultValue = true): Promise<boolean> {
     return confirm({
       message,
       default: defaultValue,
+    });
+  }
+
+  public async select(message: string, choices: SelectChoice[]): Promise<string> {
+    return select({
+      message,
+      choices,
     });
   }
 }

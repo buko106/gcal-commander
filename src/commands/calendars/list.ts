@@ -5,11 +5,8 @@ import { BaseCommand } from '../../base-command';
 
 export default class CalendarsList extends BaseCommand {
   static description = 'List all available calendars';
-static examples = [
-    '<%= config.bin %> <%= command.id %>',
-    '<%= config.bin %> <%= command.id %> --format json',
-  ];
-static flags = {
+  static examples = ['<%= config.bin %> <%= command.id %>', '<%= config.bin %> <%= command.id %> --format json'];
+  static flags = {
     ...BaseCommand.baseFlags,
   };
 
@@ -17,14 +14,16 @@ static flags = {
     await this.parse(CalendarsList);
 
     try {
-      this.logStatus('Authenticating with Google Calendar...');
+      await this.initI18nService();
+
+      this.logStatus(this.t('calendars.list.authenticating'));
       await this.initCalendarService();
 
-      this.logStatus('Fetching calendars...');
+      this.logStatus(this.t('calendars.list.fetching'));
       const calendars = await this.calendarService.listCalendars();
 
       if (calendars.length === 0) {
-        this.logResult('No calendars found.');
+        this.logResult(this.t('calendars.list.noCalendarsFound'));
         return;
       }
 
@@ -34,33 +33,33 @@ static flags = {
         this.displayCalendarsTable(calendars);
       }
     } catch (error) {
-      this.logError(`Failed to list calendars: ${error}`);
+      this.logError(this.t('calendars.list.error', { error: String(error) }));
     }
   }
 
   private displayCalendarsTable(calendars: calendarV3.Schema$CalendarListEntry[]): void {
-    this.logResult(`\nAvailable Calendars (${calendars.length} found):\n`);
-    
+    this.logResult(this.t('calendars.list.tableHeader', { count: calendars.length }));
+
     for (const [index, calendar] of calendars.entries()) {
-      const summary = calendar.summary || '(No name)';
+      const summary = calendar.summary || this.t('calendars.list.noName');
       const id = calendar.id || '';
       const description = calendar.description || '';
       const accessRole = calendar.accessRole || '';
-      const primary = calendar.primary ? ' (Primary)' : '';
+      const primary = calendar.primary ? ` ${this.t('calendars.list.labels.primary')}` : '';
       const backgroundColor = calendar.backgroundColor || '';
-      
+
       this.logResult(`${index + 1}. ${summary}${primary}`);
-      this.logResult(`   ID: ${id}`);
-      this.logResult(`   Access: ${accessRole}`);
-      
+      this.logResult(`   ${this.t('calendars.list.labels.id')} ${id}`);
+      this.logResult(`   ${this.t('calendars.list.labels.access')} ${accessRole}`);
+
       if (description) {
-        this.logResult(`   Description: ${description}`);
+        this.logResult(`   ${this.t('calendars.list.labels.description')} ${description}`);
       }
-      
+
       if (backgroundColor) {
-        this.logResult(`   Color: ${backgroundColor}`);
+        this.logResult(`   ${this.t('calendars.list.labels.color')} ${backgroundColor}`);
       }
-      
+
       this.logResult('');
     }
   }

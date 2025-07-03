@@ -1,7 +1,11 @@
 import 'reflect-metadata';
 import { container, DependencyContainer } from 'tsyringe';
 
-import { IAuthService, ICalendarService } from '../interfaces/services';
+import { IConfigStorage } from '../interfaces/config-storage';
+import { IAuthService, ICalendarService, IConfigService, II18nService } from '../interfaces/services';
+import { ConfigService } from '../services/config';
+import { FileSystemConfigStorage } from '../services/config-storage';
+import { I18nService } from '../services/i18n';
 import { MockAuthService, MockCalendarService } from '../test-utils/mock-services';
 import { setContainerProvider } from './container-provider';
 import { ProductionContainerProvider } from './production-container-provider';
@@ -33,6 +37,15 @@ export function setupTestContainer(): {
   const mockAuthService = new MockAuthService();
   const mockCalendarService = new MockCalendarService();
   
+  // For backward compatibility, use real FileSystemConfigStorage in deprecated setupTestContainer
+  // This maintains the original behavior where ConfigService used real file system
+  const configStorage = new FileSystemConfigStorage();
+  const configService = new ConfigService(configStorage);
+  
+  // Create real I18nService for backward compatibility
+  // This ensures all existing tests work with default English messages
+  const i18nService = new I18nService();
+  
   // Register mocks
   testContainer.register<IAuthService>(TOKENS.AuthService, {
     useValue: mockAuthService,
@@ -40,6 +53,20 @@ export function setupTestContainer(): {
   
   testContainer.register<ICalendarService>(TOKENS.CalendarService, {
     useValue: mockCalendarService,
+  });
+
+  // Register real ConfigStorage and ConfigService for backward compatibility
+  testContainer.register<IConfigStorage>(TOKENS.ConfigStorage, {
+    useValue: configStorage,
+  });
+
+  testContainer.register<IConfigService>(TOKENS.ConfigService, {
+    useValue: configService,
+  });
+
+  // Register real I18nService for backward compatibility
+  testContainer.register<II18nService>(TOKENS.I18nService, {
+    useValue: i18nService,
   });
 
   // Set the test container provider

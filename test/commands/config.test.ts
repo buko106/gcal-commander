@@ -5,7 +5,6 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { cleanupTestContainer, setupTestContainer } from '../../src/di/test-container';
-import { ConfigService } from '../../src/services/config';
 
 let TEST_CONFIG_DIR: string;
 
@@ -19,9 +18,6 @@ describe('config', () => {
     
     // Set environment variable to use test config path
     process.env.GCAL_COMMANDER_CONFIG_PATH = join(TEST_CONFIG_DIR, 'config.json');
-    
-    // Reset ConfigService singleton for each test
-    ConfigService.resetInstance();
   });
 
   afterEach(async () => {

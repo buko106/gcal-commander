@@ -20,7 +20,7 @@ gcal events create <summary> [options]
 |------|-------|-------------|---------|
 | `--start` | `-s` | Start date/time (ISO format) | Required |
 | `--end` | `-e` | End date/time (ISO format) | - |
-| `--duration` | `-d` | Duration in minutes (alternative to --end) | `60` |
+| `--duration` | `-d` | Duration in minutes (alternative to --end) | - |
 | `--all-day` | | Create all-day event | `false` |
 | `--calendar` | `-c` | Calendar ID to create event in | `primary` |
 | `--location` | `-l` | Event location | - |
@@ -28,7 +28,7 @@ gcal events create <summary> [options]
 | `--attendees` | | Comma-separated list of attendee emails | - |
 | `--send-updates` | | Send event invitations (all/externalOnly/none) | `none` |
 | `--format` | `-f` | Output format (table, json, or pretty-json) | `table` |
-| `--quiet` | `-q` | Suppress status messages | `false` |
+| `--quiet` | `-q` | Suppress non-essential output (status messages, progress indicators) | `false` |
 
 ## Time Specification
 

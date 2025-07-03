@@ -7,14 +7,19 @@ import { ProductionContainerProvider } from '../../di/production-container-provi
 import { setTestContainer } from '../../di/test-container';
 import { TestContainerProvider } from '../../di/test-container-provider';
 import { TOKENS } from '../../di/tokens';
-import { IAuthService, ICalendarService, IPromptService } from '../../interfaces/services';
+import { IConfigStorage } from '../../interfaces/config-storage';
+import { IAuthService, ICalendarService, IConfigService, II18nService, IPromptService } from '../../interfaces/services';
+import { ConfigService } from '../../services/config';
 import { AuthServiceMockFactory, AuthServiceMockOptions } from './auth-service-mock-factory';
 import { CalendarServiceMockFactory, CalendarServiceMockOptions } from './calendar-service-mock-factory';
+import { ConfigStorageMockFactory, ConfigStorageMockOptions } from './config-storage-mock-factory';
+import { I18nServiceMockFactory } from './i18n-service-mock-factory';
 import { PromptServiceMockFactory, PromptServiceMockOptions } from './prompt-service-mock-factory';
 
 export interface TestContainerOptions {
   authService?: AuthServiceMockOptions;
   calendarService?: CalendarServiceMockOptions;
+  configStorage?: ConfigStorageMockOptions;
   promptService?: PromptServiceMockOptions;
 }
 
@@ -49,6 +54,9 @@ export class TestContainerFactory {
     mocks: {
       authService: IAuthService & sinon.SinonStubbedInstance<IAuthService>;
       calendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
+      configService: IConfigService;
+      configStorage: IConfigStorage & sinon.SinonStubbedInstance<IConfigStorage>;
+      i18nService: II18nService & sinon.SinonStubbedInstance<II18nService>;
       promptService: IPromptService & sinon.SinonStubbedInstance<IPromptService>;
     };
   } {
@@ -64,7 +72,12 @@ export class TestContainerFactory {
     // Create mocks
     const authServiceMock = AuthServiceMockFactory.create(options.authService);
     const calendarServiceMock = CalendarServiceMockFactory.create(options.calendarService);
+    const configStorageMock = ConfigStorageMockFactory.create(options.configStorage);
+    const i18nServiceMock = I18nServiceMockFactory.create();
     const promptServiceMock = PromptServiceMockFactory.create(options.promptService);
+    
+    // Create ConfigService with mocked storage
+    const configService = new ConfigService(configStorageMock);
 
     // Register mocks in container
     this.currentContainer.register<ICalendarService>(TOKENS.CalendarService, {
@@ -73,6 +86,18 @@ export class TestContainerFactory {
 
     this.currentContainer.register<IAuthService>(TOKENS.AuthService, {
       useValue: authServiceMock,
+    });
+
+    this.currentContainer.register<IConfigStorage>(TOKENS.ConfigStorage, {
+      useValue: configStorageMock,
+    });
+
+    this.currentContainer.register<IConfigService>(TOKENS.ConfigService, {
+      useValue: configService,
+    });
+
+    this.currentContainer.register<II18nService>(TOKENS.I18nService, {
+      useValue: i18nServiceMock,
     });
 
     this.currentContainer.register<IPromptService>(TOKENS.PromptService, {
@@ -87,6 +112,9 @@ export class TestContainerFactory {
       mocks: {
         authService: authServiceMock,
         calendarService: calendarServiceMock,
+        configService,
+        configStorage: configStorageMock,
+        i18nService: i18nServiceMock,
         promptService: promptServiceMock,
       },
     };
@@ -100,6 +128,9 @@ export class TestContainerFactory {
     mocks: {
       authService: IAuthService & sinon.SinonStubbedInstance<IAuthService>;
       calendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
+      configService: IConfigService;
+      configStorage: IConfigStorage & sinon.SinonStubbedInstance<IConfigStorage>;
+      i18nService: II18nService & sinon.SinonStubbedInstance<II18nService>;
       promptService: IPromptService & sinon.SinonStubbedInstance<IPromptService>;
     };
   } {
