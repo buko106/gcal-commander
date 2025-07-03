@@ -21,6 +21,11 @@ A command-line interface for Google Calendar operations. Manage your Google Cale
 - 🔇 **Quiet mode support** - Use `--quiet` flag to suppress status messages for scripting
 - 🚀 **Fast and lightweight** - Built with oclif framework
 
+## Languages
+
+📖 **README in other languages:**
+- [🇯🇵 日本語 (Japanese)](docs/ja/README.md)
+
 ## Installation
 
 ```bash
