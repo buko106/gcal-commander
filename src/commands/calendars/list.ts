@@ -5,11 +5,8 @@ import { BaseCommand } from '../../base-command';
 
 export default class CalendarsList extends BaseCommand {
   static description = 'List all available calendars';
-static examples = [
-    '<%= config.bin %> <%= command.id %>',
-    '<%= config.bin %> <%= command.id %> --format json',
-  ];
-static flags = {
+  static examples = ['<%= config.bin %> <%= command.id %>', '<%= config.bin %> <%= command.id %> --format json'];
+  static flags = {
     ...BaseCommand.baseFlags,
   };
 
@@ -18,7 +15,7 @@ static flags = {
 
     try {
       await this.initI18nService();
-      
+
       this.logStatus(this.t('calendars.list.authenticating'));
       await this.initCalendarService();
 
@@ -42,27 +39,27 @@ static flags = {
 
   private displayCalendarsTable(calendars: calendarV3.Schema$CalendarListEntry[]): void {
     this.logResult(this.t('calendars.list.tableHeader', { count: calendars.length }));
-    
+
     for (const [index, calendar] of calendars.entries()) {
       const summary = calendar.summary || this.t('calendars.list.noName');
       const id = calendar.id || '';
       const description = calendar.description || '';
       const accessRole = calendar.accessRole || '';
-      const primary = calendar.primary ? ` ${this.t('commands:calendars.list.labels.primary')}` : '';
+      const primary = calendar.primary ? ` ${this.t('calendars.list.labels.primary')}` : '';
       const backgroundColor = calendar.backgroundColor || '';
-      
+
       this.logResult(`${index + 1}. ${summary}${primary}`);
-      this.logResult(`   ${this.t('commands:calendars.list.labels.id')} ${id}`);
-      this.logResult(`   ${this.t('commands:calendars.list.labels.access')} ${accessRole}`);
-      
+      this.logResult(`   ${this.t('calendars.list.labels.id')} ${id}`);
+      this.logResult(`   ${this.t('calendars.list.labels.access')} ${accessRole}`);
+
       if (description) {
-        this.logResult(`   ${this.t('commands:calendars.list.labels.description')} ${description}`);
+        this.logResult(`   ${this.t('calendars.list.labels.description')} ${description}`);
       }
-      
+
       if (backgroundColor) {
-        this.logResult(`   ${this.t('commands:calendars.list.labels.color')} ${backgroundColor}`);
+        this.logResult(`   ${this.t('calendars.list.labels.color')} ${backgroundColor}`);
       }
-      
+
       this.logResult('');
     }
   }

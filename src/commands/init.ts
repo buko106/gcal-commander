@@ -5,9 +5,7 @@ import { TOKENS } from '../di/tokens';
 
 export default class Init extends BaseCommand {
   static description = 'Verify Google Calendar authentication setup';
-  static examples = [
-    '<%= config.bin %> <%= command.id %>',
-  ];
+  static examples = ['<%= config.bin %> <%= command.id %>'];
   private promptService!: IPromptService;
 
   async init(): Promise<void> {
@@ -19,25 +17,25 @@ export default class Init extends BaseCommand {
   public async run(): Promise<void> {
     // Initialize i18n service first
     await this.initI18nService();
-    
+
     // Language selection first
     await this.selectLanguage();
-    
-    this.logStatus(this.t('commands:init.messages.status'));
-    
-    const confirmed = await this.promptService.confirm(this.t('commands:init.messages.confirm'), true);
-    
+
+    this.logStatus(this.t('init.messages.status'));
+
+    const confirmed = await this.promptService.confirm(this.t('init.messages.confirm'), true);
+
     if (confirmed) {
       await this.verifyAuthentication();
     } else {
-      this.logResult(this.t('commands:init.messages.cancelled'));
+      this.logResult(this.t('init.messages.cancelled'));
     }
   }
 
   private async selectLanguage(): Promise<void> {
     const selectedLanguage = await this.promptService.select('Select your preferred language:', [
       { value: 'en', name: 'English' },
-      { value: 'ja', name: '日本語 (Japanese)' }
+      { value: 'ja', name: '日本語 (Japanese)' },
     ]);
 
     await this.i18nService.changeLanguage(selectedLanguage);
@@ -46,15 +44,15 @@ export default class Init extends BaseCommand {
 
   private async verifyAuthentication(): Promise<void> {
     try {
-      this.logStatus(this.t('commands:init.messages.verifying'));
-      
+      this.logStatus(this.t('init.messages.verifying'));
+
       // Test authentication by making a simple API call
       await this.calendarService.listCalendars();
-      
-      this.logResult(this.t('commands:init.messages.success'));
+
+      this.logResult(this.t('init.messages.success'));
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      this.logResult(`Authentication failed: ${errorMessage}\nTry running the command again or check your Google Calendar API credentials.`);
+      this.logResult(this.t('init.messages.authenticationFailed', { error: errorMessage }));
     }
   }
 }

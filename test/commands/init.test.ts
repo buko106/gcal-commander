@@ -2,7 +2,13 @@ import { runCommand } from '@oclif/test';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 
-import type { IAuthService, ICalendarService, IConfigService, II18nService, IPromptService } from '../../src/interfaces/services';
+import type {
+  IAuthService,
+  ICalendarService,
+  IConfigService,
+  II18nService,
+  IPromptService,
+} from '../../src/interfaces/services';
 
 import { TestContainerFactory } from '../../src/test-utils/mock-factories/test-container-factory';
 
@@ -22,13 +28,19 @@ describe('init command', () => {
     mockI18nService = mocks.i18nService;
     mockConfigService = mocks.configService;
     configServiceSpy = sinon.spy(mockConfigService, 'set');
-    
+
     // Set up i18n mock return values
-    mockI18nService.t.withArgs('commands:init.messages.status').returns('This will verify your Google Calendar authentication.');
-    mockI18nService.t.withArgs('commands:init.messages.confirm').returns('Do you want to verify authentication?');
-    mockI18nService.t.withArgs('commands:init.messages.cancelled').returns('Operation cancelled.');
-    mockI18nService.t.withArgs('commands:init.messages.success').returns('Authentication successful!');
-    mockI18nService.t.withArgs('commands:init.messages.verifying').returns('Verifying Google Calendar authentication...');
+    mockI18nService.t.withArgs('init.messages.status').returns('This will verify your Google Calendar authentication.');
+    mockI18nService.t.withArgs('init.messages.confirm').returns('Do you want to verify authentication?');
+    mockI18nService.t.withArgs('init.messages.cancelled').returns('Operation cancelled.');
+    mockI18nService.t.withArgs('init.messages.success').returns('Authentication successful!');
+    mockI18nService.t.withArgs('init.messages.verifying').returns('Verifying Google Calendar authentication...');
+    mockI18nService.t
+      .withArgs(sinon.match('init.messages.authenticationFailed'))
+      .callsFake(
+        (key, options) =>
+          `Authentication failed: ${options?.error}\nTry running the command again or check your Google Calendar API credentials.`,
+      );
   });
 
   afterEach(() => {
@@ -134,9 +146,7 @@ describe('init command', () => {
     it('should handle authentication failure gracefully', async () => {
       mockPromptService.confirm.resolves(true);
       // Mock authentication failure
-      mockCalendarService.listCalendars.rejects(
-        new Error('Authentication failed: Invalid credentials')
-      );
+      mockCalendarService.listCalendars.rejects(new Error('Authentication failed: Invalid credentials'));
 
       const { stdout, stderr } = await runCommand('init');
 

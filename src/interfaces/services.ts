@@ -19,8 +19,8 @@ export interface CreateEventParams {
 }
 
 export interface CalendarDateTime {
-  date?: string;      // YYYY-MM-DD for all-day events
-  dateTime?: string;  // RFC3339 timestamp
+  date?: string; // YYYY-MM-DD for all-day events
+  dateTime?: string; // RFC3339 timestamp
   timeZone?: string;
 }
 
@@ -60,12 +60,12 @@ export interface II18nService {
 
 export interface Config extends Record<string, unknown> {
   defaultCalendar?: string;
-  language?: string;
   events?: {
     days?: number;
     format?: 'json' | 'pretty-json' | 'table';
     maxResults?: number;
   };
+  language?: string;
 }
 
 export interface IConfigService {
@@ -79,5 +79,5 @@ export interface IConfigService {
   set(key: string, value: unknown): Promise<void>;
   unset(key: string): Promise<void>;
   validateKey(key: string): boolean;
-  validateValue(key: string, value: unknown): { error?: string; valid: boolean; };
+  validateValue(key: string, value: unknown): { error?: string; valid: boolean };
 }

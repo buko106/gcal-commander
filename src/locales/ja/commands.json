@@ -9,7 +9,8 @@
       "confirm": "認証を確認しますか？",
       "success": "認証に成功しました！",
       "cancelled": "操作がキャンセルされました。",
-      "verifying": "Google Calendar の認証を確認中..."
+      "verifying": "Google Calendar の認証を確認中...",
+      "authenticationFailed": "認証に失敗しました: {{error}}\nコマンドを再実行するか、Google Calendar API の認証情報をご確認ください。"
     }
   },
   "events": {
@@ -58,7 +59,15 @@
         "location": "場所",
         "googleCalendarLink": "Google Calendar リンク"
       },
-      "noTitle": "(タイトルなし)"
+      "noTitle": "(タイトルなし)",
+      "errors": {
+        "conflictingFlags": "--end と --duration フラグを同時に指定することはできません",
+        "failed": "イベントの作成に失敗しました: {{error}}",
+        "invalidStartTime": "開始時刻の形式が無効です",
+        "allDayDateFormat": "終日イベントには YYYY-MM-DD 形式の日付が必要です",
+        "invalidDateFormat": "日付の形式が無効です",
+        "invalidDateTimeFormat": "日付/時刻の形式が無効です。ISO形式（例：2024-01-15T14:00:00）を使用してください"
+      }
     }
   },
   "calendars": {

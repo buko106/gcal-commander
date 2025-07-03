@@ -9,7 +9,8 @@
       "confirm": "Do you want to verify authentication?",
       "success": "Authentication successful!",
       "cancelled": "Operation cancelled.",
-      "verifying": "Verifying Google Calendar authentication..."
+      "verifying": "Verifying Google Calendar authentication...",
+      "authenticationFailed": "Authentication failed: {{error}}\nTry running the command again or check your Google Calendar API credentials."
     }
   },
   "events": {
@@ -58,7 +59,15 @@
         "location": "Location",
         "googleCalendarLink": "Google Calendar Link"
       },
-      "noTitle": "(No title)"
+      "noTitle": "(No title)",
+      "errors": {
+        "conflictingFlags": "Cannot specify both --end and --duration flags",
+        "failed": "Failed to create event: {{error}}",
+        "invalidStartTime": "Invalid start time format",
+        "allDayDateFormat": "All-day events require date format YYYY-MM-DD",
+        "invalidDateFormat": "Invalid date format",
+        "invalidDateTimeFormat": "Invalid date/time format. Expected ISO format (e.g., 2024-01-15T14:00:00)"
+      }
     }
   },
   "calendars": {

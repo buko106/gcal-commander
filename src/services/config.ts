@@ -16,9 +16,7 @@ export class ConfigService implements IConfigService {
   private config: Config = {};
   private loaded = false;
 
-  constructor(
-    @inject(TOKENS.ConfigStorage) private readonly configStorage: IConfigStorage,
-  ) {}
+  constructor(@inject(TOKENS.ConfigStorage) private readonly configStorage: IConfigStorage) {}
 
   public async get<T>(key: string): Promise<T | undefined> {
     await this.load();
@@ -44,7 +42,7 @@ export class ConfigService implements IConfigService {
     try {
       const configPath = this.configStorage.getConfigPath();
       const exists = await this.configStorage.exists(configPath);
-      
+
       if (exists) {
         const content = await this.configStorage.read(configPath);
         this.config = JSON.parse(content);
@@ -83,22 +81,14 @@ export class ConfigService implements IConfigService {
   }
 
   public validateKey(key: string): boolean {
-    return ConfigService.VALID_KEYS.includes(key as typeof ConfigService.VALID_KEYS[number]);
+    return ConfigService.VALID_KEYS.includes(key as (typeof ConfigService.VALID_KEYS)[number]);
   }
 
-  public validateValue(key: string, value: unknown): { error?: string; valid: boolean; } {
+  public validateValue(key: string, value: unknown): { error?: string; valid: boolean } {
     switch (key) {
       case 'defaultCalendar': {
         if (typeof value !== 'string') {
           return { error: 'defaultCalendar must be a string', valid: false };
-        }
-
-        break;
-      }
-
-      case 'language': {
-        if (typeof value !== 'string' || !['en', 'ja'].includes(value)) {
-          return { error: 'language must be one of "en" or "ja"', valid: false };
         }
 
         break;
@@ -128,6 +118,14 @@ export class ConfigService implements IConfigService {
         break;
       }
 
+      case 'language': {
+        if (typeof value !== 'string' || !['en', 'ja'].includes(value)) {
+          return { error: 'language must be one of "en" or "ja"', valid: false };
+        }
+
+        break;
+      }
+
       default: {
         return { error: `Unknown configuration key: ${key}`, valid: false };
       }
@@ -139,7 +137,7 @@ export class ConfigService implements IConfigService {
   private deleteNestedValue(obj: Record<string, unknown>, path: string): void {
     const keys = path.split('.');
     const lastKey = keys.pop()!;
-    
+
     let target: null | Record<string, unknown> = obj as null | Record<string, unknown>;
     for (const key of keys) {
       if (target && typeof target === 'object' && key in target) {
@@ -171,7 +169,7 @@ export class ConfigService implements IConfigService {
   private setNestedValue(obj: Record<string, unknown>, path: string, value: unknown): void {
     const keys = path.split('.');
     const lastKey = keys.pop()!;
-    
+
     let target = obj;
     for (const key of keys) {
       if (!(key in target) || typeof target[key] !== 'object' || target[key] === null) {

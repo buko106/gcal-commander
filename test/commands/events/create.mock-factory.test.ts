@@ -1,6 +1,8 @@
 import { runCommand } from '@oclif/test';
 import { expect } from 'chai';
 
+import { TOKENS } from '../../../src/di/tokens';
+import { I18nService } from '../../../src/services/i18n';
 import { TestContainerFactory } from '../../../src/test-utils/mock-factories';
 
 describe('events create with Mock Factory', () => {
@@ -18,8 +20,8 @@ describe('events create with Mock Factory', () => {
           start: { dateTime: '2024-01-15T14:00:00.000Z' },
           end: { dateTime: '2024-01-15T15:00:00.000Z' },
           htmlLink: 'https://calendar.google.com/event?eid=test-123',
-        }
-      }
+        },
+      },
     });
 
     // Act: Run the command with meeting name and start time
@@ -27,27 +29,27 @@ describe('events create with Mock Factory', () => {
 
     // Assert: Verify createEvent was called with correct parameters
     expect(mocks.calendarService.createEvent.calledOnce).to.be.true;
-    
+
     const createEventCall = mocks.calendarService.createEvent.getCall(0);
     const params = createEventCall.args[0];
-    
+
     expect(params).to.deep.include({
       summary: 'Team Meeting',
       calendarId: 'primary',
       sendUpdates: 'none',
     });
-    
+
     // Verify start time is correctly parsed (adjust for timezone conversion)
     const expectedStartTime = new Date('2024-01-15T14:00:00').toISOString();
     expect(params.start).to.deep.equal({
-      dateTime: expectedStartTime
+      dateTime: expectedStartTime,
     });
-    
+
     // Verify end time is calculated (default 1 hour duration)
     const expectedEndTime = new Date(expectedStartTime);
     expectedEndTime.setHours(expectedEndTime.getHours() + 1);
     expect(params.end).to.deep.equal({
-      dateTime: expectedEndTime.toISOString()
+      dateTime: expectedEndTime.toISOString(),
     });
   });
 
@@ -57,17 +59,21 @@ describe('events create with Mock Factory', () => {
     const { mocks } = TestContainerFactory.create({
       calendarService: {
         errors: {
-          createEvent: networkError
-        }
-      }
+          createEvent: networkError,
+        },
+      },
     });
+
+    // Set up real i18n service for proper translation
+    const realI18nService = new I18nService();
+    TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
 
     // Act: Run the command and capture the error
     const result = await runCommand('events create "Important Meeting" --start "2024-01-15T14:00:00"');
 
     // Assert: Verify createEvent was called and error handling occurred
     expect(mocks.calendarService.createEvent.calledOnce).to.be.true;
-    
+
     // Verify error was properly caught and displayed
     expect(result.error).to.exist;
     expect(result.error?.message).to.contain('Failed to create event');
@@ -80,17 +86,20 @@ describe('events create with Mock Factory', () => {
     const { mocks } = TestContainerFactory.create({
       calendarService: {
         errors: {
-          createEvent: apiError
-        }
-      }
+          createEvent: apiError,
+        },
+      },
     });
+
+    const realI18nService = new I18nService();
+    TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
 
     // Act: Run the command and capture the error
     const result = await runCommand('events create "Team Sync" --start "2024-01-15T09:00:00"');
 
     // Assert: Verify createEvent was called and error handling occurred
     expect(mocks.calendarService.createEvent.calledOnce).to.be.true;
-    
+
     // Verify error was properly caught and displayed
     expect(result.error).to.exist;
     expect(result.error?.message).to.contain('Failed to create event');
@@ -99,21 +108,26 @@ describe('events create with Mock Factory', () => {
 
   it('should handle quota exceeded error gracefully', async () => {
     // Arrange: Create container with calendar service that throws quota error
-    const quotaError = new Error('Quota exceeded for quota metric \'Calendar usage\' and limit \'Calendar usage per minute\'');
+    const quotaError = new Error(
+      "Quota exceeded for quota metric 'Calendar usage' and limit 'Calendar usage per minute'",
+    );
     const { mocks } = TestContainerFactory.create({
       calendarService: {
         errors: {
-          createEvent: quotaError
-        }
-      }
+          createEvent: quotaError,
+        },
+      },
     });
+
+    const realI18nService = new I18nService();
+    TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
 
     // Act: Run the command and capture the error
     const result = await runCommand('events create "Project Review" --start "2024-01-15T16:00:00" --duration 120');
 
     // Assert: Verify createEvent was called and error handling occurred
     expect(mocks.calendarService.createEvent.calledOnce).to.be.true;
-    
+
     // Verify error was properly caught and displayed
     expect(result.error).to.exist;
     expect(result.error?.message).to.contain('Failed to create event');
@@ -127,10 +141,13 @@ describe('events create with Mock Factory', () => {
       TestContainerFactory.create({
         calendarService: {
           errors: {
-            createEvent: networkError
-          }
-        }
+            createEvent: networkError,
+          },
+        },
       });
+
+      const realI18nService = new I18nService();
+      TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
 
       // Act: Run the command and capture all output
       const result = await runCommand('events create "Meeting" --start "2024-01-15T14:00:00"');
@@ -147,10 +164,13 @@ describe('events create with Mock Factory', () => {
       TestContainerFactory.create({
         calendarService: {
           errors: {
-            createEvent: error
-          }
-        }
+            createEvent: error,
+          },
+        },
       });
+
+      const realI18nService = new I18nService();
+      TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
 
       // Act: Run the command with --quiet flag
       const result = await runCommand('events create "Meeting" --start "2024-01-15T14:00:00" --quiet');
@@ -167,10 +187,13 @@ describe('events create with Mock Factory', () => {
       TestContainerFactory.create({
         calendarService: {
           errors: {
-            createEvent: authError
-          }
-        }
+            createEvent: authError,
+          },
+        },
       });
+
+      const realI18nService = new I18nService();
+      TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
 
       // Act: Run the command
       const result = await runCommand('events create "Daily Standup" --start "2024-01-15T10:00:00"');
