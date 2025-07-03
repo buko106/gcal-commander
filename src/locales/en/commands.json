@@ -84,7 +84,8 @@
     },
     "set": {
       "success": "Set {{key}} = {{value}}",
-      "keyAndValueRequired": "Key and value are required for set command\nUsage: gcal config set <key> <value>"
+      "keyAndValueRequired": "Key and value are required for set command\nUsage: gcal config set <key> <value>",
+      "invalidNumberValue": "Invalid number value for {{key}}: {{value}}"
     },
     "unset": {
       "keyNotSet": "Configuration key '{{key}}' is not set",

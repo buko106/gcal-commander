@@ -121,7 +121,7 @@ static flags = {
     if (key === 'events.maxResults' || key === 'events.days') {
       const numValue = Number(value);
       if (Number.isNaN(numValue)) {
-        this.logError(`Invalid number value for ${key}: ${value}`);
+        this.logError(this.t('commands:config.set.invalidNumberValue', { key, value }));
       }
 
       parsedValue = numValue;

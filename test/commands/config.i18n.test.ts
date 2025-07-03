@@ -62,6 +62,13 @@ describe('config i18n integration', () => {
       expect(result.error?.message).to.include('Key and value are required for set command');
       expect(result.error?.message).to.include('Usage: gcal config set <key> <value>');
     });
+
+    it('should display invalid number value error in English', async () => {
+      const result = await runCommand(['config', 'set', 'events.maxResults', 'not-a-number']);
+      
+      expect(result.error).to.exist;
+      expect(result.error?.message).to.include('Invalid number value for events.maxResults: not-a-number');
+    });
   });
 
   describe('Japanese translation', () => {
@@ -121,6 +128,13 @@ describe('config i18n integration', () => {
       expect(result.error).to.exist;
       expect(result.error?.message).to.include('キーと値は set コマンドで必須です');
       expect(result.error?.message).to.include('使用方法: gcal config set <key> <value>');
+    });
+
+    it('should display invalid number value error in Japanese', async () => {
+      const result = await runCommand(['config', 'set', 'events.maxResults', 'not-a-number']);
+      
+      expect(result.error).to.exist;
+      expect(result.error?.message).to.include('events.maxResults の数値が無効です: not-a-number');
     });
   });
 });

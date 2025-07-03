@@ -84,7 +84,8 @@
     },
     "set": {
       "success": "{{key}} = {{value}} に設定しました",
-      "keyAndValueRequired": "キーと値は set コマンドで必須です\n使用方法: gcal config set <key> <value>"
+      "keyAndValueRequired": "キーと値は set コマンドで必須です\n使用方法: gcal config set <key> <value>",
+      "invalidNumberValue": "{{key}} の数値が無効です: {{value}}"
     },
     "unset": {
       "keyNotSet": "設定キー '{{key}}' は設定されていません",
