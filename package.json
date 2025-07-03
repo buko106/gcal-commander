@@ -35,6 +35,8 @@
     "eslint": "^9",
     "eslint-config-oclif": "^6",
     "eslint-config-prettier": "^10",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2",
     "mocha": "^10",
     "oclif": "^4",
     "prettier": "^3.5.3",
@@ -91,7 +93,8 @@
     "prepack": "oclif readme",
     "test": "mocha --forbid-only --parallel \"test/**/*.test.ts\"",
     "test:file": "mocha --forbid-only",
-    "version": "oclif readme && git add README.md"
+    "version": "oclif readme && git add README.md",
+    "prepare": "husky"
   },
   "types": "dist/index.d.ts"
 }
