@@ -10,5 +10,16 @@
       "success": "Authentication successful!",
       "cancelled": "Operation cancelled."
     }
+  },
+  "events": {
+    "list": {
+      "description": "List upcoming calendar events",
+      "authenticating": "Authenticating with Google Calendar...",
+      "fetching": "Fetching events from {{calendarId}}...",
+      "noEventsFound": "No upcoming events found.",
+      "tableHeader": "\nUpcoming Events ({{count}} found):\n",
+      "noTitle": "(No title)",
+      "error": "Failed to list events: {{error}}"
+    }
   }
 }

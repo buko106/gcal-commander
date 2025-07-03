@@ -10,5 +10,16 @@
       "success": "認証に成功しました！",
       "cancelled": "操作がキャンセルされました。"
     }
+  },
+  "events": {
+    "list": {
+      "description": "今後の予定一覧を表示",
+      "authenticating": "Google Calendar で認証中...",
+      "fetching": "{{calendarId}} から予定を取得中...",
+      "noEventsFound": "今後の予定は見つかりませんでした。",
+      "tableHeader": "\n今後の予定 ({{count}}件):\n",
+      "noTitle": "(タイトルなし)",
+      "error": "予定の取得に失敗しました: {{error}}"
+    }
   }
 }

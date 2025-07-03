@@ -36,7 +36,8 @@ static flags = {
     const { args, flags } = await this.parse(EventsList);
 
     try {
-      this.logStatus('Authenticating with Google Calendar...');
+      await this.initI18nService();
+      this.logStatus(this.t('events.list.authenticating'));
       await this.initCalendarService();
 
       // Get configuration values
@@ -56,7 +57,7 @@ static flags = {
       const timeMin = new Date().toISOString();
       const timeMax = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
 
-      this.logStatus(`Fetching events from ${calendarId}...`);
+      this.logStatus(this.t('events.list.fetching', { calendarId }));
       const events = await this.calendarService.listEvents({
         calendarId,
         maxResults,
@@ -65,7 +66,7 @@ static flags = {
       });
 
       if (events.length === 0) {
-        this.logResult('No upcoming events found.');
+        this.logResult(this.t('events.list.noEventsFound'));
         return;
       }
 
@@ -75,15 +76,15 @@ static flags = {
         this.displayEventsTable(events);
       }
     } catch (error) {
-      this.logError(`Failed to list events: ${error}`);
+      this.logError(this.t('events.list.error', { error: String(error) }));
     }
   }
 
   private displayEventsTable(events: calendarV3.Schema$Event[]): void {
-    this.logResult(`\nUpcoming Events (${events.length} found):\n`);
+    this.logResult(this.t('events.list.tableHeader', { count: events.length }));
     
     for (const [index, event] of events.entries()) {
-      const summary = event.summary || '(No title)';
+      const summary = event.summary || this.t('events.list.noTitle');
       const location = event.location ? ` @ ${event.location}` : '';
       
       if (event.start) {

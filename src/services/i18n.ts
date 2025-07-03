@@ -27,14 +27,16 @@ export class I18nService implements II18nService {
 
     // eslint-disable-next-line unicorn/prefer-module
     const localesPath = path.join(__dirname, '../locales');
+    const loadPath = path.join(localesPath, '{{lng}}/{{ns}}.json');
     
     await i18next
       .use(Backend)
       .init({
         lng: 'en', // Default language
         fallbackLng: 'en',
+        preload: ['en', 'ja'], // Preload all supported languages
         backend: {
-          loadPath: path.join(localesPath, '{{lng}}/{{ns}}.json'),
+          loadPath,
         },
         ns: ['common', 'commands'], // Available namespaces
         defaultNS: 'commands',
@@ -42,14 +44,14 @@ export class I18nService implements II18nService {
           escapeValue: false, // React already escapes values
         },
       });
-
+    
     this.initialized = true;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t(key: string, options?: any): string {
     if (!this.initialized) {
-      return key; // Return key if not initialized
+      throw new Error(`I18n service not initialized. Cannot translate key: ${key}`);
     }
 
     const result = i18next.t(key, options);
