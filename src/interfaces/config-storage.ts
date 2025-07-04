@@ -1,6 +1,6 @@
 export interface IConfigStorage {
-  exists(path: string): Promise<boolean>;
+  exists(): Promise<boolean>;
   getConfigPath(): string;
-  read(path: string): Promise<string>;
-  write(path: string, content: string): Promise<void>;
+  read(): Promise<string>;
+  write(content: string): Promise<void>;
 }

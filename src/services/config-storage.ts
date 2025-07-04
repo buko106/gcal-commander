@@ -6,17 +6,15 @@ import { join } from 'node:path';
 import { IConfigStorage } from '../interfaces/config-storage';
 
 export class FileSystemConfigStorage implements IConfigStorage {
-  private readonly _getConfigPath = (): string => {
-    if (process.env.GCAL_COMMANDER_CONFIG_PATH) {
-      return process.env.GCAL_COMMANDER_CONFIG_PATH;
-    }
+  private readonly configPath: string;
 
-    return join(homedir(), '.gcal-commander', 'config.json');
-  };
+  constructor() {
+    this.configPath = join(homedir(), '.gcal-commander', 'config.json');
+  }
 
-  public async exists(path: string): Promise<boolean> {
+  public async exists(): Promise<boolean> {
     try {
-      await access(path, constants.F_OK);
+      await access(this.configPath, constants.F_OK);
       return true;
     } catch {
       return false;
@@ -24,16 +22,40 @@ export class FileSystemConfigStorage implements IConfigStorage {
   }
 
   public getConfigPath(): string {
-    return this._getConfigPath();
+    return this.configPath;
   }
 
-  public async read(path: string): Promise<string> {
-    return readFile(path, 'utf8');
+  public async read(): Promise<string> {
+    return readFile(this.configPath, 'utf8');
   }
 
-  public async write(path: string, content: string): Promise<void> {
-    const configDir = join(path, '..');
+  public async write(content: string): Promise<void> {
+    const configDir = join(this.configPath, '..');
     await mkdir(configDir, { recursive: true });
-    await writeFile(path, content, 'utf8');
+    await writeFile(this.configPath, content, 'utf8');
+  }
+}
+
+export class InMemoryConfigStorage implements IConfigStorage {
+  private content: string | undefined;
+
+  public async exists(): Promise<boolean> {
+    return this.content !== undefined;
+  }
+
+  public getConfigPath(): string {
+    return 'in-memory';
+  }
+
+  public async read(): Promise<string> {
+    if (this.content === undefined) {
+      throw new Error(`ENOENT: no such file or directory`);
+    }
+
+    return this.content;
+  }
+
+  public async write(content: string): Promise<void> {
+    this.content = content;
   }
 }

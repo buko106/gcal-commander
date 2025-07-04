@@ -1,38 +1,17 @@
 import { runCommand } from '@oclif/test';
 import { expect } from 'chai';
-import { mkdtemp, rm } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
 
 import { cleanupTestContainer, setupTestContainer } from '../../src/di/test-container';
 
-let TEST_CONFIG_DIR: string;
-
 describe('config', () => {
-  beforeEach(async () => {
-    // Initialize test container with mocks
+  beforeEach(() => {
+    // Initialize test container with mocks (uses InMemoryConfigStorage)
     setupTestContainer();
-    
-    // Create unique temp directory for each test
-    TEST_CONFIG_DIR = await mkdtemp(join(tmpdir(), 'gcal-commander-test-'));
-    
-    // Set environment variable to use test config path
-    process.env.GCAL_COMMANDER_CONFIG_PATH = join(TEST_CONFIG_DIR, 'config.json');
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     // Clean up test container
     cleanupTestContainer();
-    
-    // Clean up temp directory
-    try {
-      await rm(TEST_CONFIG_DIR, { force: true, recursive: true });
-    } catch {
-      // Ignore errors if directory doesn't exist
-    }
-    
-    // Clean up environment variable
-    delete process.env.GCAL_COMMANDER_CONFIG_PATH;
   });
 
   describe('config list', () => {
@@ -56,21 +35,21 @@ describe('config', () => {
       // First set some config values
       await runCommand('config set defaultCalendar test@example.com');
       await runCommand('config set events.maxResults 25');
-      
+
       const { stdout } = await runCommand('config list --format pretty-json');
-      
+
       // Should be valid JSON
       expect(() => JSON.parse(stdout)).to.not.throw();
       const config = JSON.parse(stdout);
-      
+
       expect(config).to.have.property('defaultCalendar', 'test@example.com');
       expect(config).to.have.property('events');
       expect(config.events).to.have.property('maxResults', 25);
-      
+
       // Should be formatted (with indentation)
       expect(stdout).to.contain('\n  ');
       expect(stdout.trim().split('\n').length).to.be.greaterThan(1);
-      
+
       // Should start with object bracket and proper indentation
       expect(stdout.trim()).to.match(/^{\s*\n\s+"/);
     });
@@ -79,16 +58,16 @@ describe('config', () => {
       // Set some config values first
       await runCommand('config set defaultCalendar test@example.com');
       await runCommand('config set events.format table');
-      
+
       const { stdout } = await runCommand('config list --format json');
-      
+
       // Should be valid JSON
       expect(() => JSON.parse(stdout)).to.not.throw();
       const config = JSON.parse(stdout);
-      
+
       expect(config).to.have.property('defaultCalendar', 'test@example.com');
       expect(config.events).to.have.property('format', 'table');
-      
+
       // Should be minified (no indentation)
       expect(stdout).to.not.contain('\n  ');
       expect(stdout.trim().split('\n')).to.have.length(1);
@@ -98,26 +77,26 @@ describe('config', () => {
       // Set some config values first
       await runCommand('config set defaultCalendar test@example.com');
       await runCommand('config set events.days 14');
-      
+
       const { stdout: jsonOutput } = await runCommand('config list --format json');
       const { stdout: prettyJsonOutput } = await runCommand('config list --format pretty-json');
-      
+
       // Both should be valid JSON
       expect(() => JSON.parse(jsonOutput)).to.not.throw();
       expect(() => JSON.parse(prettyJsonOutput)).to.not.throw();
-      
+
       // Parse both outputs
       const jsonConfig = JSON.parse(jsonOutput);
       const prettyJsonConfig = JSON.parse(prettyJsonOutput);
-      
+
       // Should contain exactly the same data
       expect(jsonConfig).to.deep.equal(prettyJsonConfig);
       expect(jsonConfig).to.have.property('defaultCalendar', 'test@example.com');
       expect(prettyJsonConfig.events).to.have.property('days', 14);
-      
+
       // But the string representations should be different
       expect(jsonOutput).to.not.equal(prettyJsonOutput);
-      
+
       // json should be minified, pretty-json should be formatted
       expect(jsonOutput).to.not.contain('\n  ');
       expect(prettyJsonOutput).to.contain('\n  ');
@@ -153,7 +132,7 @@ describe('config', () => {
       } catch {
         // Ignore if reset fails (no config to reset)
       }
-      
+
       const { stdout } = await runCommand('config get defaultCalendar');
       expect(stdout).to.contain("Configuration key 'defaultCalendar' is not set");
     });
@@ -190,10 +169,10 @@ describe('config', () => {
     it('resets all configuration with confirmation', async () => {
       await runCommand('config set defaultCalendar test@example.com');
       await runCommand('config set events.maxResults 25');
-      
+
       const { stdout } = await runCommand('config reset --confirm');
       expect(stdout).to.contain('All configuration settings have been reset');
-      
+
       const { stdout: listOutput } = await runCommand('config list');
       expect(listOutput).to.contain('No configuration set');
     });
@@ -205,11 +184,9 @@ describe('config', () => {
     // it.skip('requires subcommand', async () => {
     //   // This test is skipped - manual testing confirms it works
     // });
-
     // it.skip('requires key for get command', async () => {
     //   // This test is skipped - manual testing confirms it works
     // });
-
     // it.skip('requires key and value for set command', async () => {
     //   // This test is skipped - manual testing confirms it works
     // });
