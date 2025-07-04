@@ -35,7 +35,7 @@ export default [
     },
   },
   {
-    files: ['bin/dev.js'],
+    files: ['bin/dev.js', 'bin/run.js'],
     rules: {
       'n/no-unpublished-require': 'off',
       'n/no-missing-require': 'off',
