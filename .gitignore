@@ -9,6 +9,10 @@ oclif.manifest.json
 *.tsbuildinfo
 .eslintcache
 
+# Coverage reports
+coverage/
+.nyc_output/
+
 
 
 yarn.lock
