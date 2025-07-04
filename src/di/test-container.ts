@@ -4,7 +4,7 @@ import { container, DependencyContainer } from 'tsyringe';
 import { IConfigStorage } from '../interfaces/config-storage';
 import { IAuthService, ICalendarService, IConfigService, II18nService } from '../interfaces/services';
 import { ConfigService } from '../services/config';
-import { FileSystemConfigStorage } from '../services/config-storage';
+import { InMemoryConfigStorage } from '../services/config-storage';
 import { I18nService } from '../services/i18n';
 import { MockAuthService, MockCalendarService } from '../test-utils/mock-services';
 import { setContainerProvider } from './container-provider';
@@ -33,29 +33,29 @@ export function setupTestContainer(): {
 } {
   // Create child container for test isolation
   testContainer = container.createChildContainer();
-  
+
   const mockAuthService = new MockAuthService();
   const mockCalendarService = new MockCalendarService();
-  
-  // For backward compatibility, use real FileSystemConfigStorage in deprecated setupTestContainer
-  // This maintains the original behavior where ConfigService used real file system
-  const configStorage = new FileSystemConfigStorage();
+
+  // Use InMemoryConfigStorage for test isolation
+  // This prevents tests from interfering with real config files
+  const configStorage = new InMemoryConfigStorage();
   const configService = new ConfigService(configStorage);
-  
+
   // Create real I18nService for backward compatibility
   // This ensures all existing tests work with default English messages
   const i18nService = new I18nService();
-  
+
   // Register mocks
   testContainer.register<IAuthService>(TOKENS.AuthService, {
     useValue: mockAuthService,
   });
-  
+
   testContainer.register<ICalendarService>(TOKENS.CalendarService, {
     useValue: mockCalendarService,
   });
 
-  // Register real ConfigStorage and ConfigService for backward compatibility
+  // Register InMemoryConfigStorage and ConfigService for test isolation
   testContainer.register<IConfigStorage>(TOKENS.ConfigStorage, {
     useValue: configStorage,
   });
@@ -85,7 +85,7 @@ export function cleanupTestContainer(): void {
     testContainer.clearInstances();
     testContainer = null;
   }
-  
+
   // Restore production container provider
   setContainerProvider(new ProductionContainerProvider());
 }

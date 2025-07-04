@@ -40,11 +40,10 @@ export class ConfigService implements IConfigService {
     if (this.loaded) return;
 
     try {
-      const configPath = this.configStorage.getConfigPath();
-      const exists = await this.configStorage.exists(configPath);
+      const exists = await this.configStorage.exists();
 
       if (exists) {
-        const content = await this.configStorage.read(configPath);
+        const content = await this.configStorage.read();
         this.config = JSON.parse(content);
       } else {
         this.config = {};
@@ -63,9 +62,8 @@ export class ConfigService implements IConfigService {
   }
 
   public async save(): Promise<void> {
-    const configPath = this.configStorage.getConfigPath();
     const content = JSON.stringify(this.config, null, 2);
-    await this.configStorage.write(configPath, content);
+    await this.configStorage.write(content);
   }
 
   public async set(key: string, value: unknown): Promise<void> {
