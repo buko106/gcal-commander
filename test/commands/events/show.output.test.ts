@@ -1,33 +1,36 @@
+import type * as sinon from 'sinon';
+
 import { runCommand } from '@oclif/test';
 import { expect } from 'chai';
 
-import { cleanupTestContainer, setupTestContainer } from '../../../src/di/test-container';
-import { MockCalendarService } from '../../../src/test-utils/mock-services';
+import type { ICalendarService } from '../../../src/interfaces/services';
+
+import { TestContainerFactory } from '../../../src/test-utils/mock-factories/test-container-factory';
 
 describe('events show output', () => {
-  let mockCalendarService: MockCalendarService;
+  let mockCalendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
 
   beforeEach(() => {
-    const mocks = setupTestContainer();
-    mockCalendarService = mocks.mockCalendarService;
+    const { mocks } = TestContainerFactory.create();
+    mockCalendarService = mocks.calendarService;
   });
 
   afterEach(() => {
-    cleanupTestContainer();
+    TestContainerFactory.cleanup();
   });
 
   describe('format output tests', () => {
     beforeEach(() => {
       const testEvent = {
         attendees: [
-          { 
+          {
             displayName: 'Alice Johnson',
-            email: 'alice@example.com', 
-            responseStatus: 'accepted' 
+            email: 'alice@example.com',
+            responseStatus: 'accepted',
           },
-          { 
-            email: 'bob@example.com', 
-            responseStatus: 'tentative' 
+          {
+            email: 'bob@example.com',
+            responseStatus: 'tentative',
           },
         ],
         created: '2024-01-01T08:00:00.000Z',
@@ -49,7 +52,7 @@ describe('events show output', () => {
         summary: 'Important Test Meeting',
         updated: '2024-01-02T09:30:00.000Z',
       };
-      mockCalendarService.setMockEvents([testEvent]);
+      mockCalendarService.getEvent.resolves(testEvent);
     });
 
     it('should display event details in table format by default', async () => {
@@ -88,7 +91,7 @@ describe('events show output', () => {
       // Should be valid JSON
       expect(() => JSON.parse(stdout)).to.not.throw();
       const event = JSON.parse(stdout);
-      
+
       // Verify event data
       expect(event).to.have.property('id', 'test-event-123');
       expect(event).to.have.property('summary', 'Important Test Meeting');
@@ -118,7 +121,7 @@ describe('events show output', () => {
       // Should be valid JSON
       expect(() => JSON.parse(stdout)).to.not.throw();
       const event = JSON.parse(stdout);
-      
+
       // Verify event data
       expect(event).to.have.property('id', 'test-event-123');
       expect(event).to.have.property('summary', 'Important Test Meeting');
@@ -129,7 +132,7 @@ describe('events show output', () => {
       // Should be formatted (with indentation)
       expect(stdout).to.contain('\n  ');
       expect(stdout.trim().split('\n').length).to.be.greaterThan(1);
-      
+
       // Should start with object bracket and proper indentation
       expect(stdout.trim()).to.match(/^{\s*\n\s+"/);
 
@@ -157,12 +160,11 @@ describe('events show output', () => {
 
       // But the string representations should be different
       expect(jsonOutput).to.not.equal(prettyJsonOutput);
-      
+
       // json should be minified, pretty-json should be formatted
       expect(jsonOutput).to.not.contain('\n  ');
       expect(prettyJsonOutput).to.contain('\n  ');
     });
-
   });
 
   describe('stdout/stderr separation', () => {
@@ -173,7 +175,7 @@ describe('events show output', () => {
         start: { dateTime: '2024-06-25T10:00:00+09:00' },
         summary: 'Simple Event',
       };
-      mockCalendarService.setMockEvents([simpleEvent]);
+      mockCalendarService.getEvent.resolves(simpleEvent);
     });
 
     it('should send status messages to stderr and results to stdout', async () => {
@@ -182,11 +184,11 @@ describe('events show output', () => {
       // Status messages should be in stderr
       expect(stderr).to.contain('Authenticating with Google Calendar...');
       expect(stderr).to.contain('Fetching event details...');
-      
+
       // Results should be in stdout
       expect(stdout).to.contain('=== Event Details ===');
       expect(stdout).to.contain('Simple Event');
-      
+
       // Cross-contamination check
       expect(stdout).to.not.contain('Authenticating with Google Calendar...');
       expect(stderr).to.not.contain('=== Event Details ===');
@@ -197,11 +199,11 @@ describe('events show output', () => {
 
       // Should be parseable JSON without any extra text
       expect(() => JSON.parse(stdout)).to.not.throw();
-      
+
       const event = JSON.parse(stdout);
       expect(event).to.be.an('object');
       expect(event).to.have.property('id', 'simple-event');
-      
+
       // Should not contain any status messages
       expect(stdout).to.not.contain('Authenticating');
       expect(stdout).to.not.contain('Fetching');

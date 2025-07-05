@@ -69,12 +69,12 @@ npm test
 ```typescript
 describe('command name', () => {
   beforeEach(() => {
-    const mocks = setupTestContainer();
+    const mocks = TestContainerFactory.create();
     mockService = mocks.mockServiceName;
   });
 
   afterEach(() => {
-    cleanupTestContainer();
+    TestContainerFactory.cleanup();
   });
 
   it('should separate status from data output', async () => {
@@ -104,14 +104,14 @@ npm run build
 ```typescript
 // Standard pattern for integration tests
 beforeEach(() => {
-  const mocks = setupTestContainer();
+  const mocks = TestContainerFactory.create();
   mockCalendarService = mocks.mockCalendarService;
   // Set up test data
   mockCalendarService.setMockEvents([...testEvents]);
 });
 
 afterEach(() => {
-  cleanupTestContainer();
+  TestContainerFactory.cleanup();
 });
 ```
 

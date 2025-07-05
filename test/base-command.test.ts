@@ -4,14 +4,19 @@ import * as sinon from 'sinon';
 
 import type { II18nService } from '../src/interfaces/services';
 
+import { TOKENS } from '../src/di/tokens';
+import { I18nServiceMockFactory } from '../src/test-utils/mock-factories/i18n-service-mock-factory';
 import { TestContainerFactory } from '../src/test-utils/mock-factories/test-container-factory';
 
 describe('BaseCommand i18n support', () => {
   let mockI18nService: II18nService & sinon.SinonStubbedInstance<II18nService>;
 
   beforeEach(() => {
-    const { mocks } = TestContainerFactory.create();
-    mockI18nService = mocks.i18nService;
+    TestContainerFactory.create();
+
+    // This test needs a mocked I18nService to verify internal behavior
+    mockI18nService = I18nServiceMockFactory.create();
+    TestContainerFactory.registerService(TOKENS.I18nService, mockI18nService);
   });
 
   afterEach(() => {

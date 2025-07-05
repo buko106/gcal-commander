@@ -23,7 +23,9 @@ export class CalendarServiceMockFactory {
   /**
    * Create a mock ICalendarService with specified behavior
    */
-  static create(options: CalendarServiceMockOptions = {}): ICalendarService & sinon.SinonStubbedInstance<ICalendarService> {
+  static create(
+    options: CalendarServiceMockOptions = {},
+  ): ICalendarService & sinon.SinonStubbedInstance<ICalendarService> {
     const mock = {
       createEvent: sinon.stub(),
       getEvent: sinon.stub(),
@@ -40,12 +42,14 @@ export class CalendarServiceMockFactory {
   /**
    * Create a mock with successful behaviors for typical test scenarios
    */
-  static createSuccessful(options: CalendarServiceMockOptions = {}): ICalendarService & sinon.SinonStubbedInstance<ICalendarService> {
+  static createSuccessful(
+    options: CalendarServiceMockOptions = {},
+  ): ICalendarService & sinon.SinonStubbedInstance<ICalendarService> {
     const defaultOptions: CalendarServiceMockOptions = {
       events: options.events || this.getDefaultEvents(),
       calendars: options.calendars || this.getDefaultCalendars(),
       createEventResponse: options.createEventResponse || this.getDefaultCreatedEvent(),
-      ...options
+      ...options,
     };
 
     return this.create(defaultOptions);
@@ -54,7 +58,9 @@ export class CalendarServiceMockFactory {
   /**
    * Create a mock that throws errors for testing error scenarios
    */
-  static createWithErrors(errors: CalendarServiceMockOptions['errors']): ICalendarService & sinon.SinonStubbedInstance<ICalendarService> {
+  static createWithErrors(
+    errors: CalendarServiceMockOptions['errors'],
+  ): ICalendarService & sinon.SinonStubbedInstance<ICalendarService> {
     return this.create({ errors });
   }
 
@@ -70,7 +76,7 @@ export class CalendarServiceMockFactory {
     };
 
     if (params.attendees?.length) {
-      event.attendees = params.attendees.map(email => ({ email, responseStatus: 'needsAction' }));
+      event.attendees = params.attendees.map((email) => ({ email, responseStatus: 'needsAction' }));
     }
 
     return event;
@@ -105,13 +111,13 @@ export class CalendarServiceMockFactory {
     return [
       {
         id: 'mock-event-1',
-        summary: 'Default Mock Event 1',
+        summary: 'Mock Event 1',
         start: { dateTime: '2024-01-01T10:00:00Z' },
         end: { dateTime: '2024-01-01T11:00:00Z' },
       },
       {
         id: 'mock-event-2',
-        summary: 'Default Mock Event 2',
+        summary: 'Mock Event 2',
         start: { dateTime: '2024-01-02T14:00:00Z' },
         end: { dateTime: '2024-01-02T15:00:00Z' },
       },
@@ -120,7 +126,7 @@ export class CalendarServiceMockFactory {
 
   private static setupDefaultBehaviors(
     mock: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>,
-    options: CalendarServiceMockOptions
+    options: CalendarServiceMockOptions,
   ): void {
     // List Events
     if (options.errors?.listEvents) {
@@ -150,7 +156,7 @@ export class CalendarServiceMockFactory {
     } else {
       mock.getEvent.callsFake(async (eventId: string, _calendarId: string) => {
         const events = options.events || this.getDefaultEvents();
-        const event = events.find(e => e.id === eventId);
+        const event = events.find((e) => e.id === eventId);
         if (!event) {
           throw new Error(`Event not found: ${eventId}`);
         }
@@ -166,5 +172,4 @@ export class CalendarServiceMockFactory {
       mock.listCalendars.resolves(options.calendars || this.getDefaultCalendars());
     }
   }
-
 }

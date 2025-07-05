@@ -1,17 +1,17 @@
 import { runCommand } from '@oclif/test';
 import { expect } from 'chai';
 
-import { cleanupTestContainer, setupTestContainer } from '../../src/di/test-container';
+import { TestContainerFactory } from '../../src/test-utils/mock-factories/test-container-factory';
 
 describe('config', () => {
   beforeEach(() => {
     // Initialize test container with mocks (uses InMemoryConfigStorage)
-    setupTestContainer();
+    TestContainerFactory.create();
   });
 
   afterEach(() => {
     // Clean up test container
-    cleanupTestContainer();
+    TestContainerFactory.cleanup();
   });
 
   describe('config list', () => {

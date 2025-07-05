@@ -10,6 +10,8 @@ import type {
   IPromptService,
 } from '../../src/interfaces/services';
 
+import { TOKENS } from '../../src/di/tokens';
+import { I18nServiceMockFactory } from '../../src/test-utils/mock-factories/i18n-service-mock-factory';
 import { TestContainerFactory } from '../../src/test-utils/mock-factories/test-container-factory';
 
 describe('init command', () => {
@@ -25,9 +27,12 @@ describe('init command', () => {
     mockPromptService = mocks.promptService;
     mockAuthService = mocks.authService;
     mockCalendarService = mocks.calendarService;
-    mockI18nService = mocks.i18nService;
     mockConfigService = mocks.configService;
     configServiceSpy = sinon.spy(mockConfigService, 'set');
+
+    // This test needs a mocked I18nService to set up translation responses
+    mockI18nService = I18nServiceMockFactory.create();
+    TestContainerFactory.registerService(TOKENS.I18nService, mockI18nService);
 
     // Set up i18n mock return values
     mockI18nService.t.withArgs('init.messages.status').returns('This will verify your Google Calendar authentication.');

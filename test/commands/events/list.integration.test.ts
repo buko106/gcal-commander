@@ -1,19 +1,22 @@
+import type * as sinon from 'sinon';
+
 import { runCommand } from '@oclif/test';
 import { expect } from 'chai';
 
-import { cleanupTestContainer, setupTestContainer } from '../../../src/di/test-container';
-import { MockCalendarService } from '../../../src/test-utils/mock-services';
+import type { ICalendarService } from '../../../src/interfaces/services';
+
+import { TestContainerFactory } from '../../../src/test-utils/mock-factories/test-container-factory';
 
 describe('events list integration', () => {
-  let mockCalendarService: MockCalendarService;
+  let mockCalendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
 
   beforeEach(() => {
-    const mocks = setupTestContainer();
-    mockCalendarService = mocks.mockCalendarService;
+    const { mocks } = TestContainerFactory.create();
+    mockCalendarService = mocks.calendarService;
   });
 
   afterEach(() => {
-    cleanupTestContainer();
+    TestContainerFactory.cleanup();
   });
 
   describe('stdout/stderr separation', () => {
@@ -80,7 +83,8 @@ describe('events list integration', () => {
           start: { dateTime: '2024-06-27T14:30:00Z' },
         },
         {
-          description: 'This is a very long description that exceeds 100 characters and should be truncated in the table view to maintain readability and proper formatting of the output display',
+          description:
+            'This is a very long description that exceeds 100 characters and should be truncated in the table view to maintain readability and proper formatting of the output display',
           end: { dateTime: '2024-06-28T10:00:00Z' },
           id: 'long-description-event',
           start: { dateTime: '2024-06-28T09:00:00Z' },
@@ -88,7 +92,7 @@ describe('events list integration', () => {
         },
       ];
 
-      mockCalendarService.setMockEvents(mixedEvents);
+      mockCalendarService.listEvents.resolves(mixedEvents);
 
       const { stdout } = await runCommand('events list');
 
@@ -99,11 +103,13 @@ describe('events list integration', () => {
       expect(stdout).to.contain('All day');
       expect(stdout).to.contain('3. (No title)');
       expect(stdout).to.contain('4. Event with long description');
-      expect(stdout).to.contain('This is a very long description that exceeds 100 characters and should be truncated in the table vie...');
+      expect(stdout).to.contain(
+        'This is a very long description that exceeds 100 characters and should be truncated in the table vie...',
+      );
     });
 
     it('should handle empty events list', async () => {
-      mockCalendarService.setMockEvents([]);
+      mockCalendarService.listEvents.resolves([]);
 
       const { stdout } = await runCommand('events list');
 
@@ -138,7 +144,7 @@ describe('events list integration', () => {
         },
       ];
 
-      mockCalendarService.setMockEvents(unicodeEvents);
+      mockCalendarService.listEvents.resolves(unicodeEvents);
 
       const { stdout } = await runCommand('events list');
 
@@ -177,12 +183,13 @@ describe('events list integration', () => {
     beforeEach(() => {
       // Set up 15 events to test max-results limiting
       const manyEvents = Array.from({ length: 15 }, (_, i) => ({
-        end: { dateTime: `2024-06-${25 + Math.floor(i / 10)}T${11 + i % 10}:00:00Z` },
+        end: { dateTime: `2024-06-${25 + Math.floor(i / 10)}T${11 + (i % 10)}:00:00Z` },
         id: `event-${i}`,
-        start: { dateTime: `2024-06-${25 + Math.floor(i / 10)}T${10 + i % 10}:00:00Z` },
+        start: { dateTime: `2024-06-${25 + Math.floor(i / 10)}T${10 + (i % 10)}:00:00Z` },
         summary: `Event ${i + 1}`,
       }));
-      mockCalendarService.setMockEvents(manyEvents);
+      // Use callsFake to respect maxResults parameter
+      mockCalendarService.listEvents.callsFake(async (params) => manyEvents.slice(0, params.maxResults));
     });
 
     it('should respect max-results flag', async () => {
@@ -235,7 +242,7 @@ describe('events list integration', () => {
           summary: 'All Day Event',
         },
       ];
-      mockCalendarService.setMockEvents(testEvents);
+      mockCalendarService.listEvents.resolves(testEvents);
     });
 
     it('should include same events in both table and JSON formats', async () => {
@@ -301,7 +308,7 @@ describe('events list integration', () => {
       // Should be formatted JSON (with indentation)
       expect(stdout).to.contain('\n  ');
       expect(stdout.trim().split('\n').length).to.be.greaterThan(1);
-      
+
       // Should start with array bracket and proper indentation
       expect(stdout.trim()).to.match(/^\[\s*\n\s+{/);
 
@@ -329,7 +336,7 @@ describe('events list integration', () => {
 
       // But the string representations should be different
       expect(jsonOutput).to.not.equal(prettyJsonOutput);
-      
+
       // json should be minified, pretty-json should be formatted
       expect(jsonOutput).to.not.contain('\n  ');
       expect(prettyJsonOutput).to.contain('\n  ');
@@ -356,7 +363,7 @@ describe('events list integration', () => {
         },
       ];
 
-      mockCalendarService.setMockEvents(complexEvents);
+      mockCalendarService.listEvents.resolves(complexEvents);
 
       const { stdout } = await runCommand('events list --format json');
 

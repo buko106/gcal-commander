@@ -1,19 +1,22 @@
+import type * as sinon from 'sinon';
+
 import { runCommand } from '@oclif/test';
 import { expect } from 'chai';
 
-import { cleanupTestContainer, setupTestContainer } from '../../../src/di/test-container';
-import { MockCalendarService } from '../../../src/test-utils/mock-services';
+import type { ICalendarService } from '../../../src/interfaces/services';
+
+import { TestContainerFactory } from '../../../src/test-utils/mock-factories/test-container-factory';
 
 describe('calendars list integration', () => {
-  let mockCalendarService: MockCalendarService;
+  let mockCalendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
 
   beforeEach(() => {
-    const mocks = setupTestContainer();
-    mockCalendarService = mocks.mockCalendarService;
+    const { mocks } = TestContainerFactory.create();
+    mockCalendarService = mocks.calendarService;
   });
 
   afterEach(() => {
-    cleanupTestContainer();
+    TestContainerFactory.cleanup();
   });
 
   describe('large dataset scenarios', () => {
@@ -28,7 +31,7 @@ describe('calendars list integration', () => {
         summary: `Calendar ${i + 1}`,
       }));
 
-      mockCalendarService.setMockCalendars(manyCalendars);
+      mockCalendarService.listCalendars.resolves(manyCalendars);
 
       const { stderr, stdout } = await runCommand('calendars list');
 
@@ -37,7 +40,7 @@ describe('calendars list integration', () => {
       expect(stdout).to.contain('Available Calendars (50 found)');
       expect(stdout).to.contain('1. Calendar 1 (Primary)');
       expect(stdout).to.contain('50. Calendar 50');
-      
+
       // Verify some random entries to ensure all are displayed
       expect(stdout).to.contain('25. Calendar 25');
       expect(stdout).to.contain('calendar-24@example.com'); // 0-indexed
@@ -50,7 +53,7 @@ describe('calendars list integration', () => {
         summary: `Test Calendar ${i}`,
       }));
 
-      mockCalendarService.setMockCalendars(manyCalendars);
+      mockCalendarService.listCalendars.resolves(manyCalendars);
 
       const { stdout } = await runCommand('calendars list --format json');
 
@@ -64,7 +67,7 @@ describe('calendars list integration', () => {
 
   describe('real-world data patterns', () => {
     it('should handle typical Google Calendar scenarios', async () => {
-      mockCalendarService.setMockCalendars([
+      mockCalendarService.listCalendars.resolves([
         {
           accessRole: 'owner',
           backgroundColor: '#039be5',
@@ -125,7 +128,7 @@ describe('calendars list integration', () => {
     });
 
     it('should handle Unicode and international calendar names', async () => {
-      mockCalendarService.setMockCalendars([
+      mockCalendarService.listCalendars.resolves([
         {
           accessRole: 'owner',
           description: '会議とプロジェクトの予定',
@@ -167,7 +170,7 @@ describe('calendars list integration', () => {
 
   describe('error handling and edge cases', () => {
     it('should handle calendars with null/undefined properties gracefully', async () => {
-      mockCalendarService.setMockCalendars([
+      mockCalendarService.listCalendars.resolves([
         {
           id: 'partial@example.com',
           summary: 'Partial Calendar',
@@ -194,7 +197,7 @@ describe('calendars list integration', () => {
 
     it('should handle calendars with extremely long IDs', async () => {
       const longId = 'very.long.calendar.id.that.might.break.formatting@' + 'a'.repeat(100) + '.example.com';
-      mockCalendarService.setMockCalendars([
+      mockCalendarService.listCalendars.resolves([
         {
           accessRole: 'owner',
           id: longId,
@@ -211,7 +214,7 @@ describe('calendars list integration', () => {
 
   describe('consistency across formats', () => {
     beforeEach(() => {
-      mockCalendarService.setMockCalendars([
+      mockCalendarService.listCalendars.resolves([
         {
           accessRole: 'owner',
           backgroundColor: '#1a73e8',

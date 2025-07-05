@@ -1,15 +1,15 @@
 import { runCommand } from '@oclif/test';
 import { expect } from 'chai';
 
-import { cleanupTestContainer, setupTestContainer } from '../../../src/di/test-container';
+import { TestContainerFactory } from '../../../src/test-utils/mock-factories/test-container-factory';
 
 describe('events create integration', () => {
   beforeEach(() => {
-    setupTestContainer();
+    TestContainerFactory.create();
   });
 
   afterEach(() => {
-    cleanupTestContainer();
+    TestContainerFactory.cleanup();
   });
 
   describe('basic event creation', () => {
@@ -33,7 +33,9 @@ describe('events create integration', () => {
     });
 
     it('should create event with end time', async () => {
-      const { stdout } = await runCommand('events create "Meeting" --start "2024-06-25T14:00:00" --end "2024-06-25T15:30:00"');
+      const { stdout } = await runCommand(
+        'events create "Meeting" --start "2024-06-25T14:00:00" --end "2024-06-25T15:30:00"',
+      );
 
       expect(stdout).to.contain('Event created successfully!');
       expect(stdout).to.contain('Title: Meeting');
@@ -61,7 +63,9 @@ describe('events create integration', () => {
 
   describe('event creation with optional fields', () => {
     it('should create event with location', async () => {
-      const { stdout } = await runCommand('events create "Meeting" --start "2024-06-25T14:00:00" --location "Conference Room A"');
+      const { stdout } = await runCommand(
+        'events create "Meeting" --start "2024-06-25T14:00:00" --location "Conference Room A"',
+      );
 
       expect(stdout).to.contain('Event created successfully!');
       expect(stdout).to.contain('Title: Meeting');
@@ -69,21 +73,27 @@ describe('events create integration', () => {
     });
 
     it('should create event with description', async () => {
-      const { stdout } = await runCommand('events create "Meeting" --start "2024-06-25T14:00:00" --description "Important project discussion"');
+      const { stdout } = await runCommand(
+        'events create "Meeting" --start "2024-06-25T14:00:00" --description "Important project discussion"',
+      );
 
       expect(stdout).to.contain('Event created successfully!');
       expect(stdout).to.contain('Title: Meeting');
     });
 
     it('should create event with attendees', async () => {
-      const { stdout } = await runCommand('events create "Meeting" --start "2024-06-25T14:00:00" --attendees "alice@example.com,bob@example.com"');
+      const { stdout } = await runCommand(
+        'events create "Meeting" --start "2024-06-25T14:00:00" --attendees "alice@example.com,bob@example.com"',
+      );
 
       expect(stdout).to.contain('Event created successfully!');
       expect(stdout).to.contain('Title: Meeting');
     });
 
     it('should create event with all optional fields', async () => {
-      const { stdout } = await runCommand('events create "Team Meeting" --start "2024-06-25T14:00:00" --end "2024-06-25T15:00:00" --location "Room A" --description "Sprint planning" --attendees "alice@example.com,bob@example.com" --calendar "work@company.com"');
+      const { stdout } = await runCommand(
+        'events create "Team Meeting" --start "2024-06-25T14:00:00" --end "2024-06-25T15:00:00" --location "Room A" --description "Sprint planning" --attendees "alice@example.com,bob@example.com" --calendar "work@company.com"',
+      );
 
       expect(stdout).to.contain('Event created successfully!');
       expect(stdout).to.contain('Title: Team Meeting');
@@ -93,7 +103,9 @@ describe('events create integration', () => {
 
   describe('JSON output format', () => {
     it('should produce clean JSON output', async () => {
-      const { stderr, stdout } = await runCommand('events create "Test Event" --start "2024-06-25T14:00:00" --format json');
+      const { stderr, stdout } = await runCommand(
+        'events create "Test Event" --start "2024-06-25T14:00:00" --format json',
+      );
 
       // Status messages still go to stderr
       expect(stderr).to.contain('Authenticating with Google Calendar...');
@@ -114,7 +126,9 @@ describe('events create integration', () => {
     });
 
     it('should produce formatted JSON with --format pretty-json', async () => {
-      const { stdout } = await runCommand('events create "Test Event" --start "2024-06-25T14:00:00" --format pretty-json');
+      const { stdout } = await runCommand(
+        'events create "Test Event" --start "2024-06-25T14:00:00" --format pretty-json',
+      );
 
       // Should be valid JSON
       expect(() => JSON.parse(stdout)).to.not.throw();
@@ -127,7 +141,9 @@ describe('events create integration', () => {
     });
 
     it('should include all event data in JSON format', async () => {
-      const { stdout } = await runCommand('events create "Full Event" --start "2024-06-25T14:00:00" --end "2024-06-25T15:00:00" --location "Meeting Room" --description "Detailed description" --attendees "user@example.com" --format json');
+      const { stdout } = await runCommand(
+        'events create "Full Event" --start "2024-06-25T14:00:00" --end "2024-06-25T15:00:00" --location "Meeting Room" --description "Detailed description" --attendees "user@example.com" --format json',
+      );
 
       const event = JSON.parse(stdout);
       expect(event.summary).to.equal('Full Event');
@@ -146,13 +162,17 @@ describe('events create integration', () => {
     });
 
     it('should create event in specified calendar', async () => {
-      const { stdout } = await runCommand('events create "Test Event" --start "2024-06-25T14:00:00" --calendar "work@company.com"');
+      const { stdout } = await runCommand(
+        'events create "Test Event" --start "2024-06-25T14:00:00" --calendar "work@company.com"',
+      );
 
       expect(stdout).to.contain('Event created successfully!');
     });
 
     it('should accept short flag for calendar', async () => {
-      const { stdout } = await runCommand('events create "Test Event" --start "2024-06-25T14:00:00" -c "personal@gmail.com"');
+      const { stdout } = await runCommand(
+        'events create "Test Event" --start "2024-06-25T14:00:00" -c "personal@gmail.com"',
+      );
 
       expect(stdout).to.contain('Event created successfully!');
     });
@@ -188,14 +208,18 @@ describe('events create integration', () => {
     });
 
     it('should handle Unicode in location and description', async () => {
-      const { stdout } = await runCommand('events create "Meeting" --start "2024-06-25T14:00:00" --location "東京オフィス 🏢" --description "重要な会議です"');
+      const { stdout } = await runCommand(
+        'events create "Meeting" --start "2024-06-25T14:00:00" --location "東京オフィス 🏢" --description "重要な会議です"',
+      );
 
       expect(stdout).to.contain('Event created successfully!');
       expect(stdout).to.contain('Location: 東京オフィス 🏢');
     });
 
     it('should handle special characters in attendee emails', async () => {
-      const { stdout } = await runCommand('events create "Meeting" --start "2024-06-25T14:00:00" --attendees "user+tag@example.com,another.user@example-domain.com"');
+      const { stdout } = await runCommand(
+        'events create "Meeting" --start "2024-06-25T14:00:00" --attendees "user+tag@example.com,another.user@example-domain.com"',
+      );
 
       expect(stdout).to.contain('Event created successfully!');
     });
@@ -203,7 +227,9 @@ describe('events create integration', () => {
 
   describe('attendee parsing', () => {
     it('should parse single attendee', async () => {
-      const { stdout } = await runCommand('events create "Meeting" --start "2024-06-25T14:00:00" --attendees "user@example.com" --format json');
+      const { stdout } = await runCommand(
+        'events create "Meeting" --start "2024-06-25T14:00:00" --attendees "user@example.com" --format json',
+      );
 
       const event = JSON.parse(stdout);
       expect(event.attendees).to.have.length(1);
@@ -211,7 +237,9 @@ describe('events create integration', () => {
     });
 
     it('should parse multiple attendees', async () => {
-      const { stdout } = await runCommand('events create "Meeting" --start "2024-06-25T14:00:00" --attendees "alice@example.com,bob@example.com,charlie@example.com" --format json');
+      const { stdout } = await runCommand(
+        'events create "Meeting" --start "2024-06-25T14:00:00" --attendees "alice@example.com,bob@example.com,charlie@example.com" --format json',
+      );
 
       const event = JSON.parse(stdout);
       expect(event.attendees).to.have.length(3);
@@ -221,7 +249,9 @@ describe('events create integration', () => {
     });
 
     it('should handle attendees with spaces around commas', async () => {
-      const { stdout } = await runCommand('events create "Meeting" --start "2024-06-25T14:00:00" --attendees "alice@example.com, bob@example.com , charlie@example.com" --format json');
+      const { stdout } = await runCommand(
+        'events create "Meeting" --start "2024-06-25T14:00:00" --attendees "alice@example.com, bob@example.com , charlie@example.com" --format json',
+      );
 
       const event = JSON.parse(stdout);
       expect(event.attendees).to.have.length(3);
@@ -245,7 +275,9 @@ describe('events create integration', () => {
     });
 
     it('should suppress status messages in JSON format with --quiet flag', async () => {
-      const { stderr, stdout } = await runCommand('events create "Test Event" --start "2024-06-25T14:00:00" --format json --quiet');
+      const { stderr, stdout } = await runCommand(
+        'events create "Test Event" --start "2024-06-25T14:00:00" --format json --quiet',
+      );
 
       // Status messages should be suppressed
       expect(stderr).to.not.contain('Authenticating with Google Calendar...');
@@ -276,7 +308,9 @@ describe('events create integration', () => {
 
     it('should handle very long descriptions', async () => {
       const longDescription = 'Description '.repeat(100);
-      const { stdout } = await runCommand(`events create "Meeting" --start "2024-06-25T14:00:00" --description "${longDescription}"`);
+      const { stdout } = await runCommand(
+        `events create "Meeting" --start "2024-06-25T14:00:00" --description "${longDescription}"`,
+      );
 
       expect(stdout).to.contain('Event created successfully!');
     });
@@ -291,7 +325,9 @@ describe('events create integration', () => {
 
   describe('short flag aliases', () => {
     it('should accept all short flags', async () => {
-      const { stdout } = await runCommand('events create "Meeting" -s "2024-06-25T14:00:00" -e "2024-06-25T15:00:00" -c primary -l "Room A" -f json');
+      const { stdout } = await runCommand(
+        'events create "Meeting" -s "2024-06-25T14:00:00" -e "2024-06-25T15:00:00" -c primary -l "Room A" -f json',
+      );
 
       expect(() => JSON.parse(stdout)).to.not.throw();
       const event = JSON.parse(stdout);
@@ -308,9 +344,15 @@ describe('events create integration', () => {
 
   describe('send-updates flag', () => {
     it('should accept valid send-updates values', async () => {
-      const { stdout: allOutput } = await runCommand('events create "Meeting" --start "2024-06-25T14:00:00" --send-updates all');
-      const { stdout: externalOutput } = await runCommand('events create "Meeting" --start "2024-06-25T14:00:00" --send-updates externalOnly');
-      const { stdout: noneOutput } = await runCommand('events create "Meeting" --start "2024-06-25T14:00:00" --send-updates none');
+      const { stdout: allOutput } = await runCommand(
+        'events create "Meeting" --start "2024-06-25T14:00:00" --send-updates all',
+      );
+      const { stdout: externalOutput } = await runCommand(
+        'events create "Meeting" --start "2024-06-25T14:00:00" --send-updates externalOnly',
+      );
+      const { stdout: noneOutput } = await runCommand(
+        'events create "Meeting" --start "2024-06-25T14:00:00" --send-updates none',
+      );
 
       expect(allOutput).to.contain('Event created successfully!');
       expect(externalOutput).to.contain('Event created successfully!');

@@ -1,56 +1,56 @@
-import {runCommand} from '@oclif/test'
-import {expect} from 'chai'
+import { runCommand } from '@oclif/test';
+import { expect } from 'chai';
 
-import {cleanupTestContainer, setupTestContainer} from '../../../src/di/test-container'
+import { TestContainerFactory } from '../../../src/test-utils/mock-factories/test-container-factory';
 
 describe('calendars list', () => {
   beforeEach(() => {
-    setupTestContainer()
-  })
+    TestContainerFactory.create();
+  });
 
   afterEach(() => {
-    cleanupTestContainer()
-  })
+    TestContainerFactory.cleanup();
+  });
 
   it('shows authentication message in stderr', async () => {
-    const {stderr} = await runCommand('calendars list')
-    expect(stderr).to.contain('Authenticating with Google Calendar...')
-    expect(stderr).to.contain('Fetching calendars...')
-  })
+    const { stderr } = await runCommand('calendars list');
+    expect(stderr).to.contain('Authenticating with Google Calendar...');
+    expect(stderr).to.contain('Fetching calendars...');
+  });
 
   it('accepts format flag', async () => {
     try {
-      await runCommand('calendars list --format json')
+      await runCommand('calendars list --format json');
     } catch (error) {
       // Command should parse flags correctly even if authentication fails
-      expect(String(error)).to.not.contain('Unknown flag')
+      expect(String(error)).to.not.contain('Unknown flag');
     }
-  })
+  });
 
   it('rejects invalid format', async () => {
     try {
-      await runCommand('calendars list --format invalid')
-      expect.fail('Should have thrown an error for invalid format')
+      await runCommand('calendars list --format invalid');
+      expect.fail('Should have thrown an error for invalid format');
     } catch (error) {
-      expect(String(error)).to.match(/Expected.*format.*to be one of|invalid.*format/i)
+      expect(String(error)).to.match(/Expected.*format.*to be one of|invalid.*format/i);
     }
-  })
+  });
 
   it('accepts table format', async () => {
     try {
-      await runCommand('calendars list --format table')
+      await runCommand('calendars list --format table');
     } catch (error) {
       // Command should parse flags correctly even if authentication fails
-      expect(String(error)).to.not.contain('Unknown flag')
+      expect(String(error)).to.not.contain('Unknown flag');
     }
-  })
+  });
 
   it('accepts pretty-json format', async () => {
     try {
-      await runCommand('calendars list --format pretty-json')
+      await runCommand('calendars list --format pretty-json');
     } catch (error) {
       // Command should parse flags correctly even if authentication fails
-      expect(String(error)).to.not.contain('Unknown flag')
+      expect(String(error)).to.not.contain('Unknown flag');
     }
-  })
-})
+  });
+});

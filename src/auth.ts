@@ -1,15 +1,13 @@
 import { authenticate } from '@google-cloud/local-auth';
 import { google } from 'googleapis';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { homedir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { dirname } from 'node:path';
 
-const SCOPES = [
-  'https://www.googleapis.com/auth/calendar.events',
-  'https://www.googleapis.com/auth/calendar.readonly'
-];
-const TOKEN_PATH = join(homedir(), '.gcal-commander', 'token.json');
-const CREDENTIALS_PATH = join(homedir(), '.gcal-commander', 'credentials.json');
+import { AppPaths } from './utils/paths';
+
+const SCOPES = ['https://www.googleapis.com/auth/calendar.events', 'https://www.googleapis.com/auth/calendar.readonly'];
+const TOKEN_PATH = AppPaths.getTokenPath();
+const CREDENTIALS_PATH = AppPaths.getCredentialsPath();
 
 export interface CalendarAuth {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,12 +40,13 @@ async function saveCredentials(client: any): Promise<void> {
       refresh_token: client.credentials.refresh_token,
       type: 'authorized_user',
     });
-    
+
     const tokenDir = dirname(TOKEN_PATH);
     await mkdir(tokenDir, { recursive: true });
     await writeFile(TOKEN_PATH, payload);
-  } catch (error) {
-    console.error('Error saving credentials:', error);
+  } catch {
+    // Silently continue if credential saving fails - the auth will still work
+    // but the user will need to re-authenticate on next run
   }
 }
 
@@ -63,11 +62,11 @@ async function authorize(): Promise<any> {
       keyfilePath: CREDENTIALS_PATH,
       scopes: SCOPES,
     });
-    
+
     if (client.credentials) {
       await saveCredentials(client);
     }
-    
+
     return client;
   } catch (error) {
     throw new Error(`Authentication failed: ${error}`);
@@ -78,7 +77,6 @@ export async function getCalendarAuth(): Promise<CalendarAuth> {
   const client = await authorize();
   return { client };
 }
-
 
 export function getCredentialsPath(): string {
   return CREDENTIALS_PATH;
