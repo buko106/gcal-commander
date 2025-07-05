@@ -44,8 +44,9 @@ async function saveCredentials(client: any): Promise<void> {
     const tokenDir = dirname(TOKEN_PATH);
     await mkdir(tokenDir, { recursive: true });
     await writeFile(TOKEN_PATH, payload);
-  } catch (error) {
-    console.error('Error saving credentials:', error);
+  } catch {
+    // Silently continue if credential saving fails - the auth will still work
+    // but the user will need to re-authenticate on next run
   }
 }
 

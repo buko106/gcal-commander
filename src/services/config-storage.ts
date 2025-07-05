@@ -1,6 +1,6 @@
 import { constants } from 'node:fs';
 import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { dirname } from 'node:path';
 
 import { IConfigStorage } from '../interfaces/config-storage';
 import { AppPaths } from '../utils/paths';
@@ -30,7 +30,7 @@ export class FileSystemConfigStorage implements IConfigStorage {
   }
 
   public async write(content: string): Promise<void> {
-    const configDir = join(this.configPath, '..');
+    const configDir = dirname(this.configPath);
     await mkdir(configDir, { recursive: true });
     await writeFile(this.configPath, content, 'utf8');
   }

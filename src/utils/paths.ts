@@ -5,7 +5,7 @@ import { join } from 'node:path';
  * Centralized path management for gcal-commander application files
  */
 export class AppPaths {
-  private static readonly APP_DIR = join(homedir(), '.gcal-commander');
+  private static readonly APP_DIR = AppPaths.getValidatedAppDir();
 
   /**
    * Get the application directory path
@@ -33,5 +33,18 @@ export class AppPaths {
    */
   static getTokenPath(): string {
     return join(this.APP_DIR, 'token.json');
+  }
+
+  /**
+   * Get and validate the application directory path
+   */
+  private static getValidatedAppDir(): string {
+    const home = homedir();
+
+    if (!home || typeof home !== 'string') {
+      throw new Error('Unable to determine home directory');
+    }
+
+    return join(home, '.gcal-commander');
   }
 }

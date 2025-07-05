@@ -53,4 +53,18 @@ describe('AppPaths', () => {
       expect(credentialsPath).to.not.equal(configPath);
     });
   });
+
+  describe('error handling', () => {
+    it('should handle getAppDir gracefully', () => {
+      // This test verifies that getAppDir doesn't throw under normal conditions
+      expect(() => AppPaths.getAppDir()).to.not.throw();
+    });
+
+    it('should return valid path strings', () => {
+      expect(AppPaths.getAppDir()).to.be.a('string').and.not.be.empty;
+      expect(AppPaths.getTokenPath()).to.be.a('string').and.not.be.empty;
+      expect(AppPaths.getCredentialsPath()).to.be.a('string').and.not.be.empty;
+      expect(AppPaths.getConfigPath()).to.be.a('string').and.not.be.empty;
+    });
+  });
 });

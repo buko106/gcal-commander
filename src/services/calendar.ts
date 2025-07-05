@@ -97,7 +97,7 @@ export class CalendarService implements ICalendarService {
     const TOKEN_PATH = AppPaths.getTokenPath();
     try {
       await unlink(TOKEN_PATH);
-      console.error('Deleted saved token. Re-authenticating with updated permissions...');
+      // Token deleted, will re-authenticate with updated permissions
     } catch {
       // Token file might not exist, which is fine
     }
