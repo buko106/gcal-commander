@@ -1,17 +1,11 @@
 import { runCommand } from '@oclif/test';
 import { expect } from 'chai';
 
-import { TOKENS } from '../../../src/di/tokens';
-import { I18nService } from '../../../src/services/i18n';
 import { TestContainerFactory } from '../../../src/test-utils/mock-factories/test-container-factory';
 
 describe('events create', () => {
   beforeEach(() => {
     TestContainerFactory.create();
-
-    // Use real I18nService for proper English translations in tests
-    const realI18nService = new I18nService();
-    TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
   });
 
   afterEach(() => {

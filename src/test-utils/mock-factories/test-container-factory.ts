@@ -8,12 +8,18 @@ import { setTestContainer } from '../../di/test-container';
 import { TestContainerProvider } from '../../di/test-container-provider';
 import { TOKENS } from '../../di/tokens';
 import { IConfigStorage } from '../../interfaces/config-storage';
-import { IAuthService, ICalendarService, IConfigService, II18nService, IPromptService } from '../../interfaces/services';
+import {
+  IAuthService,
+  ICalendarService,
+  IConfigService,
+  II18nService,
+  IPromptService,
+} from '../../interfaces/services';
 import { ConfigService } from '../../services/config';
+import { I18nService } from '../../services/i18n';
 import { AuthServiceMockFactory, AuthServiceMockOptions } from './auth-service-mock-factory';
 import { CalendarServiceMockFactory, CalendarServiceMockOptions } from './calendar-service-mock-factory';
 import { ConfigStorageMockFactory, ConfigStorageMockOptions } from './config-storage-mock-factory';
-import { I18nServiceMockFactory } from './i18n-service-mock-factory';
 import { PromptServiceMockFactory, PromptServiceMockOptions } from './prompt-service-mock-factory';
 
 export interface TestContainerOptions {
@@ -38,10 +44,10 @@ export class TestContainerFactory {
       this.currentContainer.clearInstances();
       this.currentContainer = null;
     }
-    
+
     // Clear the test container reference
     setTestContainer(null as unknown as DependencyContainer);
-    
+
     // Restore production container provider
     setContainerProvider(new ProductionContainerProvider());
   }
@@ -56,7 +62,7 @@ export class TestContainerFactory {
       calendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
       configService: IConfigService;
       configStorage: IConfigStorage & sinon.SinonStubbedInstance<IConfigStorage>;
-      i18nService: II18nService & sinon.SinonStubbedInstance<II18nService>;
+      i18nService: II18nService;
       promptService: IPromptService & sinon.SinonStubbedInstance<IPromptService>;
     };
   } {
@@ -65,7 +71,7 @@ export class TestContainerFactory {
 
     // Create child container for test isolation
     this.currentContainer = container.createChildContainer();
-    
+
     // Set the container for the existing DI system
     setTestContainer(this.currentContainer);
 
@@ -73,9 +79,9 @@ export class TestContainerFactory {
     const authServiceMock = AuthServiceMockFactory.create(options.authService);
     const calendarServiceMock = CalendarServiceMockFactory.create(options.calendarService);
     const configStorageMock = ConfigStorageMockFactory.create(options.configStorage);
-    const i18nServiceMock = I18nServiceMockFactory.create();
+    const i18nService = new I18nService();
     const promptServiceMock = PromptServiceMockFactory.create(options.promptService);
-    
+
     // Create ConfigService with mocked storage
     const configService = new ConfigService(configStorageMock);
 
@@ -97,7 +103,7 @@ export class TestContainerFactory {
     });
 
     this.currentContainer.register<II18nService>(TOKENS.I18nService, {
-      useValue: i18nServiceMock,
+      useValue: i18nService,
     });
 
     this.currentContainer.register<IPromptService>(TOKENS.PromptService, {
@@ -114,7 +120,7 @@ export class TestContainerFactory {
         calendarService: calendarServiceMock,
         configService,
         configStorage: configStorageMock,
-        i18nService: i18nServiceMock,
+        i18nService,
         promptService: promptServiceMock,
       },
     };
@@ -130,7 +136,7 @@ export class TestContainerFactory {
       calendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
       configService: IConfigService;
       configStorage: IConfigStorage & sinon.SinonStubbedInstance<IConfigStorage>;
-      i18nService: II18nService & sinon.SinonStubbedInstance<II18nService>;
+      i18nService: II18nService;
       promptService: IPromptService & sinon.SinonStubbedInstance<IPromptService>;
     };
   } {
@@ -141,7 +147,7 @@ export class TestContainerFactory {
     };
 
     const result = this.create(successfulOptions);
-    
+
     // Ensure default successful behaviors
     if (!calendarOptions.events && !calendarOptions.errors?.listEvents) {
       // Use factory's default successful behavior
