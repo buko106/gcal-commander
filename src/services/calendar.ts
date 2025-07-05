@@ -1,11 +1,10 @@
 import { calendar_v3 as calendarV3, google } from 'googleapis';
 import { unlink } from 'node:fs/promises';
-import { homedir } from 'node:os';
-import { join } from 'node:path';
 import { inject, injectable } from 'tsyringe';
 
 import { TOKENS } from '../di/tokens';
 import { CreateEventParams, IAuthService, ICalendarService, ListEventsParams } from '../interfaces/services';
+import { AppPaths } from '../utils/paths';
 
 @injectable()
 export class CalendarService implements ICalendarService {
@@ -17,7 +16,7 @@ export class CalendarService implements ICalendarService {
   async createEvent(params: CreateEventParams): Promise<calendarV3.Schema$Event> {
     return this.withRetryOnScopeError(async () => {
       await this.ensureInitialized();
-      
+
       const eventResource: calendarV3.Schema$Event = {
         description: params.description,
         end: params.end,
@@ -27,7 +26,7 @@ export class CalendarService implements ICalendarService {
       };
 
       if (params.attendees?.length) {
-        eventResource.attendees = params.attendees.map(email => ({ email }));
+        eventResource.attendees = params.attendees.map((email) => ({ email }));
       }
 
       try {
@@ -75,12 +74,7 @@ export class CalendarService implements ICalendarService {
   async listEvents(params: ListEventsParams): Promise<calendarV3.Schema$Event[]> {
     return this.withRetryOnScopeError(async () => {
       await this.ensureInitialized();
-      const {
-        calendarId,
-        maxResults,
-        timeMax,
-        timeMin,
-      } = params;
+      const { calendarId, maxResults, timeMax, timeMin } = params;
 
       try {
         const response = await this.calendar!.events.list({
@@ -100,14 +94,14 @@ export class CalendarService implements ICalendarService {
   }
 
   private async deleteTokenAndReinitialize(): Promise<void> {
-    const TOKEN_PATH = join(homedir(), '.gcal-commander', 'token.json');
+    const TOKEN_PATH = AppPaths.getTokenPath();
     try {
       await unlink(TOKEN_PATH);
       console.error('Deleted saved token. Re-authenticating with updated permissions...');
     } catch {
       // Token file might not exist, which is fine
     }
-    
+
     this.calendar = null;
     this.hasReauthenticated = true;
     await this.ensureInitialized();

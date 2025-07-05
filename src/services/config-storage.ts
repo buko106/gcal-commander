@@ -1,15 +1,15 @@
 import { constants } from 'node:fs';
 import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
-import { homedir } from 'node:os';
 import { join } from 'node:path';
 
 import { IConfigStorage } from '../interfaces/config-storage';
+import { AppPaths } from '../utils/paths';
 
 export class FileSystemConfigStorage implements IConfigStorage {
   private readonly configPath: string;
 
   constructor() {
-    this.configPath = join(homedir(), '.gcal-commander', 'config.json');
+    this.configPath = AppPaths.getConfigPath();
   }
 
   public async exists(): Promise<boolean> {
