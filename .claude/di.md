@@ -6,9 +6,9 @@
 
 See `test/commands/config.test.ts` for standard integration test setup patterns.
 
-### Legacy Pattern (Deprecated)
+### Legacy Pattern (Removed)
 
-Use TestContainerFactory.create() instead of setupTestContainer/cleanupTestContainer.
+The deprecated setupTestContainer/cleanupTestContainer functions have been removed. Use TestContainerFactory.create() instead.
 
 ## Available Mock Services
 
@@ -51,4 +51,4 @@ TestContainerFactory provides Sinon-stubbed mock services:
 - **Test interference**: Always use `TestContainerFactory.cleanup()` in `afterEach()`
 - **Stubbing errors**: Use Sinon syntax: `mockService.method.resolves(value)` or `mockService.method.rejects(error)`
 - **ConfigService vs ConfigStorage**: ConfigService handles business logic, ConfigStorage handles file I/O
-- **Backward compatibility**: Deprecated `setupTestContainer` still uses real file system for ConfigService
+- **Migration**: All tests have been migrated from deprecated setupTestContainer to TestContainerFactory
