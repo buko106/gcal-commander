@@ -188,7 +188,8 @@ describe('events list integration', () => {
         start: { dateTime: `2024-06-${25 + Math.floor(i / 10)}T${10 + (i % 10)}:00:00Z` },
         summary: `Event ${i + 1}`,
       }));
-      mockCalendarService.listEvents.resolves(manyEvents);
+      // Use callsFake to respect maxResults parameter
+      mockCalendarService.listEvents.callsFake(async (params) => manyEvents.slice(0, params.maxResults));
     });
 
     it('should respect max-results flag', async () => {
