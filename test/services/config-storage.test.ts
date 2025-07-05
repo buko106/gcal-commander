@@ -38,14 +38,24 @@ describe('Config Storage', () => {
       expect(typeof result).to.equal('boolean');
     });
 
-    it('read method should return a promise', async () => {
+    it('read method should return a promise', () => {
+      // Don't await - just check that it returns a promise
       const result = storage.read();
       expect(result).to.be.a('promise');
+      // Clean up the promise to avoid unhandled rejection
+      result.catch(() => {
+        // Expected to fail since file doesn't exist
+      });
     });
 
-    it('write method should return a promise', async () => {
+    it('write method should return a promise', () => {
+      // Don't await - just check that it returns a promise
       const result = storage.write('test content');
       expect(result).to.be.a('promise');
+      // Clean up the promise
+      result.catch(() => {
+        // May fail due to permission issues in CI
+      });
     });
   });
 
