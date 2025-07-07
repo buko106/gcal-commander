@@ -9,7 +9,7 @@ A command-line interface for Google Calendar operations. Manage your Google Cale
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/gcal-commander.svg)](https://npmjs.org/package/gcal-commander)
 [![Downloads/week](https://img.shields.io/npm/dw/gcal-commander.svg)](https://npmjs.org/package/gcal-commander)
-[![Coverage Status](https://coveralls.io/repos/github/buko106/gcal-commander/badge.svg)](https://coveralls.io/github/buko106/gcal-commander)
+[![codecov](https://codecov.io/github/buko106/gcal-commander/graph/badge.svg?token=DQUL68E057)](https://codecov.io/github/buko106/gcal-commander)
 
 ## Features
 
