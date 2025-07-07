@@ -16,7 +16,8 @@
     "i18next": "^23.7.0",
     "i18next-fs-backend": "^2.3.0",
     "reflect-metadata": "^0.2.2",
-    "tsyringe": "^4.10.0"
+    "tsyringe": "^4.10.0",
+    "zod": "^3.25.74"
   },
   "devDependencies": {
     "@eslint/compat": "^1",

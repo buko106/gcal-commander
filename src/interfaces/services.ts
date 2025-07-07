@@ -65,7 +65,7 @@ export interface Config extends Record<string, unknown> {
     format?: 'json' | 'pretty-json' | 'table';
     maxResults?: number;
   };
-  language?: string;
+  language?: 'en' | 'ja';
 }
 
 export interface IConfigService {
@@ -79,5 +79,8 @@ export interface IConfigService {
   set(key: string, value: unknown): Promise<void>;
   unset(key: string): Promise<void>;
   validateKey(key: string): boolean;
-  validateValue(key: string, value: unknown): { error?: string; valid: boolean };
+  validateValue(
+    key: string,
+    value: unknown,
+  ): { error?: string; errorKey?: string; errorOptions?: unknown; valid: boolean };
 }

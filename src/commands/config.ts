@@ -128,7 +128,11 @@ export default class Config extends BaseCommand {
 
     const validation = this.configService.validateValue(key, parsedValue);
     if (!validation.valid) {
-      this.logError(validation.error!);
+      if (validation.errorKey) {
+        this.logError(this.t(validation.errorKey, validation.errorOptions));
+      } else {
+        this.logError(validation.error!);
+      }
     }
 
     await this.configService.set(key, parsedValue);

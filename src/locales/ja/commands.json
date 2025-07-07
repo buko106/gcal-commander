@@ -114,7 +114,10 @@
     },
     "validation": {
       "invalidKey": "無効な設定キー: {{key}}\n有効なキー: {{validKeys}}",
-      "keyRequired": "{{command}} コマンドにはキーが必要です\n使用方法: gcal config {{command}} <key>"
+      "keyRequired": "{{command}} コマンドにはキーが必要です\n使用方法: gcal config {{command}} <key>",
+      "unknownKey": "不明な設定キー: {{key}}",
+      "invalidValue": "{{key}} の値が無効です",
+      "zodError": "{{key}}: {{message}}"
     }
   }
 }

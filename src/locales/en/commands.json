@@ -114,7 +114,10 @@
     },
     "validation": {
       "invalidKey": "Invalid configuration key: {{key}}\nValid keys: {{validKeys}}",
-      "keyRequired": "Key is required for {{command}} command\nUsage: gcal config {{command}} <key>"
+      "keyRequired": "Key is required for {{command}} command\nUsage: gcal config {{command}} <key>",
+      "unknownKey": "Unknown configuration key: {{key}}",
+      "invalidValue": "Invalid value for {{key}}",
+      "zodError": "{{key}}: {{message}}"
     }
   }
 }

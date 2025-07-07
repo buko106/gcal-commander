@@ -1,8 +1,17 @@
 import { inject, injectable } from 'tsyringe';
+import { z } from 'zod';
 
 import { TOKENS } from '../di/tokens';
 import { IConfigStorage } from '../interfaces/config-storage';
 import { Config, IConfigService } from '../interfaces/services';
+
+const configValueSchema = z.object({
+  defaultCalendar: z.string(),
+  language: z.enum(['en', 'ja']),
+  'events.days': z.number().min(1).max(365),
+  'events.format': z.enum(['table', 'json', 'pretty-json']),
+  'events.maxResults': z.number().min(1).max(100),
+});
 
 @injectable()
 export class ConfigService implements IConfigService {
@@ -82,54 +91,39 @@ export class ConfigService implements IConfigService {
     return ConfigService.VALID_KEYS.includes(key as (typeof ConfigService.VALID_KEYS)[number]);
   }
 
-  public validateValue(key: string, value: unknown): { error?: string; valid: boolean } {
-    switch (key) {
-      case 'defaultCalendar': {
-        if (typeof value !== 'string') {
-          return { error: 'defaultCalendar must be a string', valid: false };
-        }
-
-        break;
-      }
-
-      case 'events.days': {
-        if (typeof value !== 'number' || value < 1 || value > 365) {
-          return { error: 'events.days must be a number between 1 and 365', valid: false };
-        }
-
-        break;
-      }
-
-      case 'events.format': {
-        if (value !== 'table' && value !== 'json' && value !== 'pretty-json') {
-          return { error: 'events.format must be one of "table", "json", or "pretty-json"', valid: false };
-        }
-
-        break;
-      }
-
-      case 'events.maxResults': {
-        if (typeof value !== 'number' || value < 1 || value > 100) {
-          return { error: 'events.maxResults must be a number between 1 and 100', valid: false };
-        }
-
-        break;
-      }
-
-      case 'language': {
-        if (typeof value !== 'string' || !['en', 'ja'].includes(value)) {
-          return { error: 'language must be one of "en" or "ja"', valid: false };
-        }
-
-        break;
-      }
-
-      default: {
-        return { error: `Unknown configuration key: ${key}`, valid: false };
-      }
+  public validateValue(
+    key: string,
+    value: unknown,
+  ): { error?: string; errorKey?: string; errorOptions?: unknown; valid: boolean } {
+    if (!this.validateKey(key)) {
+      return {
+        errorKey: 'config.validation.unknownKey',
+        errorOptions: { key },
+        valid: false,
+      };
     }
 
-    return { valid: true };
+    try {
+      const schema = configValueSchema.shape[key as keyof typeof configValueSchema.shape];
+      schema.parse(value);
+      return { valid: true };
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const message = error.errors.map((e) => e.message).join(', ');
+
+        return {
+          errorKey: 'config.validation.zodError',
+          errorOptions: { key, message },
+          valid: false,
+        };
+      }
+
+      return {
+        errorKey: 'config.validation.invalidValue',
+        errorOptions: { key },
+        valid: false,
+      };
+    }
   }
 
   private deleteNestedValue(obj: Record<string, unknown>, path: string): void {
