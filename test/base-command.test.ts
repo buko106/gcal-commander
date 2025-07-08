@@ -5,8 +5,7 @@ import * as sinon from 'sinon';
 import type { II18nService } from '../src/interfaces/services';
 
 import { TOKENS } from '../src/di/tokens';
-import { I18nServiceMockFactory } from '../src/test-utils/mock-factories/i18n-service-mock-factory';
-import { TestContainerFactory } from '../src/test-utils/mock-factories/test-container-factory';
+import { I18nServiceMockFactory, TestContainerFactory } from './test-utils/mock-factories';
 
 describe('BaseCommand i18n support', () => {
   let mockI18nService: II18nService & sinon.SinonStubbedInstance<II18nService>;

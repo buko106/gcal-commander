@@ -1,6 +1,6 @@
 import * as sinon from 'sinon';
 
-import { II18nService } from '../../interfaces/services';
+import { II18nService } from '../../../src/interfaces/services';
 
 export const I18nServiceMockFactory = {
   create(): II18nService & sinon.SinonStubbedInstance<II18nService> {
@@ -9,7 +9,7 @@ export const I18nServiceMockFactory = {
       getAvailableLanguages: sinon.stub<[], string[]>(),
       init: sinon.stub<[], Promise<void>>(),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      t: sinon.stub<[string, any?], string>()
+      t: sinon.stub<[string, any?], string>(),
     };
 
     // Default behaviors for testing
@@ -19,5 +19,5 @@ export const I18nServiceMockFactory = {
     mockI18nService.getAvailableLanguages.returns(['en', 'ja']);
 
     return mockI18nService;
-  }
+  },
 };

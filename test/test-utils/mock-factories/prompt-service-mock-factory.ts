@@ -1,6 +1,6 @@
 import * as sinon from 'sinon';
 
-import { IPromptService } from '../../interfaces/services';
+import { IPromptService } from '../../../src/interfaces/services';
 
 export interface PromptServiceMockOptions {
   confirmResponse?: boolean;

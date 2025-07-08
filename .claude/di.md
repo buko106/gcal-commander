@@ -38,7 +38,7 @@ TestContainerFactory provides Sinon-stubbed mock services:
 - `src/services/config-storage.ts`: FileSystemConfigStorage for production
 - `src/interfaces/config-storage.ts`: IConfigStorage abstraction interface
 - `src/interfaces/services.ts`: IConfigService interface + Config type
-- `src/test-utils/mock-factories/config-storage-mock-factory.ts`: Mock factory for tests
+- `test/test-utils/mock-factories/config-storage-mock-factory.ts`: Mock factory for tests
 
 ### Usage Examples
 - **DI Registration**: See `src/di/container.ts` for ConfigService and ConfigStorage setup

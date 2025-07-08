@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import { TOKENS } from '../../src/di/tokens';
 import { I18nService } from '../../src/services/i18n';
-import { TestContainerFactory } from '../../src/test-utils/mock-factories/test-container-factory';
+import { TestContainerFactory } from '../test-utils/mock-factories';
 
 describe('Language Configuration Integration', () => {
   afterEach(() => {
@@ -15,14 +15,14 @@ describe('Language Configuration Integration', () => {
     const { mocks } = TestContainerFactory.create();
     const realI18nService = new I18nService();
     TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
-    
+
     // Mock config storage to return config with Japanese language setting
     mocks.configStorage.read.resolves(JSON.stringify({ language: 'ja' }));
     mocks.configStorage.exists.resolves(true);
     mocks.calendarService.listCalendars.resolves([]);
 
     const { stderr } = await runCommand(['calendars:list']);
-    
+
     // Should display Japanese message because language is set to 'ja' in config
     expect(stderr).to.include('Google Calendar で認証中...');
     expect(stderr).to.include('カレンダーを取得中...');
@@ -33,14 +33,14 @@ describe('Language Configuration Integration', () => {
     const { mocks } = TestContainerFactory.create();
     const realI18nService = new I18nService();
     TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
-    
+
     // Mock config storage to return empty config
     mocks.configStorage.read.resolves(JSON.stringify({}));
     mocks.configStorage.exists.resolves(true);
     mocks.calendarService.listCalendars.resolves([]);
 
     const { stderr } = await runCommand(['calendars:list']);
-    
+
     // Should display English message because no language is set in config
     expect(stderr).to.include('Authenticating with Google Calendar...');
     expect(stderr).to.include('Fetching calendars...');

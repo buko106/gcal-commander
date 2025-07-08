@@ -1,6 +1,6 @@
 import * as sinon from 'sinon';
 
-import { IConfigStorage } from '../../interfaces/config-storage';
+import { IConfigStorage } from '../../../src/interfaces/config-storage';
 
 export interface ConfigStorageMockOptions {
   exists?: boolean;

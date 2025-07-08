@@ -4,7 +4,7 @@ import * as sinon from 'sinon';
 
 import { IAuthService } from '../../src/interfaces/services';
 import { CalendarService } from '../../src/services/calendar';
-import { TestContainerFactory } from '../../src/test-utils/mock-factories/test-container-factory';
+import { TestContainerFactory } from '../test-utils/mock-factories';
 
 describe('CalendarService', () => {
   let calendarService: CalendarService;

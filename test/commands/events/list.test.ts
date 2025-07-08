@@ -1,7 +1,7 @@
 import { runCommand } from '@oclif/test';
 import { expect } from 'chai';
 
-import { TestContainerFactory } from '../../../src/test-utils/mock-factories/test-container-factory';
+import { TestContainerFactory } from '../../test-utils/mock-factories';
 
 describe('events list', () => {
   beforeEach(() => {

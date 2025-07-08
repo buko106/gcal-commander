@@ -2,21 +2,21 @@ import 'reflect-metadata';
 import * as sinon from 'sinon';
 import { container, DependencyContainer } from 'tsyringe';
 
-import { setContainerProvider } from '../../di/container-provider';
-import { ProductionContainerProvider } from '../../di/production-container-provider';
-import { setTestContainer } from '../../di/test-container';
-import { TestContainerProvider } from '../../di/test-container-provider';
-import { TOKENS } from '../../di/tokens';
-import { IConfigStorage } from '../../interfaces/config-storage';
+import { setContainerProvider } from '../../../src/di/container-provider';
+import { ProductionContainerProvider } from '../../../src/di/production-container-provider';
+import { TOKENS } from '../../../src/di/tokens';
+import { IConfigStorage } from '../../../src/interfaces/config-storage';
 import {
   IAuthService,
   ICalendarService,
   IConfigService,
   II18nService,
   IPromptService,
-} from '../../interfaces/services';
-import { ConfigService } from '../../services/config';
-import { I18nService } from '../../services/i18n';
+} from '../../../src/interfaces/services';
+import { ConfigService } from '../../../src/services/config';
+import { I18nService } from '../../../src/services/i18n';
+import { setTestContainer } from '../../di/test-container';
+import { TestContainerProvider } from '../../di/test-container-provider';
 import { AuthServiceMockFactory, AuthServiceMockOptions } from './auth-service-mock-factory';
 import { CalendarServiceMockFactory, CalendarServiceMockOptions } from './calendar-service-mock-factory';
 import { ConfigStorageMockFactory, ConfigStorageMockOptions } from './config-storage-mock-factory';
