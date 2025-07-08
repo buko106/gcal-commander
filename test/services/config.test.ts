@@ -3,7 +3,7 @@ import * as sinon from 'sinon';
 
 import { IConfigStorage } from '../../src/interfaces/config-storage';
 import { IConfigService } from '../../src/interfaces/services';
-import { TestContainerFactory } from '../../src/test-utils/mock-factories/test-container-factory';
+import { TestContainerFactory } from '../test-utils/mock-factories';
 
 describe('ConfigService', () => {
   let configService: IConfigService;

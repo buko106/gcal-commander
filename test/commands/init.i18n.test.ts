@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import { TOKENS } from '../../src/di/tokens';
 import { I18nService } from '../../src/services/i18n';
-import { TestContainerFactory } from '../../src/test-utils/mock-factories/test-container-factory';
+import { TestContainerFactory } from '../test-utils/mock-factories';
 
 describe('init command i18n integration', () => {
   beforeEach(() => {
@@ -17,11 +17,11 @@ describe('init command i18n integration', () => {
   describe('Japanese translation', () => {
     beforeEach(() => {
       const { mocks } = TestContainerFactory.create();
-      
+
       // Replace mock i18n service with real one
       const realI18nService = new I18nService();
       TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
-      
+
       // Set up mocks for Japanese test
       mocks.promptService.select.resolves('ja');
       mocks.promptService.confirm.resolves(false); // Skip auth verification
@@ -43,16 +43,16 @@ describe('init command i18n integration', () => {
 
     it('should display authentication verification message in Japanese', async () => {
       const { mocks } = TestContainerFactory.create();
-      
+
       // Replace mock i18n service with real one
       const realI18nService = new I18nService();
       TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
-      
+
       // Set up mocks for Japanese test with authentication
       mocks.promptService.select.resolves('ja');
       mocks.promptService.confirm.resolves(true); // User confirms to proceed
       mocks.calendarService.listCalendars.resolves([]);
-      
+
       const { stderr } = await runCommand('init');
 
       // Should display Japanese authentication verification message
@@ -63,11 +63,11 @@ describe('init command i18n integration', () => {
   describe('English translation', () => {
     beforeEach(() => {
       const { mocks } = TestContainerFactory.create();
-      
+
       // Replace mock i18n service with real one
       const realI18nService = new I18nService();
       TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
-      
+
       // Set up mocks for English test
       mocks.promptService.select.resolves('en');
       mocks.promptService.confirm.resolves(false); // Skip auth verification
@@ -82,16 +82,16 @@ describe('init command i18n integration', () => {
 
     it('should display authentication verification message in English', async () => {
       const { mocks } = TestContainerFactory.create();
-      
+
       // Replace mock i18n service with real one
       const realI18nService = new I18nService();
       TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
-      
+
       // Set up mocks for English test with authentication
       mocks.promptService.select.resolves('en');
       mocks.promptService.confirm.resolves(true); // User confirms to proceed
       mocks.calendarService.listCalendars.resolves([]);
-      
+
       const { stderr } = await runCommand('init');
 
       // Should display English authentication verification message

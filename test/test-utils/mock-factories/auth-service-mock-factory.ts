@@ -1,6 +1,6 @@
 import * as sinon from 'sinon';
 
-import { AuthResult, IAuthService } from '../../interfaces/services';
+import { AuthResult, IAuthService } from '../../../src/interfaces/services';
 
 export interface AuthServiceMockOptions {
   authResult?: AuthResult;

@@ -1,7 +1,7 @@
 import { calendar_v3 as calendarV3 } from 'googleapis';
 import * as sinon from 'sinon';
 
-import { CreateEventParams, ICalendarService, ListEventsParams } from '../../interfaces/services';
+import { CreateEventParams, ICalendarService, ListEventsParams } from '../../../src/interfaces/services';
 
 export interface CalendarServiceMockOptions {
   calendars?: calendarV3.Schema$CalendarListEntry[];

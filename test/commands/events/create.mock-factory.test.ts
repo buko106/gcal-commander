@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import { TOKENS } from '../../../src/di/tokens';
 import { I18nService } from '../../../src/services/i18n';
-import { TestContainerFactory } from '../../../src/test-utils/mock-factories';
+import { TestContainerFactory } from '../../test-utils/mock-factories';
 
 describe('events create with Mock Factory', () => {
   afterEach(() => {

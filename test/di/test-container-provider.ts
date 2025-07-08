@@ -1,6 +1,6 @@
 import { DependencyContainer } from 'tsyringe';
 
-import { IContainerProvider } from './container-provider';
+import { IContainerProvider } from '../../src/di/container-provider';
 import { getTestContainer } from './test-container';
 
 /**

@@ -5,7 +5,7 @@ import { expect } from 'chai';
 
 import type { ICalendarService } from '../../../src/interfaces/services';
 
-import { TestContainerFactory } from '../../../src/test-utils/mock-factories/test-container-factory';
+import { TestContainerFactory } from '../../test-utils/mock-factories';
 
 describe('events show output', () => {
   let mockCalendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
