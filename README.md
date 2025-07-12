@@ -25,6 +25,11 @@ A command-line interface for Google Calendar operations. Manage your Google Cale
 
 📖 **README in other languages:**
 - [🇯🇵 日本語 (Japanese)](docs/ja/README.md)
+- [🇪🇸 Español (Spanish)](docs/es/README.md)
+- [🇩🇪 Deutsch (German)](docs/de/README.md)
+- [🇵🇹 Português (Portuguese)](docs/pt/README.md)
+- [🇫🇷 Français (French)](docs/fr/README.md)
+- [🇰🇷 한국어 (Korean)](docs/ko/README.md)
 
 ## Installation
 
