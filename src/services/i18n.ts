@@ -2,7 +2,7 @@ import i18next from 'i18next';
 import Backend from 'i18next-fs-backend';
 import path from 'node:path';
 
-import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES } from '../constants/languages';
+import { DEFAULT_LANGUAGE } from '../constants/languages';
 import { II18nService } from '../interfaces/services';
 
 export class I18nService implements II18nService {
@@ -33,7 +33,7 @@ export class I18nService implements II18nService {
     await i18next.use(Backend).init({
       lng: language || DEFAULT_LANGUAGE, // Use provided language or default to English
       fallbackLng: DEFAULT_LANGUAGE,
-      preload: [...SUPPORTED_LANGUAGES], // Preload all supported languages
+      preload: [DEFAULT_LANGUAGE], // Preload only default language for faster startup
       backend: {
         loadPath,
       },
