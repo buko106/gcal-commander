@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 
+import { SUPPORTED_LANGUAGES } from '../../src/constants/languages';
 import { IConfigStorage } from '../../src/interfaces/config-storage';
 import { IConfigService } from '../../src/interfaces/services';
 import { TestContainerFactory } from '../test-utils/mock-factories';
@@ -125,6 +126,15 @@ describe('ConfigService', () => {
       expect(result.valid).to.be.true;
       expect(result.error).to.be.undefined;
       expect(result.errorKey).to.be.undefined;
+    });
+
+    it('should return valid=true for all supported language values', () => {
+      for (const language of SUPPORTED_LANGUAGES) {
+        const result = configService.validateValue('language', language);
+        expect(result.valid).to.be.true;
+        expect(result.error).to.be.undefined;
+        expect(result.errorKey).to.be.undefined;
+      }
     });
 
     it('should return valid=false for invalid language value', () => {

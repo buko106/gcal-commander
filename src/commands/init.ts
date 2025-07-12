@@ -1,6 +1,7 @@
 import type { ICalendarService, IPromptService } from '../interfaces/services';
 
 import { BaseCommand } from '../base-command';
+import { SUPPORTED_LANGUAGES, SupportedLanguage } from '../constants/languages';
 import { TOKENS } from '../di/tokens';
 
 export default class Init extends BaseCommand {
@@ -33,10 +34,17 @@ export default class Init extends BaseCommand {
   }
 
   private async selectLanguage(): Promise<void> {
-    const selectedLanguage = await this.promptService.select('Select your preferred language:', [
+    const languageOptions = [
       { value: 'en', name: 'English' },
       { value: 'ja', name: '日本語 (Japanese)' },
-    ]);
+      { value: 'es', name: 'Español (Spanish)' },
+      { value: 'de', name: 'Deutsch (German)' },
+      { value: 'pt', name: 'Português (Portuguese)' },
+      { value: 'fr', name: 'Français (French)' },
+      { value: 'ko', name: '한국어 (Korean)' },
+    ].filter((option) => SUPPORTED_LANGUAGES.includes(option.value as SupportedLanguage));
+
+    const selectedLanguage = await this.promptService.select('Select your preferred language:', languageOptions);
 
     await this.i18nService.changeLanguage(selectedLanguage);
     await this.configService.set('language', selectedLanguage);

@@ -33,6 +33,7 @@ gcal config <subcommand> [key] [value] [options]
 | Key | Description | Default | Valid Values |
 |-----|-------------|---------|--------------|
 | `defaultCalendar` | Default calendar for events list | `primary` | Any calendar ID |
+| `language` | Interface language | `en` | `en`, `ja`, `es`, `de`, `pt`, `fr`, `ko` |
 
 ### Events Command Defaults
 
@@ -52,6 +53,9 @@ gcal config set defaultCalendar work@company.com
 
 # Get current default calendar
 gcal config get defaultCalendar
+
+# Set interface language
+gcal config set language ja
 
 # List all current settings
 gcal config list
@@ -110,6 +114,7 @@ events.days         60
 ```json
 {
   "defaultCalendar": "work@company.com",
+  "language": "ja",
   "events": {
     "maxResults": 25,
     "format": "json",
@@ -131,6 +136,7 @@ Configuration is stored in `~/.gcal-commander/config.json`:
 ```json
 {
   "defaultCalendar": "work@company.com",
+  "language": "en",
   "events": {
     "maxResults": 25,
     "format": "table",
@@ -150,6 +156,19 @@ gcal config set defaultCalendar work@company.com
 gcal config set events.maxResults 20
 gcal config set events.days 14
 gcal config set events.format table
+gcal config set language en
+```
+
+### Setting Up Multi-language Environment
+```bash
+# Configure for Japanese interface
+gcal config set language ja
+
+# Configure for Spanish interface
+gcal config set language es
+
+# View available languages: en, ja, es, de, pt, fr, ko
+gcal config get language
 ```
 
 ### Setting Up Scripting Environment
@@ -177,12 +196,15 @@ Configuration values are validated when set:
 
 - **Calendar IDs**: Not validated until first use
 - **Numeric ranges**: `maxResults` (1-100), `days` (1-365)
-- **Enums**: `format` must be "table" or "json"
+- **Enums**: `format` must be "table", "json", or "pretty-json"; `language` must be one of "en", "ja", "es", "de", "pt", "fr", "ko"
 - **Invalid values**: Command will show error and current valid options
 
 ## Impact on Commands
 
 Configuration affects default behavior of commands:
+
+### Global Settings
+- `language` - Sets interface language for all command output and messages
 
 ### [`gcal events list`](events-list.md)
 - Uses `defaultCalendar` when no calendar specified
@@ -192,6 +214,9 @@ Configuration affects default behavior of commands:
 
 ### [`gcal events show`](events-show.md)
 - Uses `defaultCalendar` for `--calendar` default when not specified
+
+### [`gcal init`](init.md)
+- Uses `language` setting to determine default language selection
 
 Command-line flags always override configuration defaults.
 

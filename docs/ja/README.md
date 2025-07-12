@@ -9,8 +9,18 @@ Google Calendarの操作を行うコマンドラインインターフェース�
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/gcal-commander.svg)](https://npmjs.org/package/gcal-commander)
 [![Downloads/week](https://img.shields.io/npm/dw/gcal-commander.svg)](https://npmjs.org/package/gcal-commander)
-[![Coverage Status](https://coveralls.io/repos/github/buko106/gcal-commander/badge.svg)](https://coveralls.io/github/buko106/gcal-commander)
+[![codecov](https://codecov.io/github/buko106/gcal-commander/graph/badge.svg?token=DQUL68E057)](https://codecov.io/github/buko106/gcal-commander)
 
+
+## 言語
+
+📖 **README in other languages:**
+- [🇺🇸 English](../../README.md)
+- [🇪🇸 Español (Spanish)](../../docs/es/README.md)
+- [🇩🇪 Deutsch (German)](../../docs/de/README.md)
+- [🇵🇹 Português (Portuguese)](../../docs/pt/README.md)
+- [🇫🇷 Français (French)](../../docs/fr/README.md)
+- [🇰🇷 한국어 (Korean)](../../docs/ko/README.md)
 
 ## 機能
 
@@ -103,10 +113,17 @@ gcal events create "チームミーティング" --start "2024-01-15T14:00:00" -
 # 終日イベントを作成
 gcal events create "カンファレンス" --start "2024-01-15" --all-day
 
+# 参加者と説明付きでイベントを作成
+gcal events create "プロジェクトレビュー" --start "2024-01-15T10:00:00" --duration 90 \
+  --attendees "team@company.com,manager@company.com" \
+  --description "四半期プロジェクトレビュー会議" \
+  --location "会議室A" \
+  --send-updates all
+
 # イベント数と時間範囲を制限
 gcal events list --max-results 5 --days 7
 
-# スクリプト用の静寂モード（ステータスメッセージを非表示）
+# スクリプト用の静寂モード（ステータスメッセージを非表示、データ出力は維持）
 gcal events list --quiet --format json | jq '.[] | .summary'
 
 # 設定例
@@ -131,6 +148,9 @@ gcal config set events.format json
 # デフォルト時間範囲（日数）を設定
 gcal config set events.days 60
 
+# インターフェース言語を設定（サポート：en, ja, es, de, pt, fr, ko）
+gcal config set language ja
+
 # すべての現在の設定を表示
 gcal config list
 
@@ -150,7 +170,7 @@ gcal config reset --confirm
 - `events.maxResults` - デフォルトの最大イベント数（1-100、デフォルト：10）
 - `events.format` - デフォルト出力形式："table"、"json"、または"pretty-json"（デフォルト："table"）
 - `events.days` - デフォルトの先読み日数（1-365、デフォルト：30）
-- `language` - インターフェース言語："en"または"ja"（デフォルト："en"）
+- `language` - インターフェース言語："en"、"ja"、"es"、"de"、"pt"、"fr"、または"ko"（デフォルト："en"）
 
 設定は`~/.gcal-commander/config.json`に保存され、手動で編集することも可能です。
 
@@ -162,15 +182,15 @@ gcal-commanderはGoogle Calendarとやり取りするためのいくつかのコ
 - **[`gcal calendars list`](calendars-list.md)** - 利用可能なすべてのカレンダーを一覧表示
 
 ### イベント管理  
-- **[`gcal events list`](events-list.md)** - 今後のカレンダーイベントを一覧表示
+- **[`gcal events list`](events-list.md)** - 設定デフォルト対応で今後のカレンダーイベントを一覧表示
 - **[`gcal events show`](events-show.md)** - イベントの詳細情報を表示
-- **[`gcal events create`](events-create.md)** - 柔軟なスケジューリングオプションで新しいカレンダーイベントを作成
+- **[`gcal events create`](events-create.md)** - 参加者、説明、通知オプション付きで新しいカレンダーイベントを作成
 
 ### 設定
 - **[`gcal config`](config.md)** - グローバル設定の管理
 
 ### セットアップ・認証
-- **[`gcal init`](init.md)** - Google Calendar認証設定の確認
+- **[`gcal init`](init.md)** - 言語選択と認証確認を含むインタラクティブセットアップ
 
 ### ヘルプ
 - **`gcal help`** - 任意のコマンドのヘルプを表示
@@ -206,13 +226,37 @@ gcal-commanderへの貢献を歓迎します！このプロジェクトはAI支�
 
 ## 言語サポート
 
-gcal-commanderは国際化（i18n）をサポートしており、現在英語と日本語で利用可能です：
+gcal-commanderは国際化（i18n）をサポートしており、複数の言語で利用可能です：
+
+**サポート言語：**
+- **English** (`en`) - デフォルト
+- **Japanese** (`ja`) - 日本語  
+- **Spanish** (`es`) - Español
+- **German** (`de`) - Deutsch
+- **Portuguese** (`pt`) - Português
+- **French** (`fr`) - Français
+- **Korean** (`ko`) - 한국어
 
 ```bash
 # 日本語に切り替え
 gcal config set language ja
 
-# 英語に切り替え
+# スペイン語に切り替え
+gcal config set language es
+
+# ドイツ語に切り替え
+gcal config set language de
+
+# ポルトガル語に切り替え
+gcal config set language pt
+
+# フランス語に切り替え
+gcal config set language fr
+
+# 韓国語に切り替え
+gcal config set language ko
+
+# 英語に戻す  
 gcal config set language en
 
 # 現在の言語設定を確認

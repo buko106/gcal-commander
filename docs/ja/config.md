@@ -197,7 +197,7 @@ gcal events list personal@gmail.com
 - **カレンダーID**: 初回使用まで検証されません
 - **数値範囲**: `maxResults`（1-100）、`days`（1-365）
 - **列挙型**: `format`は"table"、"json"、"pretty-json"である必要があります
-- **言語**: `language`は"en"または"ja"である必要があります
+- **言語**: `language`は"en", "ja", "es", "de", "pt", "fr", "ko"のいずれかである必要があります
 - **無効な値**: コマンドがエラーと現在の有効オプションを表示
 
 ## コマンドへの影響
@@ -214,7 +214,7 @@ gcal events list personal@gmail.com
 - 指定されていない場合、`--calendar`のデフォルトに`defaultCalendar`を使用
 
 ### すべてのコマンド
-- `language`設定に基づいてメッセージを表示
+- `language`設定に基づいてインターフェース言語でメッセージを表示
 
 コマンドラインフラグは常に設定のデフォルトをオーバーライドします。
 
