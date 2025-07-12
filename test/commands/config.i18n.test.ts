@@ -167,4 +167,38 @@ describe('config i18n integration', () => {
       expect(result.error?.message).to.include('使用方法: gcal config get <key>');
     });
   });
+
+  describe('language setting behavior', () => {
+    beforeEach(() => {
+      const { mocks } = TestContainerFactory.create();
+      const realI18nService = new I18nService();
+      TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
+
+      // Mock config storage methods
+      mocks.configStorage.read.resolves('{}');
+      mocks.configStorage.exists.resolves(false);
+    });
+
+    afterEach(() => {
+      TestContainerFactory.cleanup();
+    });
+
+    it('should switch language immediately when setting language to Japanese', async () => {
+      const { stdout } = await runCommand(['config', 'set', 'language', 'ja']);
+
+      expect(stdout).to.include('language = "ja" に設定しました');
+    });
+
+    it('should switch language immediately when setting language to English', async () => {
+      const { stdout } = await runCommand(['config', 'set', 'language', 'en']);
+
+      expect(stdout).to.include('Set language = "en"');
+    });
+
+    it('should switch language immediately when setting language to Korean', async () => {
+      const { stdout } = await runCommand(['config', 'set', 'language', 'ko']);
+
+      expect(stdout).to.include('language = "ko" 설정');
+    });
+  });
 });
