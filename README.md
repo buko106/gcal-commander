@@ -154,7 +154,7 @@ gcal config reset --confirm
 - `events.maxResults` - Default maximum number of events (1-100, defaults to 10)
 - `events.format` - Default output format: "table", "json", or "pretty-json" (defaults to "table")
 - `events.days` - Default number of days to look ahead (1-365, defaults to 30)
-- `language` - Interface language: "en" or "ja" (defaults to "en")
+- `language` - Interface language: "en", "ja", "es", "de", "pt", "fr", or "ko" (defaults to "en")
 
 Configuration is stored in `~/.gcal-commander/config.json` and can be edited manually.
 
@@ -210,13 +210,37 @@ The project uses Husky + lint-staged for automatic code quality checks before co
 
 ## Language Support
 
-gcal-commander supports internationalization (i18n) and is available in English and Japanese:
+gcal-commander supports internationalization (i18n) and is available in multiple languages:
+
+**Supported Languages:**
+- **English** (`en`) - Default
+- **Japanese** (`ja`) - 日本語  
+- **Spanish** (`es`) - Español
+- **German** (`de`) - Deutsch
+- **Portuguese** (`pt`) - Português
+- **French** (`fr`) - Français
+- **Korean** (`ko`) - 한국어
 
 ```bash
 # Switch to Japanese
 gcal config set language ja
 
-# Switch to English  
+# Switch to Spanish
+gcal config set language es
+
+# Switch to German
+gcal config set language de
+
+# Switch to Portuguese
+gcal config set language pt
+
+# Switch to French
+gcal config set language fr
+
+# Switch to Korean
+gcal config set language ko
+
+# Switch back to English  
 gcal config set language en
 
 # View current language setting

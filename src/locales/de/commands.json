@@ -1,0 +1,123 @@
+{
+  "init": {
+    "description": "Google Calendar-Authentifizierungseinrichtung überprüfen",
+    "examples": {
+      "basic": "gcal init"
+    },
+    "messages": {
+      "status": "Dies wird Ihre Google Calendar-Authentifizierung überprüfen.",
+      "confirm": "Möchten Sie die Authentifizierung überprüfen?",
+      "success": "Authentifizierung erfolgreich!",
+      "cancelled": "Vorgang abgebrochen.",
+      "verifying": "Google Calendar-Authentifizierung wird überprüft...",
+      "authenticationFailed": "Authentifizierung fehlgeschlagen: {{error}}\nVersuchen Sie, den Befehl erneut auszuführen oder überprüfen Sie Ihre Google Calendar API-Anmeldedaten."
+    }
+  },
+  "events": {
+    "list": {
+      "description": "Kommende Kalenderereignisse auflisten",
+      "authenticating": "Authentifizierung mit Google Calendar...",
+      "fetching": "Ereignisse von {{calendarId}} abrufen...",
+      "noEventsFound": "Keine kommenden Ereignisse gefunden.",
+      "tableHeader": "\nKommende Ereignisse ({{count}} gefunden):\n",
+      "noTitle": "(Kein Titel)",
+      "error": "Fehler beim Auflisten der Ereignisse: {{error}}"
+    },
+    "show": {
+      "description": "Detaillierte Informationen zu einem bestimmten Ereignis anzeigen",
+      "authenticating": "Authentifizierung mit Google Calendar...",
+      "fetching": "Ereignisdetails abrufen...",
+      "error": "Fehler beim Anzeigen des Ereignisses: {{error}}",
+      "eventDetails": "Ereignisdetails",
+      "labels": {
+        "title": "Titel",
+        "id": "ID",
+        "description": "Beschreibung",
+        "location": "Ort",
+        "status": "Status",
+        "creator": "Ersteller",
+        "organizer": "Organisator",
+        "attendees": "Teilnehmer",
+        "recurrence": "Wiederholung",
+        "googleCalendarLink": "Google Calendar-Link",
+        "created": "Erstellt",
+        "lastUpdated": "Zuletzt aktualisiert"
+      },
+      "noTitle": "(Kein Titel)"
+    },
+    "create": {
+      "description": "Ein neues Kalenderereignis erstellen",
+      "authenticating": "Authentifizierung mit Google Calendar...",
+      "creating": "Ereignis wird erstellt...",
+      "success": "Ereignis erfolgreich erstellt!",
+      "labels": {
+        "title": "Titel",
+        "id": "ID",
+        "date": "Datum",
+        "start": "Beginn",
+        "end": "Ende",
+        "location": "Ort",
+        "googleCalendarLink": "Google Calendar-Link"
+      },
+      "noTitle": "(Kein Titel)",
+      "errors": {
+        "conflictingFlags": "Kann nicht sowohl --end als auch --duration Flags angeben",
+        "failed": "Fehler beim Erstellen des Ereignisses: {{error}}",
+        "invalidStartTime": "Ungültiges Startzeitformat",
+        "allDayDateFormat": "Ganztägige Ereignisse erfordern Datumsformat YYYY-MM-DD",
+        "invalidDateFormat": "Ungültiges Datumsformat",
+        "invalidDateTimeFormat": "Ungültiges Datum/Uhrzeit-Format. Erwartet ISO-Format (z.B. 2024-01-15T14:00:00)"
+      }
+    }
+  },
+  "calendars": {
+    "list": {
+      "description": "Alle verfügbaren Kalender auflisten",
+      "authenticating": "Authentifizierung mit Google Calendar...",
+      "fetching": "Kalender abrufen...",
+      "noCalendarsFound": "Keine Kalender gefunden.",
+      "tableHeader": "\nVerfügbare Kalender ({{count}} gefunden):\n",
+      "noName": "(Kein Name)",
+      "error": "Fehler beim Auflisten der Kalender: {{error}}",
+      "labels": {
+        "primary": "(Primär)",
+        "id": "ID:",
+        "access": "Zugriff:",
+        "description": "Beschreibung:",
+        "color": "Farbe:"
+      }
+    }
+  },
+  "config": {
+    "description": "Globale Konfigurationseinstellungen verwalten",
+    "get": {
+      "keyNotSet": "Konfigurationsschlüssel '{{key}}' ist nicht gesetzt"
+    },
+    "list": {
+      "currentConfiguration": "Aktuelle Konfiguration:",
+      "configFile": "Konfigurationsdatei: {{path}}",
+      "noConfiguration": "Keine Konfiguration gesetzt"
+    },
+    "set": {
+      "success": "{{key}} = {{value}} gesetzt",
+      "keyAndValueRequired": "Schlüssel und Wert sind für den set-Befehl erforderlich\nVerwendung: gcal config set <schlüssel> <wert>",
+      "invalidNumberValue": "Ungültiger Zahlenwert für {{key}}: {{value}}"
+    },
+    "unset": {
+      "keyNotSet": "Konfigurationsschlüssel '{{key}}' ist nicht gesetzt",
+      "success": "{{key}} entfernt"
+    },
+    "reset": {
+      "confirmationMessage": "Dies wird alle Konfigurationseinstellungen zurücksetzen.",
+      "useConfirmFlag": "Verwenden Sie die --confirm Flag um fortzufahren: gcal config reset --confirm",
+      "success": "Alle Konfigurationseinstellungen wurden zurückgesetzt"
+    },
+    "validation": {
+      "invalidKey": "Ungültiger Konfigurationsschlüssel: {{key}}\nGültige Schlüssel: {{validKeys}}",
+      "keyRequired": "Schlüssel ist für den {{command}}-Befehl erforderlich\nVerwendung: gcal config {{command}} <schlüssel>",
+      "unknownKey": "Unbekannter Konfigurationsschlüssel: {{key}}",
+      "invalidValue": "Ungültiger Wert für {{key}}",
+      "zodError": "{{key}}: {{message}}"
+    }
+  }
+}
