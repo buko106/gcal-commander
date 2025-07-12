@@ -1,6 +1,6 @@
 # gcal init
 
-Vérifie la configuration d'authentification Google Calendar et teste la connectivité à l'API Google Calendar.
+Configuration interactive avec sélection de langue et vérification d'authentification Google Calendar.
 
 ## Utilisation
 
@@ -17,8 +17,13 @@ gcal init [options]
 
 ## Description
 
-La commande `init` vérifie que l'authentification Google Calendar fonctionne correctement. Elle effectue une connexion de test à l'API Google Calendar pour vérifier :
+La commande `init` fournit une expérience de configuration interactive qui vous aide à :
 
+1. **Sélectionner votre langue préférée** parmi les options supportées (Anglais, Japonais, Espagnol, Allemand, Portugais, Français, Coréen)
+2. **Vérifier l'authentification Google Calendar** en testant votre connexion à l'API Google Calendar
+
+Elle garantit que :
+- Votre langue d'interface est configurée selon vos préférences
 - Les fichiers d'identification sont correctement configurés
 - Les jetons d'authentification sont valides
 - Vous avez accès à Google Calendar

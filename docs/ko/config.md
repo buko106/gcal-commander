@@ -33,7 +33,7 @@ gcal config <하위명령> [키] [값] [옵션]
 | 키 | 설명 | 기본값 | 유효한 값 |
 |----|------|--------|----------|
 | `defaultCalendar` | 이벤트 나열을 위한 기본 캘린더 | `primary` | 모든 캘린더 ID |
-| `language` | 표시 언어 | `en` | `en`, `ja` |
+| `language` | 인터페이스 언어 | `en` | `en`, `ja`, `es`, `de`, `pt`, `fr`, `ko` |
 
 ### 이벤트 명령 기본값
 
@@ -197,7 +197,7 @@ gcal events list personal@gmail.com
 - **캘린더 ID**: 첫 사용까지 유효성 검사 안됨
 - **숫자 범위**: `maxResults` (1-100), `days` (1-365)
 - **열거형**: `format`은 "table", "json", "pretty-json"이어야 함
-- **언어**: `language`는 "en" 또는 "ja"이어야 함
+- **언어**: `language`는 "en", "ja", "es", "de", "pt", "fr", "ko" 중 하나여야 함
 - **잘못된 값**: 명령이 오류와 현재 유효한 옵션을 표시
 
 ## 명령에 미치는 영향

@@ -111,10 +111,17 @@ gcal events create "Réunion d'Équipe" --start "2024-01-15T14:00:00" --duration
 # Créer un événement de toute la journée
 gcal events create "Conférence" --start "2024-01-15" --all-day
 
+# Créer un événement avec des participants et une description
+gcal events create "Révision de Projet" --start "2024-01-15T10:00:00" --duration 90 \
+  --attendees "team@company.com,manager@company.com" \
+  --description "Réunion de révision trimestrielle du projet" \
+  --location "Salle de conférence A" \
+  --send-updates all
+
 # Limiter le nombre d'événements et la plage de temps
 gcal events list --max-results 5 --days 7
 
-# Utiliser le mode silencieux pour les scripts (supprime les messages de statut)
+# Utiliser le mode silencieux pour les scripts (supprime les messages de statut, conserve la sortie de données)
 gcal events list --quiet --format json | jq '.[] | .summary'
 
 # Exemples de configuration
@@ -178,7 +185,7 @@ gcal-commander fournit plusieurs commandes pour interagir avec Google Calendar :
 - **[`gcal config`](config.md)** - Gérer les paramètres de configuration globaux
 
 ### Configuration et Authentification
-- **[`gcal init`](init.md)** - Vérifier la configuration d'authentification Google Calendar
+- **[`gcal init`](init.md)** - Configuration interactive avec sélection de langue et vérification d'authentification
 
 ### Aide
 - **`gcal help`** - Afficher l'aide pour n'importe quelle commande

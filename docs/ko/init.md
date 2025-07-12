@@ -1,6 +1,6 @@
 # gcal init
 
-Google Calendar 인증 설정을 확인하고 Google Calendar API와의 연결을 테스트합니다.
+언어 선택과 Google Calendar 인증 확인을 포함한 대화형 설정.
 
 ## 사용법
 
@@ -17,8 +17,13 @@ gcal init [옵션]
 
 ## 설명
 
-`init` 명령은 Google Calendar 인증이 제대로 작동하는지 확인합니다. Google Calendar API에 테스트 연결을 수행하여 다음을 확인합니다:
+`init` 명령은 다음을 도와주는 대화형 설정 경험을 제공합니다:
 
+1. **선호하는 언어 선택** - 지원되는 옵션 중에서 (영어, 일본어, 스페인어, 독일어, 포르투갈어, 프랑스어, 한국어)
+2. **Google Calendar 인증 확인** - Google Calendar API에 대한 연결을 테스트하여 인증 확인
+
+다음을 보장합니다:
+- 인터페이스 언어가 기본 설정에 따라 구성됨
 - 자격 증명 파일이 올바르게 설정되어 있음
 - 인증 토큰이 유효함
 - Google Calendar에 대한 액세스 권한이 있음

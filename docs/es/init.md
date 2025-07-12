@@ -1,6 +1,6 @@
 # gcal init
 
-Verifica la configuración de autenticación de Google Calendar y prueba la conectividad con la API de Google Calendar.
+Configuración interactiva con selección de idioma y verificación de autenticación de Google Calendar.
 
 ## Uso
 
@@ -17,14 +17,20 @@ gcal init [opciones]
 
 ## Descripción
 
-El comando `init` verifica que la autenticación de Google Calendar esté funcionando correctamente. Realiza una conexión de prueba a la API de Google Calendar para verificar:
+El comando `init` proporciona una experiencia de configuración interactiva que te ayuda a:
 
-- Los archivos de credenciales están configurados correctamente
-- Los tokens de autenticación son válidos
-- Tienes acceso a Google Calendar
+1. **Seleccionar tu idioma preferido** de las opciones soportadas (Inglés, Japonés, Español, Alemán, Portugués, Francés, Coreano)
+2. **Verificar la autenticación de Google Calendar** probando tu conexión a la API de Google Calendar
+
+Asegura que:
+- Tu idioma de interfaz esté configurado según tu preferencia
+- Los archivos de credenciales estén configurados correctamente
+- Los tokens de autenticación sean válidos
+- Tengas acceso a Google Calendar
 
 Este comando es especialmente útil para:
 - Configuración inicial de gcal-commander
+- Cambiar tu preferencia de idioma de interfaz
 - Solución de problemas de autenticación
 - Verificación de configuración después de hacer cambios a las credenciales
 
@@ -33,21 +39,48 @@ Este comando es especialmente útil para:
 ### Uso básico
 
 ```bash
-# Verificar autenticación con prompt de confirmación
+# Configuración interactiva con selección de idioma y verificación de autenticación
 gcal init
 
-# Verificar autenticación silenciosamente (para scripts)
+# Ejecutar configuración silenciosamente (útil para scripts)
 gcal init --quiet
 ```
 
 ## Flujo interactivo
 
-Al ejecutar `gcal init`, verás un prompt de confirmación para la verificación de autenticación:
+Cuando ejecutas `gcal init`, pasas por un proceso interactivo de dos pasos:
+
+### Paso 1: Selección de idioma
+
+Primero, se te solicitará seleccionar tu idioma de interfaz preferido:
 
 ```
-Esto verificará la autenticación de Google Calendar.
-? ¿Verificar autenticación? (Y/n) 
+? Selecciona tu idioma preferido (Usa las teclas de flecha)
+❯ English (en)
+  日本語 (ja)
+  Español (es)
+  Deutsch (de)
+  Português (pt)
+  Français (fr)
+  한국어 (ko)
 ```
+
+- Usa las teclas de flecha para navegar
+- Presiona Enter para seleccionar tu idioma preferido
+- Tu elección se guardará en tu configuración
+
+### Paso 2: Verificación de autenticación
+
+Después de la selección de idioma, se te solicitará verificar tu autenticación de Google Calendar:
+
+```
+? ¿Quieres verificar la autenticación? (Y/n) 
+```
+
+- Presiona Enter o escribe `y` para proceder con la verificación
+- Escribe `n` para omitir la verificación de autenticación
+
+**Nota**: La bandera `--quiet` suprime los prompts interactivos y usa valores predeterminados cuando es posible.
 
 - Presiona Enter o escribe `y` para continuar con la verificación
 - Escribe `n` para cancelar la operación
@@ -115,6 +148,8 @@ chmod 600 ~/.gcal-commander/token.json
 
 ## Casos de uso
 
+- **Configuración por primera vez** - Configurar preferencia de idioma y verificar autenticación
+- **Cambio de idioma** - Cambiar tu idioma de interfaz a una de las 7 opciones soportadas
 - **Verificación de configuración inicial** - Confirmar que la autenticación funciona después de la configuración
 - **Solución de problemas** - Diagnosticar problemas de autenticación
 - **Integración CI/CD** - Verificar autenticación en entornos automatizados

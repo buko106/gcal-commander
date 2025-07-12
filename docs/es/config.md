@@ -33,7 +33,7 @@ gcal config <subcomando> [clave] [valor] [opciones]
 | Clave | Descripción | Por defecto | Valores válidos |
 |-------|-------------|-------------|-----------------|
 | `defaultCalendar` | Calendario por defecto para listar eventos | `primary` | Cualquier ID de calendario |
-| `language` | Idioma de visualización | `en` | `en`, `ja` |
+| `language` | Idioma de la interfaz | `en` | `en`, `ja`, `es`, `de`, `pt`, `fr`, `ko` |
 
 ### Valores por defecto para comandos de eventos
 
@@ -69,6 +69,21 @@ gcal config set language es
 
 # Cambiar a inglés
 gcal config set language en
+
+# Cambiar a japonés
+gcal config set language ja
+
+# Cambiar a alemán
+gcal config set language de
+
+# Cambiar a portugués
+gcal config set language pt
+
+# Cambiar a francés
+gcal config set language fr
+
+# Cambiar a coreano
+gcal config set language ko
 
 # Verificar configuración de idioma actual
 gcal config get language
@@ -197,7 +212,7 @@ Los valores de configuración se validan al establecerlos:
 - **IDs de calendario**: No se validan hasta el primer uso
 - **Rangos numéricos**: `maxResults` (1-100), `days` (1-365)
 - **Enumeraciones**: `format` debe ser "table", "json", o "pretty-json"
-- **Idioma**: `language` debe ser "en" o "ja"
+- **Idioma**: `language` debe ser uno de "en", "ja", "es", "de", "pt", "fr", "ko"
 - **Valores inválidos**: El comando mostrará un error y las opciones válidas actuales
 
 ## Impacto en comandos

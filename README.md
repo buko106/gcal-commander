@@ -112,10 +112,17 @@ gcal events create "Team Meeting" --start "2024-01-15T14:00:00" --duration 60
 # Create an all-day event
 gcal events create "Conference" --start "2024-01-15" --all-day
 
+# Create an event with attendees and description
+gcal events create "Project Review" --start "2024-01-15T10:00:00" --duration 90 \
+  --attendees "team@company.com,manager@company.com" \
+  --description "Quarterly project review meeting" \
+  --location "Conference Room A" \
+  --send-updates all
+
 # Limit number of events and time range
 gcal events list --max-results 5 --days 7
 
-# Use quiet mode for scripting (suppresses status messages)
+# Use quiet mode for scripting (suppresses status messages, keeps data output)
 gcal events list --quiet --format json | jq '.[] | .summary'
 
 # Configuration examples
@@ -139,6 +146,9 @@ gcal config set events.format json
 
 # Set default time range (days)
 gcal config set events.days 60
+
+# Set interface language (supports: en, ja, es, de, pt, fr, ko)
+gcal config set language ja
 
 # View all current configuration
 gcal config list
@@ -171,15 +181,15 @@ gcal-commander provides several commands to interact with Google Calendar:
 - **[`gcal calendars list`](docs/calendars-list.md)** - List all available calendars
 
 ### Event Management  
-- **[`gcal events list`](docs/events-list.md)** - List upcoming calendar events
+- **[`gcal events list`](docs/events-list.md)** - List upcoming calendar events with configuration defaults support
 - **[`gcal events show`](docs/events-show.md)** - Show detailed event information
-- **[`gcal events create`](docs/events-create.md)** - Create new calendar events with flexible scheduling options
+- **[`gcal events create`](docs/events-create.md)** - Create new calendar events with attendees, descriptions, and notification options
 
 ### Configuration
 - **[`gcal config`](docs/config.md)** - Manage global configuration settings
 
 ### Setup & Authentication
-- **[`gcal init`](docs/init.md)** - Verify Google Calendar authentication setup
+- **[`gcal init`](docs/init.md)** - Interactive setup with language selection and authentication verification
 
 ### Help
 - **`gcal help`** - Display help for any command

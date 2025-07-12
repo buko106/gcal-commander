@@ -33,7 +33,7 @@ gcal config <unterbefehl> [schlüssel] [wert] [optionen]
 | Schlüssel | Beschreibung | Standard | Gültige Werte |
 |-----------|--------------|----------|---------------|
 | `defaultCalendar` | Standard-Kalender für das Auflisten von Ereignissen | `primary` | Jede Kalender-ID |
-| `language` | Anzeigesprache | `en` | `en`, `ja` |
+| `language` | Benutzeroberflächensprache | `en` | `en`, `ja`, `es`, `de`, `pt`, `fr`, `ko` |
 
 ### Standardwerte für Ereignisbefehle
 
@@ -197,7 +197,7 @@ Konfigurationswerte werden beim Setzen validiert:
 - **Kalender-IDs**: Nicht validiert bis zur ersten Verwendung
 - **Zahlenbereiche**: `maxResults` (1-100), `days` (1-365)
 - **Aufzählungen**: `format` muss "table", "json" oder "pretty-json" sein
-- **Sprache**: `language` muss "en" oder "ja" sein
+- **Sprache**: `language` muss eines von "en", "ja", "es", "de", "pt", "fr", "ko" sein
 - **Ungültige Werte**: Befehl zeigt Fehler und aktuelle gültige Optionen an
 
 ## Auswirkungen auf Befehle

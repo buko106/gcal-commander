@@ -26,6 +26,10 @@ Una interfaz de línea de comandos para operaciones de Google Calendar. Gestiona
 📖 **README en otros idiomas:**
 - [🇺🇸 English](../../README.md)
 - [🇯🇵 日本語 (Japanese)](../ja/README.md)
+- [🇩🇪 Deutsch (German)](../de/README.md)
+- [🇵🇹 Português (Portuguese)](../pt/README.md)
+- [🇫🇷 Français (French)](../fr/README.md)
+- [🇰🇷 한국어 (Korean)](../ko/README.md)
 
 ## Instalación
 
@@ -108,10 +112,17 @@ gcal events create "Reunión de Equipo" --start "2024-01-15T14:00:00" --duration
 # Crear un evento de todo el día
 gcal events create "Conferencia" --start "2024-01-15" --all-day
 
+# Crear un evento con asistentes y descripción
+gcal events create "Revisión de Proyecto" --start "2024-01-15T10:00:00" --duration 90 \
+  --attendees "team@company.com,manager@company.com" \
+  --description "Reunión de revisión trimestral del proyecto" \
+  --location "Sala de Conferencias A" \
+  --send-updates all
+
 # Limitar número de eventos y rango de tiempo
 gcal events list --max-results 5 --days 7
 
-# Usar modo silencioso para scripting (suprime mensajes de estado)
+# Usar modo silencioso para scripting (suprime mensajes de estado, mantiene salida de datos)
 gcal events list --quiet --format json | jq '.[] | .summary'
 
 # Ejemplos de configuración
@@ -135,6 +146,9 @@ gcal config set events.format json
 
 # Establecer rango de tiempo predeterminado (días)
 gcal config set events.days 60
+
+# Establecer idioma de la interfaz (soporta: en, ja, es, de, pt, fr, ko)
+gcal config set language es
 
 # Ver toda la configuración actual
 gcal config list
@@ -167,15 +181,15 @@ gcal-commander proporciona varios comandos para interactuar con Google Calendar:
 - **[`gcal calendars list`](calendars-list.md)** - Listar todos los calendarios disponibles
 
 ### Gestión de Eventos  
-- **[`gcal events list`](events-list.md)** - Listar próximos eventos del calendario
+- **[`gcal events list`](events-list.md)** - Listar próximos eventos del calendario con soporte para configuración por defecto
 - **[`gcal events show`](events-show.md)** - Mostrar información detallada del evento
-- **[`gcal events create`](events-create.md)** - Crear nuevos eventos de calendario con opciones flexibles de programación
+- **[`gcal events create`](events-create.md)** - Crear nuevos eventos de calendario con asistentes, descripciones y opciones de notificación
 
 ### Configuración
 - **[`gcal config`](config.md)** - Gestionar configuraciones globales
 
 ### Configuración y Autenticación
-- **[`gcal init`](init.md)** - Verificar la configuración de autenticación de Google Calendar
+- **[`gcal init`](init.md)** - Configuración interactiva con selección de idioma y verificación de autenticación
 
 ### Ayuda
 - **`gcal help`** - Mostrar ayuda para cualquier comando

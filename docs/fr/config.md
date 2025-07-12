@@ -33,7 +33,7 @@ gcal config <sous-commande> [clé] [valeur] [options]
 | Clé | Description | Par défaut | Valeurs valides |
 |-----|-------------|------------|-----------------|
 | `defaultCalendar` | Calendrier par défaut pour lister les événements | `primary` | N'importe quel ID de calendrier |
-| `language` | Langue d'affichage | `en` | `en`, `ja` |
+| `language` | Langue de l'interface | `en` | `en`, `ja`, `es`, `de`, `pt`, `fr`, `ko` |
 
 ### Valeurs par défaut pour les commandes d'événements
 
@@ -197,7 +197,7 @@ Les valeurs de configuration sont validées lors de leur définition :
 - **IDs de calendrier** : Non validés jusqu'à la première utilisation
 - **Plages numériques** : `maxResults` (1-100), `days` (1-365)
 - **Énumérations** : `format` doit être "table", "json" ou "pretty-json"
-- **Langue** : `language` doit être "en" ou "ja"
+- **Langue** : `language` doit être l'un de "en", "ja", "es", "de", "pt", "fr", "ko"
 - **Valeurs invalides** : La commande affichera une erreur et les options valides actuelles
 
 ## Impact sur les commandes

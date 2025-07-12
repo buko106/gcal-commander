@@ -176,7 +176,7 @@ gcal-commander bietet mehrere Befehle zur Interaktion mit Google Calendar:
 - **[`gcal config`](config.md)** - Globale Konfigurationseinstellungen verwalten
 
 ### Einrichtung & Authentifizierung
-- **[`gcal init`](init.md)** - Google Calendar-Authentifizierungseinrichtung überprüfen
+- **[`gcal init`](init.md)** - Interaktive Einrichtung mit Sprachauswahl und Authentifizierungsüberprüfung
 
 ### Hilfe
 - **`gcal help`** - Hilfe für jeden Befehl anzeigen
