@@ -136,6 +136,12 @@ export default class Config extends BaseCommand {
     }
 
     await this.configService.set(key, parsedValue);
+
+    // Update i18n service language if language key was changed
+    if (key === 'language') {
+      await this.i18nService.changeLanguage(parsedValue as string);
+    }
+
     this.logResult(this.t('config.set.success', { key, value: JSON.stringify(parsedValue) }));
   }
 
