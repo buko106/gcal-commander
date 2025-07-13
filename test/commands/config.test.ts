@@ -1,6 +1,8 @@
 import { runCommand } from '@oclif/test';
 import { expect } from 'chai';
 
+import { TOKENS } from '../../src/di/tokens';
+import { I18nService } from '../../src/services/i18n';
 import { TestContainerFactory } from '../test-utils/mock-factories';
 
 describe('config', () => {
@@ -112,6 +114,16 @@ describe('config', () => {
     it('sets nested configuration values', async () => {
       const { stdout } = await runCommand('config set events.maxResults 25');
       expect(stdout).to.contain('Set events.maxResults = 25');
+    });
+
+    it('calls i18nService.changeLanguage when setting language', async () => {
+      // Use real I18nService for this test to ensure code coverage
+      const realI18nService = new I18nService();
+      TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
+
+      const { stdout } = await runCommand('config set language ja');
+      // When setting language to 'ja', the success message is immediately displayed in Japanese
+      expect(stdout).to.contain('language = "ja" に設定しました');
     });
 
     // Note: Error validation tests are removed due to @oclif/test complexity
