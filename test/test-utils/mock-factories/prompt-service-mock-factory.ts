@@ -1,4 +1,6 @@
-import * as sinon from 'sinon';
+import type { MockedObject } from 'vitest';
+
+import { vi } from 'vitest';
 
 import { IPromptService } from '../../../src/interfaces/services';
 
@@ -19,24 +21,24 @@ export class PromptServiceMockFactory {
   /**
    * Create a PromptService mock with specified options
    */
-  static create(options: PromptServiceMockOptions = {}): IPromptService & sinon.SinonStubbedInstance<IPromptService> {
+  static create(options: PromptServiceMockOptions = {}): MockedObject<IPromptService> {
     const mock = {
-      confirm: sinon.stub(),
-      select: sinon.stub(),
-    } as IPromptService & sinon.SinonStubbedInstance<IPromptService>;
+      confirm: vi.fn(),
+      select: vi.fn(),
+    } as MockedObject<IPromptService>;
 
     // Configure confirm behavior
     if (options.errors?.confirm) {
-      mock.confirm.rejects(options.errors.confirm);
+      mock.confirm.mockRejectedValue(options.errors.confirm);
     } else {
-      mock.confirm.resolves(options.confirmResponse ?? true);
+      mock.confirm.mockResolvedValue(options.confirmResponse ?? true);
     }
 
     // Configure select behavior
     if (options.errors?.select) {
-      mock.select.rejects(options.errors.select);
+      mock.select.mockRejectedValue(options.errors.select);
     } else {
-      mock.select.resolves(options.selectResponse ?? 'en');
+      mock.select.mockResolvedValue(options.selectResponse ?? 'en');
     }
 
     return mock;
@@ -45,21 +47,21 @@ export class PromptServiceMockFactory {
   /**
    * Create a PromptService mock that always confirms (returns true)
    */
-  static createConfirming(): IPromptService & sinon.SinonStubbedInstance<IPromptService> {
+  static createConfirming(): MockedObject<IPromptService> {
     return this.create({ confirmResponse: true });
   }
 
   /**
    * Create a PromptService mock that always declines (returns false)
    */
-  static createDeclining(): IPromptService & sinon.SinonStubbedInstance<IPromptService> {
+  static createDeclining(): MockedObject<IPromptService> {
     return this.create({ confirmResponse: false });
   }
 
   /**
    * Create a PromptService mock that throws an error
    */
-  static createWithError(error: Error): IPromptService & sinon.SinonStubbedInstance<IPromptService> {
+  static createWithError(error: Error): MockedObject<IPromptService> {
     return this.create({ errors: { confirm: error } });
   }
 }

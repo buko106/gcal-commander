@@ -1,5 +1,7 @@
 import 'reflect-metadata';
-import * as sinon from 'sinon';
+
+import type { MockedObject } from 'vitest';
+
 import { container, DependencyContainer } from 'tsyringe';
 
 import { setContainerProvider } from '../../../src/di/container-provider';
@@ -58,12 +60,12 @@ export class TestContainerFactory {
   static create(options: TestContainerOptions = {}): {
     container: DependencyContainer;
     mocks: {
-      authService: IAuthService & sinon.SinonStubbedInstance<IAuthService>;
-      calendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
+      authService: MockedObject<IAuthService>;
+      calendarService: MockedObject<ICalendarService>;
       configService: IConfigService;
-      configStorage: IConfigStorage & sinon.SinonStubbedInstance<IConfigStorage>;
+      configStorage: MockedObject<IConfigStorage>;
       i18nService: II18nService;
-      promptService: IPromptService & sinon.SinonStubbedInstance<IPromptService>;
+      promptService: MockedObject<IPromptService>;
     };
   } {
     // Clean up any existing container
@@ -132,12 +134,12 @@ export class TestContainerFactory {
   static createSuccessful(options: TestContainerOptions = {}): {
     container: DependencyContainer;
     mocks: {
-      authService: IAuthService & sinon.SinonStubbedInstance<IAuthService>;
-      calendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
+      authService: MockedObject<IAuthService>;
+      calendarService: MockedObject<ICalendarService>;
       configService: IConfigService;
-      configStorage: IConfigStorage & sinon.SinonStubbedInstance<IConfigStorage>;
+      configStorage: MockedObject<IConfigStorage>;
       i18nService: II18nService;
-      promptService: IPromptService & sinon.SinonStubbedInstance<IPromptService>;
+      promptService: MockedObject<IPromptService>;
     };
   } {
     const calendarOptions = options.calendarService || {};
