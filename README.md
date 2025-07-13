@@ -25,6 +25,11 @@ A command-line interface for Google Calendar operations. Manage your Google Cale
 
 📖 **README in other languages:**
 - [🇯🇵 日本語 (Japanese)](docs/ja/README.md)
+- [🇪🇸 Español (Spanish)](docs/es/README.md)
+- [🇩🇪 Deutsch (German)](docs/de/README.md)
+- [🇵🇹 Português (Portuguese)](docs/pt/README.md)
+- [🇫🇷 Français (French)](docs/fr/README.md)
+- [🇰🇷 한국어 (Korean)](docs/ko/README.md)
 
 ## Installation
 
@@ -107,10 +112,17 @@ gcal events create "Team Meeting" --start "2024-01-15T14:00:00" --duration 60
 # Create an all-day event
 gcal events create "Conference" --start "2024-01-15" --all-day
 
+# Create an event with attendees and description
+gcal events create "Project Review" --start "2024-01-15T10:00:00" --duration 90 \
+  --attendees "team@company.com,manager@company.com" \
+  --description "Quarterly project review meeting" \
+  --location "Conference Room A" \
+  --send-updates all
+
 # Limit number of events and time range
 gcal events list --max-results 5 --days 7
 
-# Use quiet mode for scripting (suppresses status messages)
+# Use quiet mode for scripting (suppresses status messages, keeps data output)
 gcal events list --quiet --format json | jq '.[] | .summary'
 
 # Configuration examples
@@ -135,6 +147,9 @@ gcal config set events.format json
 # Set default time range (days)
 gcal config set events.days 60
 
+# Set interface language (supports: en, ja, es, de, pt, fr, ko)
+gcal config set language ja
+
 # View all current configuration
 gcal config list
 
@@ -154,7 +169,7 @@ gcal config reset --confirm
 - `events.maxResults` - Default maximum number of events (1-100, defaults to 10)
 - `events.format` - Default output format: "table", "json", or "pretty-json" (defaults to "table")
 - `events.days` - Default number of days to look ahead (1-365, defaults to 30)
-- `language` - Interface language: "en" or "ja" (defaults to "en")
+- `language` - Interface language: "en", "ja", "es", "de", "pt", "fr", or "ko" (defaults to "en")
 
 Configuration is stored in `~/.gcal-commander/config.json` and can be edited manually.
 
@@ -166,15 +181,15 @@ gcal-commander provides several commands to interact with Google Calendar:
 - **[`gcal calendars list`](docs/calendars-list.md)** - List all available calendars
 
 ### Event Management  
-- **[`gcal events list`](docs/events-list.md)** - List upcoming calendar events
+- **[`gcal events list`](docs/events-list.md)** - List upcoming calendar events with configuration defaults support
 - **[`gcal events show`](docs/events-show.md)** - Show detailed event information
-- **[`gcal events create`](docs/events-create.md)** - Create new calendar events with flexible scheduling options
+- **[`gcal events create`](docs/events-create.md)** - Create new calendar events with attendees, descriptions, and notification options
 
 ### Configuration
 - **[`gcal config`](docs/config.md)** - Manage global configuration settings
 
 ### Setup & Authentication
-- **[`gcal init`](docs/init.md)** - Verify Google Calendar authentication setup
+- **[`gcal init`](docs/init.md)** - Interactive setup with language selection and authentication verification
 
 ### Help
 - **`gcal help`** - Display help for any command
@@ -210,13 +225,37 @@ The project uses Husky + lint-staged for automatic code quality checks before co
 
 ## Language Support
 
-gcal-commander supports internationalization (i18n) and is available in English and Japanese:
+gcal-commander supports internationalization (i18n) and is available in multiple languages:
+
+**Supported Languages:**
+- **English** (`en`) - Default
+- **Japanese** (`ja`) - 日本語  
+- **Spanish** (`es`) - Español
+- **German** (`de`) - Deutsch
+- **Portuguese** (`pt`) - Português
+- **French** (`fr`) - Français
+- **Korean** (`ko`) - 한국어
 
 ```bash
 # Switch to Japanese
 gcal config set language ja
 
-# Switch to English  
+# Switch to Spanish
+gcal config set language es
+
+# Switch to German
+gcal config set language de
+
+# Switch to Portuguese
+gcal config set language pt
+
+# Switch to French
+gcal config set language fr
+
+# Switch to Korean
+gcal config set language ko
+
+# Switch back to English  
 gcal config set language en
 
 # View current language setting

@@ -2,6 +2,7 @@ import i18next from 'i18next';
 import Backend from 'i18next-fs-backend';
 import path from 'node:path';
 
+import { DEFAULT_LANGUAGE } from '../constants/languages';
 import { II18nService } from '../interfaces/services';
 
 export class I18nService implements II18nService {
@@ -13,11 +14,6 @@ export class I18nService implements II18nService {
     }
 
     await i18next.changeLanguage(language);
-  }
-
-  getAvailableLanguages(): string[] {
-    // Return supported languages as per design doc
-    return ['en', 'ja'];
   }
 
   async init(language?: string): Promise<void> {
@@ -33,23 +29,21 @@ export class I18nService implements II18nService {
     // eslint-disable-next-line unicorn/prefer-module
     const localesPath = path.join(__dirname, '../locales');
     const loadPath = path.join(localesPath, '{{lng}}/{{ns}}.json');
-    
-    await i18next
-      .use(Backend)
-      .init({
-        lng: language || 'en', // Use provided language or default to English
-        fallbackLng: 'en',
-        preload: ['en', 'ja'], // Preload all supported languages
-        backend: {
-          loadPath,
-        },
-        ns: ['common', 'commands'], // Available namespaces
-        defaultNS: 'commands',
-        interpolation: {
-          escapeValue: false, // React already escapes values
-        },
-      });
-    
+
+    await i18next.use(Backend).init({
+      lng: language || DEFAULT_LANGUAGE, // Use provided language or default to English
+      fallbackLng: DEFAULT_LANGUAGE,
+      preload: [DEFAULT_LANGUAGE], // Preload only default language for faster startup
+      backend: {
+        loadPath,
+      },
+      ns: ['common', 'commands'], // Available namespaces
+      defaultNS: 'commands',
+      interpolation: {
+        escapeValue: false, // React already escapes values
+      },
+    });
+
     this.initialized = true;
   }
 

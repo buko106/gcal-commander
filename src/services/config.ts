@@ -1,13 +1,14 @@
 import { inject, injectable } from 'tsyringe';
 import { z } from 'zod';
 
+import { SUPPORTED_LANGUAGES } from '../constants/languages';
 import { TOKENS } from '../di/tokens';
 import { IConfigStorage } from '../interfaces/config-storage';
 import { Config, IConfigService } from '../interfaces/services';
 
 const configValueSchema = z.object({
   defaultCalendar: z.string(),
-  language: z.enum(['en', 'ja']),
+  language: z.enum(SUPPORTED_LANGUAGES),
   'events.days': z.number().min(1).max(365),
   'events.format': z.enum(['table', 'json', 'pretty-json']),
   'events.maxResults': z.number().min(1).max(100),

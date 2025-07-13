@@ -1,5 +1,7 @@
 import { calendar_v3 as calendarV3 } from 'googleapis';
 
+import { SupportedLanguage } from '../constants/languages';
+
 export interface ListEventsParams {
   calendarId: string;
   maxResults: number;
@@ -52,7 +54,6 @@ export interface IPromptService {
 
 export interface II18nService {
   changeLanguage(language: string): Promise<void>;
-  getAvailableLanguages(): string[];
   init(language?: string): Promise<void>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t(key: string, options?: any): string;
@@ -65,7 +66,7 @@ export interface Config extends Record<string, unknown> {
     format?: 'json' | 'pretty-json' | 'table';
     maxResults?: number;
   };
-  language?: 'en' | 'ja';
+  language?: SupportedLanguage;
 }
 
 export interface IConfigService {
