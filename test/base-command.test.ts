@@ -1,21 +1,39 @@
-import { runCommand } from '@oclif/test';
-import { expect } from 'chai';
-import * as sinon from 'sinon';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { II18nService } from '../src/interfaces/services';
+import type { II18nService, MockedObject } from '../src/interfaces/services';
 
+import { BaseCommand } from '../src/base-command';
 import { TOKENS } from '../src/di/tokens';
 import { I18nServiceMockFactory, TestContainerFactory } from './test-utils/mock-factories';
 
+// Test implementation of BaseCommand for testing
+class TestBaseCommand extends BaseCommand {
+  static description = 'Test command for BaseCommand functionality';
+
+  // Expose protected methods for testing
+  public async testInitI18nService(): Promise<void> {
+    return this.initI18nService();
+  }
+
+  public testT(key: string, options?: unknown): string {
+    return this.t(key, options);
+  }
+}
+
 describe('BaseCommand i18n support', () => {
-  let mockI18nService: II18nService & sinon.SinonStubbedInstance<II18nService>;
+  let mockI18nService: MockedObject<II18nService>;
+  let testCommand: TestBaseCommand;
 
   beforeEach(() => {
     TestContainerFactory.create();
 
-    // This test needs a mocked I18nService to verify internal behavior
+    // This test needs mocked I18nService to verify internal behavior
     mockI18nService = I18nServiceMockFactory.create();
     TestContainerFactory.registerService(TOKENS.I18nService, mockI18nService);
+
+    testCommand = new TestBaseCommand([], {});
+    // Mock the getContainer method to return our test container
+    testCommand.getContainer = vi.fn().mockReturnValue(TestContainerFactory.getCurrentContainer());
   });
 
   afterEach(() => {
@@ -24,26 +42,24 @@ describe('BaseCommand i18n support', () => {
 
   describe('i18n initialization', () => {
     it('should initialize i18n service when initI18nService is called', async () => {
-      // Test with init command which calls initI18nService
-      await runCommand('init');
+      await testCommand.testInitI18nService();
 
-      expect(mockI18nService.init.called).to.be.true;
+      expect(mockI18nService.init).toHaveBeenCalled();
     });
   });
 
   describe('translation method', () => {
     it('should provide t() method and delegate to i18n service', async () => {
-      mockI18nService.t.returns('translated text');
+      mockI18nService.t.mockReturnValue('translated text');
 
-      // Test through init command which now uses t() method
-      await runCommand('init');
+      // Initialize i18n service first
+      await testCommand.testInitI18nService();
 
-      // Verify that t() method was called for translation keys
-      expect(mockI18nService.t.called).to.be.true;
-      const translationCalls = mockI18nService.t.getCalls();
-      const translationKeys = translationCalls.map((call) => call.args[0]);
-      expect(translationKeys).to.include('init.messages.status');
-      expect(translationKeys).to.include('init.messages.confirm');
+      // Test the t() method
+      const result = testCommand.testT('test.key');
+
+      expect(result).toBe('translated text');
+      expect(mockI18nService.t).toHaveBeenCalledWith('test.key', undefined);
     });
   });
 });
