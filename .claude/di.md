@@ -12,13 +12,13 @@ The deprecated setupTestContainer/cleanupTestContainer functions have been remov
 
 ## Available Mock Services
 
-TestContainerFactory provides Sinon-stubbed mock services:
+TestContainerFactory provides Vitest-mocked mock services:
 
-- **mockCalendarService**: Stubbed ICalendarService with methods like `listEvents.resolves()`, `createEvent.resolves()`
-- **mockAuthService**: Stubbed IAuthService with methods like `getCalendarAuth.resolves()`
-- **mockConfigService**: Real ConfigService instance with mocked storage (not stubbed)
-- **mockConfigStorage**: Stubbed IConfigStorage with methods like `read.resolves()`, `write.resolves()`, `exists.resolves()`
-- **mockPromptService**: Stubbed IPromptService with methods like `confirm.resolves()`
+- **mockCalendarService**: Mocked ICalendarService with methods like `listEvents.mockResolvedValue()`, `createEvent.mockResolvedValue()`
+- **mockAuthService**: Mocked IAuthService with methods like `getCalendarAuth.mockResolvedValue()`
+- **mockConfigService**: Real ConfigService instance with mocked storage (not mocked)
+- **mockConfigStorage**: Mocked IConfigStorage with methods like `read.mockResolvedValue()`, `write.mockResolvedValue()`, `exists.mockResolvedValue()`
+- **mockPromptService**: Mocked IPromptService with methods like `confirm.mockResolvedValue()`
 
 ### Factory Methods
 
@@ -47,8 +47,8 @@ TestContainerFactory provides Sinon-stubbed mock services:
 
 ## Common Issues
 
-- **Mock behavior not applied**: Configure stubs after `TestContainerFactory.create()`
+- **Mock behavior not applied**: Configure mocks after `TestContainerFactory.create()`
 - **Test interference**: Always use `TestContainerFactory.cleanup()` in `afterEach()`
-- **Stubbing errors**: Use Sinon syntax: `mockService.method.resolves(value)` or `mockService.method.rejects(error)`
+- **Mocking errors**: Use Vitest syntax: `mockService.method.mockResolvedValue(value)` or `mockService.method.mockRejectedValue(error)`
 - **ConfigService vs ConfigStorage**: ConfigService handles business logic, ConfigStorage handles file I/O
 - **Migration**: All tests have been migrated from deprecated setupTestContainer to TestContainerFactory
