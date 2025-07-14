@@ -1,5 +1,5 @@
 import { calendar_v3 as calendarV3 } from 'googleapis';
-import * as sinon from 'sinon';
+import { MockedObject, vi } from 'vitest';
 
 import { CreateEventParams, ICalendarService, ListEventsParams } from '../../../src/interfaces/services';
 
@@ -23,15 +23,13 @@ export class CalendarServiceMockFactory {
   /**
    * Create a mock ICalendarService with specified behavior
    */
-  static create(
-    options: CalendarServiceMockOptions = {},
-  ): ICalendarService & sinon.SinonStubbedInstance<ICalendarService> {
+  static create(options: CalendarServiceMockOptions = {}): ICalendarService & MockedObject<ICalendarService> {
     const mock = {
-      createEvent: sinon.stub(),
-      getEvent: sinon.stub(),
-      listCalendars: sinon.stub(),
-      listEvents: sinon.stub(),
-    } as ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
+      createEvent: vi.fn(),
+      getEvent: vi.fn(),
+      listCalendars: vi.fn(),
+      listEvents: vi.fn(),
+    } as ICalendarService & MockedObject<ICalendarService>;
 
     // Configure default behaviors
     this.setupDefaultBehaviors(mock, options);
@@ -42,9 +40,7 @@ export class CalendarServiceMockFactory {
   /**
    * Create a mock with successful behaviors for typical test scenarios
    */
-  static createSuccessful(
-    options: CalendarServiceMockOptions = {},
-  ): ICalendarService & sinon.SinonStubbedInstance<ICalendarService> {
+  static createSuccessful(options: CalendarServiceMockOptions = {}): ICalendarService & MockedObject<ICalendarService> {
     const defaultOptions: CalendarServiceMockOptions = {
       events: options.events || this.getDefaultEvents(),
       calendars: options.calendars || this.getDefaultCalendars(),
@@ -60,7 +56,7 @@ export class CalendarServiceMockFactory {
    */
   static createWithErrors(
     errors: CalendarServiceMockOptions['errors'],
-  ): ICalendarService & sinon.SinonStubbedInstance<ICalendarService> {
+  ): ICalendarService & MockedObject<ICalendarService> {
     return this.create({ errors });
   }
 
@@ -125,14 +121,14 @@ export class CalendarServiceMockFactory {
   }
 
   private static setupDefaultBehaviors(
-    mock: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>,
+    mock: ICalendarService & MockedObject<ICalendarService>,
     options: CalendarServiceMockOptions,
   ): void {
     // List Events
     if (options.errors?.listEvents) {
-      mock.listEvents.rejects(options.errors.listEvents);
+      mock.listEvents.mockRejectedValue(options.errors.listEvents);
     } else {
-      mock.listEvents.callsFake(async (params: ListEventsParams) => {
+      mock.listEvents.mockImplementation(async (params: ListEventsParams) => {
         const events = options.events || this.getDefaultEvents();
 
         return events.slice(0, params.maxResults);
@@ -141,9 +137,9 @@ export class CalendarServiceMockFactory {
 
     // Create Event
     if (options.errors?.createEvent) {
-      mock.createEvent.rejects(options.errors.createEvent);
+      mock.createEvent.mockRejectedValue(options.errors.createEvent);
     } else {
-      mock.createEvent.callsFake(async (params: CreateEventParams) => {
+      mock.createEvent.mockImplementation(async (params: CreateEventParams) => {
         const response = options.createEventResponse || this.createEventFromParams(params);
 
         return response;
@@ -152,9 +148,9 @@ export class CalendarServiceMockFactory {
 
     // Get Event
     if (options.errors?.getEvent) {
-      mock.getEvent.rejects(options.errors.getEvent);
+      mock.getEvent.mockRejectedValue(options.errors.getEvent);
     } else {
-      mock.getEvent.callsFake(async (eventId: string, _calendarId: string) => {
+      mock.getEvent.mockImplementation(async (eventId: string, _calendarId: string) => {
         const events = options.events || this.getDefaultEvents();
         const event = events.find((e) => e.id === eventId);
         if (!event) {
@@ -167,9 +163,9 @@ export class CalendarServiceMockFactory {
 
     // List Calendars
     if (options.errors?.listCalendars) {
-      mock.listCalendars.rejects(options.errors.listCalendars);
+      mock.listCalendars.mockRejectedValue(options.errors.listCalendars);
     } else {
-      mock.listCalendars.resolves(options.calendars || this.getDefaultCalendars());
+      mock.listCalendars.mockResolvedValue(options.calendars || this.getDefaultCalendars());
     }
   }
 }

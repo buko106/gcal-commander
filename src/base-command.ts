@@ -1,6 +1,6 @@
 import { Command, Flags } from '@oclif/core';
+import { container } from 'tsyringe';
 
-import { getContainerProvider } from './di/container-provider';
 import { TOKENS } from './di/tokens';
 import { IAuthService, ICalendarService, IConfigService, II18nService } from './interfaces/services';
 
@@ -20,7 +20,7 @@ export abstract class BaseCommand extends Command {
       description: 'Suppress non-essential output (status messages, progress indicators)',
     }),
   };
-protected authService!: IAuthService;
+  protected authService!: IAuthService;
   protected calendarService!: ICalendarService;
   protected configService!: IConfigService;
   protected format: OutputFormat = 'table';
@@ -28,7 +28,7 @@ protected authService!: IAuthService;
   protected quiet = false;
 
   protected getContainer() {
-    return getContainerProvider().getContainer();
+    return container;
   }
 
   async init(): Promise<void> {
@@ -57,7 +57,7 @@ protected authService!: IAuthService;
   protected async initI18nService(): Promise<void> {
     if (!this.i18nService) {
       this.i18nService = this.getContainer().resolve<II18nService>(TOKENS.I18nService);
-      
+
       // Try to load saved language setting from config, fallback to undefined (English default)
       let savedLanguage: string | undefined;
       try {
@@ -66,7 +66,7 @@ protected authService!: IAuthService;
         // If config loading fails, use default language (English)
         savedLanguage = undefined;
       }
-      
+
       await this.i18nService.init(savedLanguage);
     }
   }

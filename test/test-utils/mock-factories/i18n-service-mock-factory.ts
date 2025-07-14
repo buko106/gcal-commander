@@ -1,20 +1,19 @@
-import * as sinon from 'sinon';
+import { MockedObject, vi } from 'vitest';
 
 import { II18nService } from '../../../src/interfaces/services';
 
 export const I18nServiceMockFactory = {
-  create(): II18nService & sinon.SinonStubbedInstance<II18nService> {
-    const mockI18nService: II18nService & sinon.SinonStubbedInstance<II18nService> = {
-      changeLanguage: sinon.stub<[string], Promise<void>>(),
-      init: sinon.stub<[], Promise<void>>(),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      t: sinon.stub<[string, any?], string>(),
-    };
+  create(): II18nService & MockedObject<II18nService> {
+    const mockI18nService = {
+      changeLanguage: vi.fn(),
+      init: vi.fn(),
+      t: vi.fn(),
+    } as MockedObject<II18nService>;
 
     // Default behaviors for testing
-    mockI18nService.init.resolves();
-    mockI18nService.t.returnsArg(0); // Return the key as-is by default
-    mockI18nService.changeLanguage.resolves();
+    mockI18nService.init.mockResolvedValue();
+    mockI18nService.t.mockImplementation((key: string) => key); // Return the key as-is by default
+    mockI18nService.changeLanguage.mockResolvedValue();
 
     return mockI18nService;
   },

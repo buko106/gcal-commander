@@ -9,8 +9,6 @@ import { ConfigService } from '../services/config';
 import { FileSystemConfigStorage } from '../services/config-storage';
 import { I18nService } from '../services/i18n';
 import { InquirerPromptService } from '../services/prompt';
-import { setContainerProvider } from './container-provider';
-import { ProductionContainerProvider } from './production-container-provider';
 import { TOKENS } from './tokens';
 
 // Container setup
@@ -39,8 +37,4 @@ export function setupContainer(): void {
   });
 }
 
-// Initialize container and set production provider
 setupContainer();
-setContainerProvider(new ProductionContainerProvider());
-
-export { container } from 'tsyringe';

@@ -1,4 +1,4 @@
-import * as sinon from 'sinon';
+import { MockedObject, vi } from 'vitest';
 
 import { AuthResult, IAuthService } from '../../../src/interfaces/services';
 
@@ -17,14 +17,14 @@ export class AuthServiceMockFactory {
   /**
    * Create an AuthService mock with specified options
    */
-  static create(options: AuthServiceMockOptions = {}): IAuthService & sinon.SinonStubbedInstance<IAuthService> {
+  static create(options: AuthServiceMockOptions = {}): IAuthService & MockedObject<IAuthService> {
     const mock = {
-      getCalendarAuth: sinon.stub(),
-    } as IAuthService & sinon.SinonStubbedInstance<IAuthService>;
+      getCalendarAuth: vi.fn(),
+    } as IAuthService & MockedObject<IAuthService>;
 
     // Configure getCalendarAuth behavior
     if (options.errors?.getCalendarAuth) {
-      mock.getCalendarAuth.rejects(options.errors.getCalendarAuth);
+      mock.getCalendarAuth.mockRejectedValue(options.errors.getCalendarAuth);
     } else {
       const defaultAuthResult: AuthResult = {
         client: {
@@ -36,7 +36,7 @@ export class AuthServiceMockFactory {
           },
         },
       };
-      mock.getCalendarAuth.resolves(options.authResult ?? defaultAuthResult);
+      mock.getCalendarAuth.mockResolvedValue(options.authResult ?? defaultAuthResult);
     }
 
     return mock;
@@ -45,14 +45,14 @@ export class AuthServiceMockFactory {
   /**
    * Create an AuthService mock that always succeeds
    */
-  static createSuccessful(): IAuthService & sinon.SinonStubbedInstance<IAuthService> {
+  static createSuccessful(): IAuthService & MockedObject<IAuthService> {
     return this.create();
   }
 
   /**
    * Create an AuthService mock that throws an error
    */
-  static createWithError(error: Error): IAuthService & sinon.SinonStubbedInstance<IAuthService> {
+  static createWithError(error: Error): IAuthService & MockedObject<IAuthService> {
     return this.create({ errors: { getCalendarAuth: error } });
   }
 }
