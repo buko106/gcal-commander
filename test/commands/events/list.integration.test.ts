@@ -97,15 +97,13 @@ describe('events list integration', () => {
       const { stdout } = await runCommand('events list');
 
       expect(stdout).toContain('Upcoming Events (4 found)');
-      expect(stdout).toContain('1. Meeting with client');
+      expect(stdout).toContain('Meeting with client');
       expect(stdout).toContain('Conference Room A');
-      expect(stdout).toContain('2. Company Holiday');
+      expect(stdout).toContain('Company Holiday');
       expect(stdout).toContain('All day');
-      expect(stdout).toContain('3. (No title)');
-      expect(stdout).toContain('4. Event with long description');
-      expect(stdout).toContain(
-        'This is a very long description that exceeds 100 characters and should be truncated in the table vie...',
-      );
+      expect(stdout).toContain('(No title)');
+      expect(stdout).toContain('Event with long description');
+      expect(stdout).toContain('This is a very long descrip…');
     });
 
     it('should handle empty events list', async () => {
@@ -150,7 +148,7 @@ describe('events list integration', () => {
 
       expect(stdout).toContain('会議 📅');
       expect(stdout).toContain('東京オフィス 🏢');
-      expect(stdout).toContain('重要な会議です。資料を準備してください。');
+      expect(stdout).toContain('重要な会議です。資料を準備');
       expect(stdout).toContain('🎉 Birthday Party 🎂');
       expect(stdout).toContain('🏠 Home');
       expect(stdout).toContain('Celebrating with 🍰 and 🎈');
@@ -196,18 +194,18 @@ describe('events list integration', () => {
       const { stdout } = await runCommand('events list --max-results 5');
 
       expect(stdout).toContain('Upcoming Events (5 found)');
-      expect(stdout).toContain('1. Event 1');
-      expect(stdout).toContain('5. Event 5');
-      expect(stdout).to.not.contain('6. Event 6');
+      expect(stdout).toContain('Event 1');
+      expect(stdout).toContain('Event 5');
+      expect(stdout).to.not.contain('Event 6');
     });
 
     it('should respect max-results short flag', async () => {
       const { stdout } = await runCommand('events list -n 3');
 
       expect(stdout).toContain('Upcoming Events (3 found)');
-      expect(stdout).toContain('1. Event 1');
-      expect(stdout).toContain('3. Event 3');
-      expect(stdout).to.not.contain('4. Event 4');
+      expect(stdout).toContain('Event 1');
+      expect(stdout).toContain('Event 3');
+      expect(stdout).to.not.contain('Event 4');
     });
 
     it('should use default max-results when not specified', async () => {
@@ -215,8 +213,8 @@ describe('events list integration', () => {
 
       // Default should be 10, but we have 15 events, so should see 10
       expect(stdout).toContain('Upcoming Events (10 found)');
-      expect(stdout).toContain('10. Event 10');
-      expect(stdout).to.not.contain('11. Event 11');
+      expect(stdout).toContain('Event 10');
+      expect(stdout).to.not.contain('Event 11');
     });
   });
 
@@ -400,6 +398,60 @@ describe('events list integration', () => {
       expect(() => JSON.parse(stdout)).not.toThrow();
       const events = JSON.parse(stdout);
       expect(events).to.have.length(2);
+    });
+  });
+
+  describe('--fields flag behavior', () => {
+    beforeEach(() => {
+      const testEvents = [
+        {
+          description: 'Important test meeting',
+          end: { dateTime: '2024-06-25T11:00:00Z' },
+          id: 'test-event-1',
+          location: 'Meeting Room 1',
+          start: { dateTime: '2024-06-25T10:00:00Z' },
+          summary: 'Test Meeting',
+        },
+      ];
+      mockCalendarService.listEvents.mockResolvedValue(testEvents);
+    });
+
+    it('should show only specified fields with --fields flag', async () => {
+      const { stdout } = await runCommand('events list --fields=title,date');
+
+      expect(stdout).toContain('Title');
+      expect(stdout).toContain('Date');
+      expect(stdout).toContain('Test Meeting');
+      expect(stdout).toContain('6/25/2024');
+
+      // These columns should NOT be present
+      expect(stdout).to.not.contain('Time');
+      expect(stdout).to.not.contain('Location');
+      expect(stdout).to.not.contain('Description');
+    });
+
+    it('should handle single field with --fields flag', async () => {
+      const { stdout } = await runCommand('events list --fields=title');
+
+      expect(stdout).toContain('Title');
+      expect(stdout).toContain('Test Meeting');
+
+      // These columns should NOT be present
+      expect(stdout).to.not.contain('Date');
+      expect(stdout).to.not.contain('Time');
+      expect(stdout).to.not.contain('Location');
+      expect(stdout).to.not.contain('Description');
+    });
+
+    it('should work with --fields and --format json', async () => {
+      const { stdout } = await runCommand('events list --fields=title,date --format json');
+
+      // JSON output should not be affected by --fields flag
+      expect(() => JSON.parse(stdout)).not.toThrow();
+      const events = JSON.parse(stdout);
+      expect(events).to.have.length(1);
+      expect(events[0]).to.have.property('summary', 'Test Meeting');
+      expect(events[0]).to.have.property('location', 'Meeting Room 1');
     });
   });
 });

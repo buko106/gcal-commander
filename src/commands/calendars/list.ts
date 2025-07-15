@@ -2,6 +2,7 @@
 import { calendar_v3 as calendarV3 } from 'googleapis';
 
 import { BaseCommand } from '../../base-command';
+import { TableColumn, TableFormatter } from '../../utils/table-formatter';
 
 export default class CalendarsList extends BaseCommand {
   static description = 'List all available calendars';
@@ -40,27 +41,34 @@ export default class CalendarsList extends BaseCommand {
   private displayCalendarsTable(calendars: calendarV3.Schema$CalendarListEntry[]): void {
     this.logResult(this.t('calendars.list.tableHeader', { count: calendars.length }));
 
-    for (const [index, calendar] of calendars.entries()) {
-      const summary = calendar.summary || this.t('calendars.list.noName');
-      const id = calendar.id || '';
-      const description = calendar.description || '';
-      const accessRole = calendar.accessRole || '';
-      const primary = calendar.primary ? ` ${this.t('calendars.list.labels.primary')}` : '';
-      const backgroundColor = calendar.backgroundColor || '';
+    const columns: TableColumn[] = [
+      { key: 'name', label: this.t('calendars.list.columns.name'), width: 25 },
+      { key: 'id', label: this.t('calendars.list.columns.id'), width: 35 },
+      { key: 'access', label: this.t('calendars.list.columns.access'), width: 15 },
+      { key: 'primary', label: this.t('calendars.list.columns.primary'), width: 10 },
+      { key: 'description', label: this.t('calendars.list.columns.description'), width: 30 },
+      { key: 'color', label: this.t('calendars.list.columns.color'), width: 15 },
+    ];
 
-      this.logResult(`${index + 1}. ${summary}${primary}`);
-      this.logResult(`   ${this.t('calendars.list.labels.id')} ${id}`);
-      this.logResult(`   ${this.t('calendars.list.labels.access')} ${accessRole}`);
+    const formatter = new TableFormatter({
+      columns,
+      fields: this.fields,
+    });
 
-      if (description) {
-        this.logResult(`   ${this.t('calendars.list.labels.description')} ${description}`);
-      }
+    const tableData = calendars.map((calendar) => ({
+      name: calendar.summary || this.t('calendars.list.noName'),
+      id: calendar.id || '',
+      access: calendar.accessRole || '',
+      primary: calendar.primary ? this.t('calendars.list.labels.primary') : '',
+      description: calendar.description
+        ? calendar.description.length > 40
+          ? calendar.description.slice(0, 40) + '...'
+          : calendar.description
+        : '',
+      color: calendar.backgroundColor || '',
+    }));
 
-      if (backgroundColor) {
-        this.logResult(`   ${this.t('calendars.list.labels.color')} ${backgroundColor}`);
-      }
-
-      this.logResult('');
-    }
+    const table = formatter.format(tableData);
+    this.logResult(table);
   }
 }

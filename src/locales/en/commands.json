@@ -21,7 +21,14 @@
       "noEventsFound": "No upcoming events found.",
       "tableHeader": "\nUpcoming Events ({{count}} found):\n",
       "noTitle": "(No title)",
-      "error": "Failed to list events: {{error}}"
+      "error": "Failed to list events: {{error}}",
+      "columns": {
+        "title": "Title",
+        "date": "Date",
+        "time": "Time",
+        "location": "Location",
+        "description": "Description"
+      }
     },
     "show": {
       "description": "Show detailed information about a specific event",
@@ -85,6 +92,14 @@
         "access": "Access:",
         "description": "Description:",
         "color": "Color:"
+      },
+      "columns": {
+        "name": "Name",
+        "id": "ID",
+        "access": "Access",
+        "primary": "Primary",
+        "description": "Description",
+        "color": "Color"
       }
     }
   },
