@@ -32,13 +32,13 @@ export function validateJsonOutput(jsonString: string, expectedLength?: number):
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function validateCalendarObject(calendar: any): void {
-  expect(calendar, 'Calendar should be an object').to.be.an('object');
-  expect(calendar, 'Calendar should have an id').to.have.property('id');
-  expect(calendar.id, 'Calendar id should be a string').to.be.a('string');
+  expect(calendar, 'Calendar should be an object').toBeTypeOf('object');
+  expect(calendar, 'Calendar should have an id').toHaveProperty('id');
+  expect(calendar.id, 'Calendar id should be a string').toBeTypeOf('string');
 
   // summary can be null or string
   if (calendar.summary !== null && calendar.summary !== undefined) {
-    expect(calendar.summary, 'Calendar summary should be a string when present').to.be.a('string');
+    expect(calendar.summary, 'Calendar summary should be a string when present').toBeTypeOf('string');
   }
 }
 
@@ -47,15 +47,15 @@ export function validateCalendarObject(calendar: any): void {
  */
 export function validateTableOutput(output: string, expectedCount: number): void {
   if (expectedCount === 0) {
-    expect(output).to.contain('No calendars found.');
+    expect(output).toContain('No calendars found.');
     return;
   }
 
-  expect(output).to.contain(`Available Calendars (${expectedCount} found)`);
+  expect(output).toContain(`Available Calendars (${expectedCount} found)`);
 
   // Check that numbered list exists
   for (let i = 1; i <= Math.min(expectedCount, 10); i++) {
-    expect(output).to.contain(`${i}. `);
+    expect(output).toContain(`${i}. `);
   }
 }
 
@@ -92,19 +92,19 @@ export function validateCalendarTableDisplay(output: string, calendar: any, inde
   const primaryLabel = calendar.primary ? ' (Primary)' : '';
   const expectedName = calendar.summary || '(No name)';
 
-  expect(output).to.contain(`${index}. ${expectedName}${primaryLabel}`);
-  expect(output).to.contain(`ID: ${calendar.id}`);
+  expect(output).toContain(`${index}. ${expectedName}${primaryLabel}`);
+  expect(output).toContain(`ID: ${calendar.id}`);
 
   if (calendar.accessRole) {
-    expect(output).to.contain(`Access: ${calendar.accessRole}`);
+    expect(output).toContain(`Access: ${calendar.accessRole}`);
   }
 
   if (calendar.description) {
-    expect(output).to.contain(`Description: ${calendar.description}`);
+    expect(output).toContain(`Description: ${calendar.description}`);
   }
 
   if (calendar.backgroundColor) {
-    expect(output).to.contain(`Color: ${calendar.backgroundColor}`);
+    expect(output).toContain(`Color: ${calendar.backgroundColor}`);
   }
 }
 
@@ -113,7 +113,7 @@ export function validateCalendarTableDisplay(output: string, calendar: any, inde
  */
 export function validateUnicodeHandling(output: string): void {
   // Should not contain escaped Unicode sequences in the final output
-  expect(output).to.not.match(/\\u[0-9a-fA-F]{4}/);
+  expect(output).not.toMatch(/\\u[0-9a-fA-F]{4}/);
 
   // Should preserve emojis and special characters
   const unicodeTestStrings = [
@@ -138,7 +138,7 @@ export function validateUnicodeHandling(output: string): void {
     // If Unicode content is present, verify it's displayed correctly
     for (const str of unicodeTestStrings) {
       if (output.includes(str)) {
-        expect(output).to.contain(str, `Unicode string "${str}" should be preserved`);
+        expect(output, `Unicode string "${str}" should be preserved`).toContain(str);
       }
     }
   }
@@ -149,17 +149,17 @@ export function validateUnicodeHandling(output: string): void {
  */
 export function validateCleanJsonOutput(jsonOutput: string): void {
   // Should not contain any status messages
-  expect(jsonOutput).to.not.contain('Authenticating');
-  expect(jsonOutput).to.not.contain('Fetching');
-  expect(jsonOutput).to.not.contain('Available Calendars');
+  expect(jsonOutput).not.toContain('Authenticating');
+  expect(jsonOutput).not.toContain('Fetching');
+  expect(jsonOutput).not.toContain('Available Calendars');
 
   // Should start with [ and end with ]
   const trimmed = jsonOutput.trim();
-  expect(trimmed.startsWith('[')).to.equal(true, 'JSON should start with [');
-  expect(trimmed.endsWith(']')).to.equal(true, 'JSON should end with ]');
+  expect(trimmed.startsWith('['), 'JSON should start with [').toBe(true);
+  expect(trimmed.endsWith(']'), 'JSON should end with ]').toBe(true);
 
   // Should be parseable
-  expect(() => JSON.parse(trimmed)).to.not.throw();
+  expect(() => JSON.parse(trimmed)).not.toThrow();
 }
 
 /**
@@ -183,7 +183,7 @@ export function validateColorCodes(output: string): void {
   if (colorMatches) {
     for (const colorMatch of colorMatches) {
       const colorCode = colorMatch.replace('Color: ', '');
-      expect(colorCode).to.match(/^#[a-fA-F0-9]{6}$/, `Color code ${colorCode} should be valid hex`);
+      expect(colorCode, `Color code ${colorCode} should be valid hex`).toMatch(/^#[a-fA-F0-9]{6}$/);
     }
   }
 }
@@ -193,8 +193,7 @@ export function validateColorCodes(output: string): void {
  */
 export function validatePerformance(startTime: number, maxDurationMs: number): void {
   const duration = Date.now() - startTime;
-  expect(duration).to.be.below(
+  expect(duration, `Operation should complete within ${maxDurationMs}ms but took ${duration}ms`).toBeLessThan(
     maxDurationMs,
-    `Operation should complete within ${maxDurationMs}ms but took ${duration}ms`,
   );
 }

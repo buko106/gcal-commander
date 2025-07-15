@@ -7,7 +7,7 @@ This is `gcal-commander`, a Google Calendar CLI tool built with the oclif framew
 ## Development Commands
 
 - `npm run build` - Build TypeScript to dist/ directory
-- `npm run test` - Run Mocha tests with pattern "test/**/*.test.ts"  
+- `npm run test` - Run Vitest tests with pattern "test/**/*.test.ts"  
 - `npm run test:file [file(s)]` - Run specific test file(s) or patterns
 - `npm run lint` - Run ESLint
 - `npm run posttest` - Automatically runs lint after tests
@@ -40,7 +40,7 @@ Built on oclif CLI framework:
   - `src/services/calendar.ts` wraps Google Calendar API calls
   - `src/services/config.ts` manages user configuration in JSON format
   - `src/services/prompt.ts` provides InquirerPromptService for CLI interactions
-- **Tests**: Mirror command structure in `test/commands/` using Mocha and Chai
+- **Tests**: Mirror command structure in `test/commands/` using Vitest
 - **CLI Entry**: 
   - `bin/run.js` points to built commands in `dist/commands/` (production)
   - `bin/dev.js` loads TypeScript commands from `src/commands/` with ts-node (development)
