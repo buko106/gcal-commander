@@ -19,6 +19,7 @@ Google Calendar 작업을 위한 명령줄 인터페이스입니다. 터미널�
 - 🔐 **안전한 OAuth2 인증** - 일회성 설정으로 자동 토큰 갱신
 - 💻 **터미널 친화적 출력** - 스크립팅을 위한 깔끔한 테이블 형식 또는 JSON
 - 🔇 **조용한 모드 지원** - 스크립팅을 위해 `--quiet` 플래그로 상태 메시지 숨김
+- 🎯 **사용자 정의 테이블 열** - 테이블 형식에서 특정 열만 표시하려면 `--fields` 플래그 사용
 - 🚀 **빠르고 가벼움** - oclif 프레임워크로 구축
 
 ## 언어
@@ -117,6 +118,10 @@ gcal events list --max-results 5 --days 7
 
 # 스크립팅을 위한 조용한 모드 사용 (상태 메시지 숨김)
 gcal events list --quiet --format json | jq '.[] | .summary'
+
+# 테이블 열 사용자 정의
+gcal events list --fields title,date,time
+gcal calendars list --fields name,id
 
 # 구성 예제
 gcal config set defaultCalendar work@company.com

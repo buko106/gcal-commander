@@ -19,6 +19,7 @@ Eine Befehlszeilenschnittstelle für Google Calendar-Operationen. Verwalten Sie 
 - 🔐 **Sichere OAuth2-Authentifizierung** - Einmalige Einrichtung mit automatischer Token-Aktualisierung
 - 💻 **Terminal-freundliche Ausgabe** - Sauberes Tabellenformat oder JSON für Skripting
 - 🔇 **Unterstützung für stillen Modus** - Verwenden Sie die `--quiet`-Flagge, um Statusmeldungen für Skripting zu unterdrücken
+- 🎯 **Anpassbare Tabellenspalten** - Verwenden Sie die `--fields`-Flagge, um nur bestimmte Spalten im Tabellenformat anzuzeigen
 - 🚀 **Schnell und leichtgewichtig** - Mit dem oclif-Framework erstellt
 
 ## Sprachen
@@ -114,6 +115,10 @@ gcal events list --max-results 5 --days 7
 
 # Stillen Modus für Skripting verwenden (unterdrückt Statusmeldungen)
 gcal events list --quiet --format json | jq '.[] | .summary'
+
+# Tabellenspalten anpassen
+gcal events list --fields title,date,time
+gcal calendars list --fields name,id
 
 # Konfigurationsbeispiele
 gcal config set defaultCalendar work@company.com

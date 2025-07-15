@@ -19,6 +19,7 @@ gcal events show <event-id> [options]
 | Drapeau | Abrév. | Description | Par défaut |
 |---------|--------|-------------|------------|
 | `--calendar` | `-c` | ID du calendrier où l'événement existe | `primary` |
+| `--fields` | | Liste séparée par des virgules des champs à afficher en format tableau | Tous les champs |
 | `--format` | `-f` | Format de sortie (table, json, pretty-json) | `table` |
 | `--quiet` | `-q` | Masquer la sortie non essentielle (messages de statut, indicateurs de progression) | `false` |
 

@@ -12,6 +12,7 @@ gcal calendars list [options]
 
 | フラグ | 短縮形 | 説明 | デフォルト |
 |--------|--------|------|-----------|
+| `--fields` | | テーブル形式で表示するフィールドのカンマ区切りリスト | すべてのフィールド |
 | `--format` | `-f` | 出力形式（table、json、pretty-json） | `table` |
 | `--quiet` | `-q` | 重要でない出力を非表示（ステータスメッセージ、進行状況表示） | `false` |
 
@@ -28,6 +29,12 @@ gcal calendars list --format json
 
 # カレンダーを静寂に一覧表示（ステータスメッセージなし）
 gcal calendars list --quiet
+
+# カレンダー名とIDのみ表示
+gcal calendars list --fields name,id
+
+# カレンダー名のみ表示（クイック概要用）
+gcal calendars list --fields name
 ```
 
 ### 出力形式
@@ -65,6 +72,37 @@ gcal calendars list --quiet
   }
 ]
 ```
+
+## テーブルフィールドのカスタマイズ
+
+`--fields`フラグを使用して、テーブル形式で表示する列をカスタマイズできます：
+
+### 利用可能なフィールド
+
+- `name` - カレンダー名/概要
+- `id` - カレンダーID
+- `access` - アクセス権限（owner、reader、writer等）
+- `primary` - プライマリカレンダー表示
+- `description` - カレンダー説明
+- `color` - カレンダーの色
+
+### 例
+
+```bash
+# 名前とIDのみ表示（最も一般的な用途）
+gcal calendars list --fields name,id
+
+# 名前、ID、アクセス権限を表示
+gcal calendars list --fields name,id,access
+
+# 名前のみ表示（クイック概要用）
+gcal calendars list --fields name
+
+# カレンダーの色とアクセス権限を表示
+gcal calendars list --fields name,color,access
+```
+
+**注意**: `--fields`フラグはテーブル形式の出力にのみ影響します。JSON出力は常にすべての利用可能なフィールドを含みます。
 
 ## 使用例
 

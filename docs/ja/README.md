@@ -30,6 +30,7 @@ Google Calendarの操作を行うコマンドラインインターフェース�
 - 🔐 **安全なOAuth2認証** - 一度の設定でトークンの自動更新
 - 💻 **ターミナル向け出力** - スクリプト用のテーブル形式またはJSON形式
 - 🔇 **静寂モードサポート** - スクリプト用に`--quiet`フラグでステータスメッセージを非表示
+- 🎯 **カスタマイズ可能なテーブル列** - `--fields`フラグでテーブル形式の特定列のみを表示
 - 🚀 **高速・軽量** - oclifフレームワークで構築
 
 ## インストール
@@ -125,6 +126,10 @@ gcal events list --max-results 5 --days 7
 
 # スクリプト用の静寂モード（ステータスメッセージを非表示、データ出力は維持）
 gcal events list --quiet --format json | jq '.[] | .summary'
+
+# --fieldsフラグでテーブル列をカスタマイズ
+gcal events list --fields title,date,time
+gcal calendars list --fields name,id
 
 # 設定例
 gcal config set defaultCalendar work@company.com

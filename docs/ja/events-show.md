@@ -19,6 +19,7 @@ gcal events show <event-id> [options]
 | フラグ | 短縮形 | 説明 | デフォルト |
 |--------|--------|------|-----------|
 | `--calendar` | `-c` | イベントが存在するカレンダーID | `primary` |
+| `--fields` | | テーブル形式で表示するフィールドのカンマ区切りリスト | すべてのフィールド |
 | `--format` | `-f` | 出力形式（table、json、pretty-json） | `table` |
 | `--quiet` | `-q` | 重要でない出力を非表示（ステータスメッセージ、進行状況表示） | `false` |
 

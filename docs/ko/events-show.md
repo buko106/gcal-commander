@@ -19,6 +19,7 @@ gcal events show <event-id> [옵션]
 | 플래그 | 단축 | 설명 | 기본값 |
 |--------|------|------|--------|
 | `--calendar` | `-c` | 이벤트가 존재하는 캘린더 ID | `primary` |
+| `--fields` | | 테이블 형식으로 표시할 필드의 쉼표 구분 목록 | 모든 필드 |
 | `--format` | `-f` | 출력 형식 (table, json, pretty-json) | `table` |
 | `--quiet` | `-q` | 필수가 아닌 출력 숨기기 (상태 메시지, 진행률 표시기) | `false` |
 

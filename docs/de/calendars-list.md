@@ -12,6 +12,7 @@ gcal calendars list [optionen]
 
 | Flag | Kurz | Beschreibung | Standard |
 |------|------|--------------|----------|
+| `--fields` | | Kommagetrennte Liste der Felder für Tabellenformat | Alle Felder |
 | `--format` | `-f` | Ausgabeformat (table, json, pretty-json) | `table` |
 | `--quiet` | `-q` | Nicht-wesentliche Ausgabe ausblenden (Statusmeldungen, Fortschrittsanzeigen) | `false` |
 
@@ -28,6 +29,12 @@ gcal calendars list --format json
 
 # Kalender stumm auflisten (ohne Statusmeldungen)
 gcal calendars list --quiet
+
+# Nur Kalendernamen und IDs anzeigen
+gcal calendars list --fields name,id
+
+# Nur Namen anzeigen (für schnelle Übersicht)
+gcal calendars list --fields name
 ```
 
 ### Ausgabeformate
@@ -65,6 +72,35 @@ Verfügbare Kalender (3 gefunden):
   }
 ]
 ```
+
+## Tabellenfeld-Anpassung
+
+Sie können anpassen, welche Spalten im Tabellenformat angezeigt werden, indem Sie die `--fields`-Flagge verwenden:
+
+### Verfügbare Felder
+- `name` - Kalendername/-zusammenfassung
+- `id` - Kalender-ID
+- `access` - Zugriffsrolle (owner, reader, writer, etc.)
+- `primary` - Primärkalender-Indikator
+- `description` - Kalenderbeschreibung
+- `color` - Kalenderfarbe
+
+### Beispiele
+```bash
+# Nur Name und ID anzeigen (häufigster Anwendungsfall)
+gcal calendars list --fields name,id
+
+# Name, ID und Zugriffsrolle anzeigen
+gcal calendars list --fields name,id,access
+
+# Nur Namen für schnelle Übersicht anzeigen
+gcal calendars list --fields name
+
+# Kalenderfarben und Zugriff anzeigen
+gcal calendars list --fields name,color,access
+```
+
+**Hinweis**: Die `--fields`-Flagge wirkt nur auf die Tabellenformat-Ausgabe. JSON-Ausgabe enthält immer alle verfügbaren Felder.
 
 ## Anwendungsfälle
 

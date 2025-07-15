@@ -19,6 +19,7 @@ gcal events list [캘린더] [옵션]
 | 플래그 | 단축 | 설명 | 기본값 |
 |--------|------|------|--------|
 | `--days` | `-d` | 미래로 조회할 일수 (1-365) | `30` |
+| `--fields` | | 테이블 형식으로 표시할 필드의 쉼표 구분 목록 | 모든 필드 |
 | `--format` | `-f` | 출력 형식 (table, json, pretty-json) | `table` |
 | `--max-results` | `-n` | 반환할 최대 이벤트 수 (1-100) | `10` |
 | `--quiet` | `-q` | 필수가 아닌 출력 숨기기 (상태 메시지, 진행률 표시기) | `false` |
@@ -65,6 +66,10 @@ gcal events list --quiet --format json | jq '.[] | .summary'
 gcal config set defaultCalendar work@company.com
 gcal config set events.days 14
 gcal events list  # 14일간 work@company.com 사용
+
+# 테이블 열 사용자 정의
+gcal events list --fields title,date,time
+gcal events list --fields title,location --max-results 20
 ```
 
 ### 출력 형식
@@ -97,6 +102,31 @@ gcal events list  # 14일간 work@company.com 사용
   }
 ]
 ```
+
+## 테이블 필드 사용자 정의
+
+`--fields` 플래그를 사용하여 테이블 형식에서 표시될 열을 사용자 정의할 수 있습니다:
+
+### 사용 가능한 필드
+- `title` - 이벤트 제목/요약
+- `date` - 이벤트 날짜
+- `time` - 이벤트 시간
+- `location` - 이벤트 위치
+- `description` - 이벤트 설명
+
+### 예제
+```bash
+# 제목과 날짜만 표시
+gcal events list --fields title,date
+
+# 제목, 시간, 위치 표시
+gcal events list --fields title,time,location
+
+# 제목만 표시 (빠른 개요용)
+gcal events list --fields title
+```
+
+**참고**: `--fields` 플래그는 테이블 형식 출력에만 영향을 줍니다. JSON 출력은 항상 사용 가능한 모든 필드를 포함합니다.
 
 ## 시간 범위 및 제한
 

@@ -12,6 +12,7 @@ gcal calendars list [opciones]
 
 | Bandera | Abrev. | Descripción | Por defecto |
 |---------|--------|-------------|-------------|
+| `--fields` | | Lista separada por comas de campos a mostrar en formato tabla | Todos los campos |
 | `--format` | `-f` | Formato de salida (table, json, pretty-json) | `table` |
 | `--quiet` | `-q` | Ocultar salida no esencial (mensajes de estado, indicadores de progreso) | `false` |
 
@@ -28,6 +29,12 @@ gcal calendars list --format json
 
 # Listar calendarios silenciosamente (sin mensajes de estado)
 gcal calendars list --quiet
+
+# Mostrar solo nombres de calendarios e IDs
+gcal calendars list --fields name,id
+
+# Mostrar solo nombres (para vista rápida)
+gcal calendars list --fields name
 ```
 
 ### Formatos de salida
@@ -65,6 +72,35 @@ Calendarios disponibles (3 encontrados):
   }
 ]
 ```
+
+## Personalización de campos de tabla
+
+Puedes personalizar qué columnas se muestran en formato tabla usando la bandera `--fields`:
+
+### Campos disponibles
+- `name` - Nombre/resumen del calendario
+- `id` - ID del calendario
+- `access` - Rol de acceso (owner, reader, writer, etc.)
+- `primary` - Indicador de calendario principal
+- `description` - Descripción del calendario
+- `color` - Color del calendario
+
+### Ejemplos
+```bash
+# Mostrar solo nombre e ID (caso de uso más común)
+gcal calendars list --fields name,id
+
+# Mostrar nombre, ID y rol de acceso
+gcal calendars list --fields name,id,access
+
+# Mostrar solo nombres para vista rápida
+gcal calendars list --fields name
+
+# Mostrar colores de calendarios y acceso
+gcal calendars list --fields name,color,access
+```
+
+**Nota**: La bandera `--fields` solo afecta la salida en formato tabla. La salida JSON siempre incluye todos los campos disponibles.
 
 ## Casos de uso
 
