@@ -66,11 +66,12 @@ describe('calendars/list i18n integration', () => {
 
       const { stdout } = await runCommand(['calendars:list']);
 
-      expect(stdout).toContain('(Primary)');
-      expect(stdout).toContain('ID:');
-      expect(stdout).toContain('Access:');
-      expect(stdout).toContain('Description:');
-      expect(stdout).toContain('Color:');
+      expect(stdout).toContain('✓');
+      expect(stdout).toContain('Name');
+      expect(stdout).toContain('ID');
+      expect(stdout).toContain('Access');
+      expect(stdout).toContain('Description');
+      expect(stdout).toContain('Color');
     });
   });
 
@@ -140,11 +141,11 @@ describe('calendars/list i18n integration', () => {
 
       const { stdout } = await runCommand(['calendars:list']);
 
-      expect(stdout).toContain('(メイン)');
-      expect(stdout).toContain('ID:');
-      expect(stdout).toContain('アクセス:');
-      expect(stdout).toContain('説明:');
-      expect(stdout).toContain('色:');
+      expect(stdout).toContain('✓');
+      expect(stdout).toContain('ID');
+      expect(stdout).toContain('アクセス');
+      expect(stdout).toContain('説明');
+      expect(stdout).toContain('色');
     });
   });
 });

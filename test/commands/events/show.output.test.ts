@@ -93,18 +93,18 @@ describe('events show output', () => {
       const event = JSON.parse(stdout);
 
       // Verify event data
-      expect(event).to.have.property('id', 'test-event-123');
-      expect(event).to.have.property('summary', 'Important Test Meeting');
-      expect(event).to.have.property('description', 'This is a detailed description of the test event');
-      expect(event).to.have.property('location', 'Conference Room A, Building 1');
-      expect(event).to.have.property('status', 'confirmed');
-      expect(event.attendees).to.have.length(2);
-      expect(event.creator).to.have.property('displayName', 'Event Creator');
-      expect(event.organizer).to.have.property('displayName', 'Meeting Organizer');
+      expect(event).toHaveProperty('id', 'test-event-123');
+      expect(event).toHaveProperty('summary', 'Important Test Meeting');
+      expect(event).toHaveProperty('description', 'This is a detailed description of the test event');
+      expect(event).toHaveProperty('location', 'Conference Room A, Building 1');
+      expect(event).toHaveProperty('status', 'confirmed');
+      expect(event.attendees).toHaveLength(2);
+      expect(event.creator).toHaveProperty('displayName', 'Event Creator');
+      expect(event.organizer).toHaveProperty('displayName', 'Meeting Organizer');
 
       // Should be minified (no indentation)
       expect(stdout).not.toContain('\n  ');
-      expect(stdout.trim().split('\n')).to.have.length(1);
+      expect(stdout.trim().split('\n')).toHaveLength(1);
 
       // No status messages should contaminate JSON output
       expect(stdout).not.toContain('Authenticating');
@@ -123,18 +123,18 @@ describe('events show output', () => {
       const event = JSON.parse(stdout);
 
       // Verify event data
-      expect(event).to.have.property('id', 'test-event-123');
-      expect(event).to.have.property('summary', 'Important Test Meeting');
-      expect(event).to.have.property('description', 'This is a detailed description of the test event');
-      expect(event).to.have.property('location', 'Conference Room A, Building 1');
-      expect(event.attendees).to.have.length(2);
+      expect(event).toHaveProperty('id', 'test-event-123');
+      expect(event).toHaveProperty('summary', 'Important Test Meeting');
+      expect(event).toHaveProperty('description', 'This is a detailed description of the test event');
+      expect(event).toHaveProperty('location', 'Conference Room A, Building 1');
+      expect(event.attendees).toHaveLength(2);
 
       // Should be formatted (with indentation)
       expect(stdout).toContain('\n  ');
-      expect(stdout.trim().split('\n').length).to.be.greaterThan(1);
+      expect(stdout.trim().split('\n').length).toBeGreaterThan(1);
 
       // Should start with object bracket and proper indentation
-      expect(stdout.trim()).to.match(/^{\s*\n\s+"/);
+      expect(stdout.trim()).toMatch(/^{\s*\n\s+"/);
 
       // No status messages should contaminate JSON output
       expect(stdout).not.toContain('Authenticating');
@@ -146,24 +146,24 @@ describe('events show output', () => {
       const { stdout: prettyJsonOutput } = await runCommand('events show test-event-123 --format pretty-json');
 
       // Both should be valid JSON
-      expect(() => JSON.parse(jsonOutput)).to.not.throw();
-      expect(() => JSON.parse(prettyJsonOutput)).to.not.throw();
+      expect(() => JSON.parse(jsonOutput)).not.toThrow();
+      expect(() => JSON.parse(prettyJsonOutput)).not.toThrow();
 
       // Parse both outputs
       const jsonEvent = JSON.parse(jsonOutput);
       const prettyJsonEvent = JSON.parse(prettyJsonOutput);
 
       // Should contain exactly the same data
-      expect(jsonEvent).to.deep.equal(prettyJsonEvent);
-      expect(jsonEvent).to.have.property('id', 'test-event-123');
-      expect(prettyJsonEvent).to.have.property('summary', 'Important Test Meeting');
+      expect(jsonEvent).toEqual(prettyJsonEvent);
+      expect(jsonEvent).toHaveProperty('id', 'test-event-123');
+      expect(prettyJsonEvent).toHaveProperty('summary', 'Important Test Meeting');
 
       // But the string representations should be different
-      expect(jsonOutput).to.not.equal(prettyJsonOutput);
+      expect(jsonOutput).not.toEqual(prettyJsonOutput);
 
       // json should be minified, pretty-json should be formatted
-      expect(jsonOutput).to.not.contain('\n  ');
-      expect(prettyJsonOutput).to.contain('\n  ');
+      expect(jsonOutput).not.toContain('\n  ');
+      expect(prettyJsonOutput).toContain('\n  ');
     });
   });
 
@@ -201,8 +201,8 @@ describe('events show output', () => {
       expect(() => JSON.parse(stdout)).not.toThrow();
 
       const event = JSON.parse(stdout);
-      expect(event).to.be.an('object');
-      expect(event).to.have.property('id', 'simple-event');
+      expect(event).toBeTypeOf('object');
+      expect(event).toHaveProperty('id', 'simple-event');
 
       // Should not contain any status messages
       expect(stdout).not.toContain('Authenticating');

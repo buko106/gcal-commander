@@ -33,8 +33,8 @@ describe('events list integration', () => {
       expect(stdout).toContain('Mock Event 2');
 
       // Status messages should NOT be in stdout
-      expect(stdout).to.not.contain('Authenticating with Google Calendar...');
-      expect(stdout).to.not.contain('Fetching events from');
+      expect(stdout).not.toContain('Authenticating with Google Calendar...');
+      expect(stdout).not.toContain('Fetching events from');
     });
 
     it('should produce clean JSON output for piping', async () => {
@@ -47,14 +47,14 @@ describe('events list integration', () => {
       // stdout should contain only clean JSON
       expect(() => JSON.parse(stdout)).not.toThrow();
       const events = JSON.parse(stdout);
-      expect(Array.isArray(events)).to.be.true;
-      expect(events).to.have.length(2);
-      expect(events[0]).to.have.property('summary', 'Mock Event 1');
-      expect(events[1]).to.have.property('summary', 'Mock Event 2');
+      expect(Array.isArray(events)).toBe(true);
+      expect(events).toHaveLength(2);
+      expect(events[0]).toHaveProperty('summary', 'Mock Event 1');
+      expect(events[1]).toHaveProperty('summary', 'Mock Event 2');
 
       // No status messages should contaminate JSON output
-      expect(stdout).to.not.contain('Authenticating');
-      expect(stdout).to.not.contain('Fetching');
+      expect(stdout).not.toContain('Authenticating');
+      expect(stdout).not.toContain('Fetching');
     });
   });
 
@@ -97,15 +97,13 @@ describe('events list integration', () => {
       const { stdout } = await runCommand('events list');
 
       expect(stdout).toContain('Upcoming Events (4 found)');
-      expect(stdout).toContain('1. Meeting with client');
+      expect(stdout).toContain('Meeting with client');
       expect(stdout).toContain('Conference Room A');
-      expect(stdout).toContain('2. Company Holiday');
+      expect(stdout).toContain('Company Holiday');
       expect(stdout).toContain('All day');
-      expect(stdout).toContain('3. (No title)');
-      expect(stdout).toContain('4. Event with long description');
-      expect(stdout).toContain(
-        'This is a very long description that exceeds 100 characters and should be truncated in the table vie...',
-      );
+      expect(stdout).toContain('(No title)');
+      expect(stdout).toContain('Event with long description');
+      expect(stdout).toContain('This is a very long descrip…');
     });
 
     it('should handle empty events list', async () => {
@@ -150,7 +148,7 @@ describe('events list integration', () => {
 
       expect(stdout).toContain('会議 📅');
       expect(stdout).toContain('東京オフィス 🏢');
-      expect(stdout).toContain('重要な会議です。資料を準備してください。');
+      expect(stdout).toContain('重要な会議です。資料を準備');
       expect(stdout).toContain('🎉 Birthday Party 🎂');
       expect(stdout).toContain('🏠 Home');
       expect(stdout).toContain('Celebrating with 🍰 and 🎈');
@@ -196,18 +194,18 @@ describe('events list integration', () => {
       const { stdout } = await runCommand('events list --max-results 5');
 
       expect(stdout).toContain('Upcoming Events (5 found)');
-      expect(stdout).toContain('1. Event 1');
-      expect(stdout).toContain('5. Event 5');
-      expect(stdout).to.not.contain('6. Event 6');
+      expect(stdout).toContain('Event 1');
+      expect(stdout).toContain('Event 5');
+      expect(stdout).not.toContain('Event 6');
     });
 
     it('should respect max-results short flag', async () => {
       const { stdout } = await runCommand('events list -n 3');
 
       expect(stdout).toContain('Upcoming Events (3 found)');
-      expect(stdout).toContain('1. Event 1');
-      expect(stdout).toContain('3. Event 3');
-      expect(stdout).to.not.contain('4. Event 4');
+      expect(stdout).toContain('Event 1');
+      expect(stdout).toContain('Event 3');
+      expect(stdout).not.toContain('Event 4');
     });
 
     it('should use default max-results when not specified', async () => {
@@ -215,8 +213,8 @@ describe('events list integration', () => {
 
       // Default should be 10, but we have 15 events, so should see 10
       expect(stdout).toContain('Upcoming Events (10 found)');
-      expect(stdout).toContain('10. Event 10');
-      expect(stdout).to.not.contain('11. Event 11');
+      expect(stdout).toContain('Event 10');
+      expect(stdout).not.toContain('Event 11');
     });
   });
 
@@ -251,34 +249,34 @@ describe('events list integration', () => {
 
       // Parse JSON output
       const events = JSON.parse(jsonOutput);
-      expect(events).to.have.length(2);
+      expect(events).toHaveLength(2);
 
       // Verify key information appears in both formats
       const firstEvent = events.find((event: any) => event.id === 'test-event-1'); // eslint-disable-line @typescript-eslint/no-explicit-any
       const secondEvent = events.find((event: any) => event.id === 'test-event-2'); // eslint-disable-line @typescript-eslint/no-explicit-any
 
-      expect(firstEvent).to.exist;
-      expect(secondEvent).to.exist;
+      expect(firstEvent).toBeDefined();
+      expect(secondEvent).toBeDefined();
 
       // Check table format contains the same information
-      expect(tableOutput).to.contain('Test Meeting');
-      expect(tableOutput).to.contain('All Day Event');
-      expect(tableOutput).to.contain('Meeting Room 1');
-      expect(tableOutput).to.contain('Important test meeting');
-      expect(tableOutput).to.contain('All day');
+      expect(tableOutput).toContain('Test Meeting');
+      expect(tableOutput).toContain('All Day Event');
+      expect(tableOutput).toContain('Meeting Room 1');
+      expect(tableOutput).toContain('Important test meeting');
+      expect(tableOutput).toContain('All day');
 
       // Verify JSON contains complete data
-      expect(firstEvent.summary).to.equal('Test Meeting');
-      expect(firstEvent.location).to.equal('Meeting Room 1');
-      expect(firstEvent.description).to.equal('Important test meeting');
-      expect(firstEvent.attendees).to.have.length(2);
+      expect(firstEvent.summary).toBe('Test Meeting');
+      expect(firstEvent.location).toBe('Meeting Room 1');
+      expect(firstEvent.description).toBe('Important test meeting');
+      expect(firstEvent.attendees).toHaveLength(2);
 
-      expect(secondEvent.summary).to.equal('All Day Event');
-      expect(secondEvent.start.date).to.equal('2024-06-26');
+      expect(secondEvent.summary).toBe('All Day Event');
+      expect(secondEvent.start.date).toBe('2024-06-26');
 
       // Should be minified JSON (no indentation)
-      expect(jsonOutput).to.not.contain('\n  ');
-      expect(jsonOutput.trim().split('\n')).to.have.length(1);
+      expect(jsonOutput).not.toContain('\n  ');
+      expect(jsonOutput.trim().split('\n')).toHaveLength(1);
     });
 
     it('should produce formatted JSON with --format pretty-json', async () => {
@@ -291,30 +289,30 @@ describe('events list integration', () => {
       // Should be valid JSON
       expect(() => JSON.parse(stdout)).not.toThrow();
       const events = JSON.parse(stdout);
-      expect(events).to.have.length(2);
+      expect(events).toHaveLength(2);
 
       // Verify data integrity
       const firstEvent = events.find((event: any) => event.id === 'test-event-1'); // eslint-disable-line @typescript-eslint/no-explicit-any
       const secondEvent = events.find((event: any) => event.id === 'test-event-2'); // eslint-disable-line @typescript-eslint/no-explicit-any
 
-      expect(firstEvent).to.exist;
-      expect(firstEvent.summary).to.equal('Test Meeting');
-      expect(firstEvent.location).to.equal('Meeting Room 1');
-      expect(firstEvent.attendees).to.have.length(2);
+      expect(firstEvent).toBeDefined();
+      expect(firstEvent.summary).toBe('Test Meeting');
+      expect(firstEvent.location).toBe('Meeting Room 1');
+      expect(firstEvent.attendees).toHaveLength(2);
 
-      expect(secondEvent).to.exist;
-      expect(secondEvent.summary).to.equal('All Day Event');
+      expect(secondEvent).toBeDefined();
+      expect(secondEvent.summary).toBe('All Day Event');
 
       // Should be formatted JSON (with indentation)
       expect(stdout).toContain('\n  ');
-      expect(stdout.trim().split('\n').length).to.be.greaterThan(1);
+      expect(stdout.trim().split('\n').length).toBeGreaterThan(1);
 
       // Should start with array bracket and proper indentation
-      expect(stdout.trim()).to.match(/^\[\s*\n\s+{/);
+      expect(stdout.trim()).toMatch(/^\[\s*\n\s+{/);
 
       // No status messages should contaminate JSON output
-      expect(stdout).to.not.contain('Authenticating');
-      expect(stdout).to.not.contain('Fetching');
+      expect(stdout).not.toContain('Authenticating');
+      expect(stdout).not.toContain('Fetching');
     });
 
     it('should produce same data in json and pretty-json formats', async () => {
@@ -322,24 +320,24 @@ describe('events list integration', () => {
       const { stdout: prettyJsonOutput } = await runCommand('events list --format pretty-json');
 
       // Both should be valid JSON
-      expect(() => JSON.parse(jsonOutput)).to.not.throw();
-      expect(() => JSON.parse(prettyJsonOutput)).to.not.throw();
+      expect(() => JSON.parse(jsonOutput)).not.toThrow();
+      expect(() => JSON.parse(prettyJsonOutput)).not.toThrow();
 
       // Parse both outputs
       const jsonEvents = JSON.parse(jsonOutput);
       const prettyJsonEvents = JSON.parse(prettyJsonOutput);
 
       // Should contain exactly the same data
-      expect(jsonEvents).to.deep.equal(prettyJsonEvents);
-      expect(jsonEvents).to.have.length(2);
-      expect(prettyJsonEvents).to.have.length(2);
+      expect(jsonEvents).toEqual(prettyJsonEvents);
+      expect(jsonEvents).toHaveLength(2);
+      expect(prettyJsonEvents).toHaveLength(2);
 
       // But the string representations should be different
-      expect(jsonOutput).to.not.equal(prettyJsonOutput);
+      expect(jsonOutput).not.toEqual(prettyJsonOutput);
 
       // json should be minified, pretty-json should be formatted
-      expect(jsonOutput).to.not.contain('\n  ');
-      expect(prettyJsonOutput).to.contain('\n  ');
+      expect(jsonOutput).not.toContain('\n  ');
+      expect(prettyJsonOutput).toContain('\n  ');
     });
 
     it('should produce valid JSON even with complex event data', async () => {
@@ -369,10 +367,10 @@ describe('events list integration', () => {
 
       expect(() => JSON.parse(stdout)).not.toThrow();
       const events = JSON.parse(stdout);
-      expect(events).to.have.length(1);
-      expect(events[0].summary).to.contain('quotes');
-      expect(events[0].description).to.contain('newlines');
-      expect(events[0].location).to.contain('special');
+      expect(events).toHaveLength(1);
+      expect(events[0].summary).toContain('quotes');
+      expect(events[0].description).toContain('newlines');
+      expect(events[0].location).toContain('special');
     });
   });
 
@@ -381,8 +379,8 @@ describe('events list integration', () => {
       const { stderr, stdout } = await runCommand('events list --quiet');
 
       // Status messages should be suppressed
-      expect(stderr).to.not.contain('Authenticating with Google Calendar...');
-      expect(stderr).to.not.contain('Fetching events from');
+      expect(stderr).not.toContain('Authenticating with Google Calendar...');
+      expect(stderr).not.toContain('Fetching events from');
 
       // But results should still be shown
       expect(stdout).toContain('Upcoming Events (2 found)');
@@ -393,13 +391,67 @@ describe('events list integration', () => {
       const { stderr, stdout } = await runCommand('events list --format json --quiet');
 
       // Status messages should be suppressed
-      expect(stderr).to.not.contain('Authenticating with Google Calendar...');
-      expect(stderr).to.not.contain('Fetching events from');
+      expect(stderr).not.toContain('Authenticating with Google Calendar...');
+      expect(stderr).not.toContain('Fetching events from');
 
       // JSON output should still be clean and valid
       expect(() => JSON.parse(stdout)).not.toThrow();
       const events = JSON.parse(stdout);
-      expect(events).to.have.length(2);
+      expect(events).toHaveLength(2);
+    });
+  });
+
+  describe('--fields flag behavior', () => {
+    beforeEach(() => {
+      const testEvents = [
+        {
+          description: 'Important test meeting',
+          end: { dateTime: '2024-06-25T11:00:00Z' },
+          id: 'test-event-1',
+          location: 'Meeting Room 1',
+          start: { dateTime: '2024-06-25T10:00:00Z' },
+          summary: 'Test Meeting',
+        },
+      ];
+      mockCalendarService.listEvents.mockResolvedValue(testEvents);
+    });
+
+    it('should show only specified fields with --fields flag', async () => {
+      const { stdout } = await runCommand('events list --fields=title,date');
+
+      expect(stdout).toContain('Title');
+      expect(stdout).toContain('Date');
+      expect(stdout).toContain('Test Meeting');
+      expect(stdout).toContain('6/25/2024');
+
+      // These columns should NOT be present
+      expect(stdout).not.toContain('Time');
+      expect(stdout).not.toContain('Location');
+      expect(stdout).not.toContain('Description');
+    });
+
+    it('should handle single field with --fields flag', async () => {
+      const { stdout } = await runCommand('events list --fields=title');
+
+      expect(stdout).toContain('Title');
+      expect(stdout).toContain('Test Meeting');
+
+      // These columns should NOT be present
+      expect(stdout).not.toContain('Date');
+      expect(stdout).not.toContain('Time');
+      expect(stdout).not.toContain('Location');
+      expect(stdout).not.toContain('Description');
+    });
+
+    it('should work with --fields and --format json', async () => {
+      const { stdout } = await runCommand('events list --fields=title,date --format json');
+
+      // JSON output should not be affected by --fields flag
+      expect(() => JSON.parse(stdout)).not.toThrow();
+      const events = JSON.parse(stdout);
+      expect(events).toHaveLength(1);
+      expect(events[0]).toHaveProperty('summary', 'Test Meeting');
+      expect(events[0]).toHaveProperty('location', 'Meeting Room 1');
     });
   });
 });

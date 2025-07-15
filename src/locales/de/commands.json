@@ -21,7 +21,14 @@
       "noEventsFound": "Keine kommenden Ereignisse gefunden.",
       "tableHeader": "\nKommende Ereignisse ({{count}} gefunden):\n",
       "noTitle": "(Kein Titel)",
-      "error": "Fehler beim Auflisten der Ereignisse: {{error}}"
+      "error": "Fehler beim Auflisten der Ereignisse: {{error}}",
+      "columns": {
+        "title": "Titel",
+        "date": "Datum",
+        "time": "Zeit",
+        "location": "Ort",
+        "description": "Beschreibung"
+      }
     },
     "show": {
       "description": "Detaillierte Informationen zu einem bestimmten Ereignis anzeigen",
@@ -85,6 +92,14 @@
         "access": "Zugriff:",
         "description": "Beschreibung:",
         "color": "Farbe:"
+      },
+      "columns": {
+        "name": "Name",
+        "id": "ID",
+        "access": "Zugriff",
+        "primary": "Primär",
+        "description": "Beschreibung",
+        "color": "Farbe"
       }
     }
   },

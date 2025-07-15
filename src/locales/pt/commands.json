@@ -21,7 +21,14 @@
       "noEventsFound": "Nenhum evento próximo encontrado.",
       "tableHeader": "\nPróximos Eventos ({{count}} encontrados):\n",
       "noTitle": "(Sem título)",
-      "error": "Falha ao listar eventos: {{error}}"
+      "error": "Falha ao listar eventos: {{error}}",
+      "columns": {
+        "title": "Título",
+        "date": "Data",
+        "time": "Hora",
+        "location": "Local",
+        "description": "Descrição"
+      }
     },
     "show": {
       "description": "Mostrar informações detalhadas sobre um evento específico",
@@ -85,6 +92,14 @@
         "access": "Acesso:",
         "description": "Descrição:",
         "color": "Cor:"
+      },
+      "columns": {
+        "name": "Nome",
+        "id": "ID",
+        "access": "Acesso",
+        "primary": "Principal",
+        "description": "Descrição",
+        "color": "Cor"
       }
     }
   },

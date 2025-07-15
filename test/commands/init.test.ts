@@ -64,7 +64,7 @@ describe('init command', () => {
       expect(mockPromptService.select).toHaveBeenCalled();
       expect(mockPromptService.select.mock.calls[0][0]).toContain('language');
       expect(mockI18nService.changeLanguage).toHaveBeenCalled();
-      expect(mockI18nService.changeLanguage.mock.calls[0][0]).toEqual('ja');
+      expect(mockI18nService.changeLanguage.mock.calls[0][0]).toBe('ja');
     });
 
     it('should set English as default when user selects English', async () => {
@@ -74,7 +74,7 @@ describe('init command', () => {
       await runCommand('init');
 
       expect(mockI18nService.changeLanguage).toHaveBeenCalled();
-      expect(mockI18nService.changeLanguage.mock.calls[0][0]).toEqual('en');
+      expect(mockI18nService.changeLanguage.mock.calls[0][0]).toBe('en');
     });
 
     it('should initialize i18n service before language selection', async () => {
@@ -94,8 +94,8 @@ describe('init command', () => {
       await runCommand('init');
 
       expect(configServiceSpy).toHaveBeenCalled();
-      expect(configServiceSpy.mock.calls[0][0]).toEqual('language');
-      expect(configServiceSpy.mock.calls[0][1]).toEqual('ja');
+      expect(configServiceSpy.mock.calls[0][0]).toBe('language');
+      expect(configServiceSpy.mock.calls[0][1]).toBe('ja');
     });
   });
 

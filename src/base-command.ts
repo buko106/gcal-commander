@@ -3,11 +3,16 @@ import { container } from 'tsyringe';
 
 import { TOKENS } from './di/tokens';
 import { IAuthService, ICalendarService, IConfigService, II18nService } from './interfaces/services';
+import { parseFields } from './utils/fields-parser';
 
 export type OutputFormat = 'json' | 'pretty-json' | 'table';
 
 export abstract class BaseCommand extends Command {
   static baseFlags = {
+    fields: Flags.string({
+      description: 'Comma-separated list of fields to display in table format',
+      helpValue: 'field1,field2,...',
+    }),
     format: Flags.string({
       char: 'f',
       default: 'table',
@@ -23,6 +28,7 @@ export abstract class BaseCommand extends Command {
   protected authService!: IAuthService;
   protected calendarService!: ICalendarService;
   protected configService!: IConfigService;
+  protected fields?: string[];
   protected format: OutputFormat = 'table';
   protected i18nService!: II18nService;
   protected quiet = false;
@@ -34,6 +40,7 @@ export abstract class BaseCommand extends Command {
   async init(): Promise<void> {
     await super.init();
     const { flags } = await this.parse(this.constructor as typeof BaseCommand);
+    this.fields = parseFields(flags.fields);
     this.format = flags.format as OutputFormat;
     this.quiet = flags.quiet;
 

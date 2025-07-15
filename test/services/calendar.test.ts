@@ -22,7 +22,7 @@ describe('CalendarService', () => {
   });
 
   it('can be imported', () => {
-    expect(CalendarService).to.be.a('function');
+    expect(typeof CalendarService).toBe('function');
   });
 
   it('requires auth parameter', () => {
@@ -32,7 +32,7 @@ describe('CalendarService', () => {
       expect.fail('Should have thrown an error');
     } catch (error) {
       // Expected to fail without proper auth
-      expect(error).to.exist;
+      expect(error).toBeDefined();
     }
   });
 

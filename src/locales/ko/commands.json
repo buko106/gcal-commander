@@ -21,7 +21,14 @@
       "noEventsFound": "다가오는 이벤트를 찾을 수 없습니다.",
       "tableHeader": "\n다가오는 이벤트 ({{count}}개 발견):\n",
       "noTitle": "(제목 없음)",
-      "error": "이벤트 목록을 가져오는데 실패했습니다: {{error}}"
+      "error": "이벤트 목록을 가져오는데 실패했습니다: {{error}}",
+      "columns": {
+        "title": "제목",
+        "date": "날짜",
+        "time": "시간",
+        "location": "위치",
+        "description": "설명"
+      }
     },
     "show": {
       "description": "특정 이벤트의 상세 정보 표시",
@@ -85,6 +92,14 @@
         "access": "접근:",
         "description": "설명:",
         "color": "색상:"
+      },
+      "columns": {
+        "name": "이름",
+        "id": "ID",
+        "access": "접근",
+        "primary": "기본",
+        "description": "설명",
+        "color": "색상"
       }
     }
   },

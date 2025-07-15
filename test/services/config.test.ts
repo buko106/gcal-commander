@@ -90,7 +90,7 @@ describe('ConfigService', () => {
       const result = await configService.list();
       expect(result).toEqual({});
       expect(mockConfigStorage.write).toHaveBeenCalledOnce();
-      expect(mockConfigStorage.write.mock.calls[0][0]).toEqual('{}');
+      expect(mockConfigStorage.write.mock.calls[0][0]).toBe('{}');
     });
   });
 
@@ -115,7 +115,7 @@ describe('ConfigService', () => {
       const result = configService.validateValue('unknownKey', 'value');
 
       expect(result.valid).toBe(false);
-      expect(result.errorKey).toEqual('config.validation.unknownKey');
+      expect(result.errorKey).toBe('config.validation.unknownKey');
       expect(result.errorOptions).toEqual({ key: 'unknownKey' });
     });
 
@@ -140,7 +140,7 @@ describe('ConfigService', () => {
       const result = configService.validateValue('language', 'invalid');
 
       expect(result.valid).toBe(false);
-      expect(result.errorKey).toEqual('config.validation.zodError');
+      expect(result.errorKey).toBe('config.validation.zodError');
       expect(result.errorOptions).toHaveProperty('key', 'language');
       expect(result.errorOptions).toHaveProperty('message');
     });
@@ -149,7 +149,7 @@ describe('ConfigService', () => {
       const result = configService.validateValue('events.days', 0);
 
       expect(result.valid).toBe(false);
-      expect(result.errorKey).toEqual('config.validation.zodError');
+      expect(result.errorKey).toBe('config.validation.zodError');
       expect(result.errorOptions).toHaveProperty('key', 'events.days');
     });
 
@@ -157,7 +157,7 @@ describe('ConfigService', () => {
       const result = configService.validateValue('events.maxResults', 101);
 
       expect(result.valid).toBe(false);
-      expect(result.errorKey).toEqual('config.validation.zodError');
+      expect(result.errorKey).toBe('config.validation.zodError');
       expect(result.errorOptions).toHaveProperty('key', 'events.maxResults');
     });
 
@@ -165,7 +165,7 @@ describe('ConfigService', () => {
       const result = configService.validateValue('events.format', 'invalid');
 
       expect(result.valid).toBe(false);
-      expect(result.errorKey).toEqual('config.validation.zodError');
+      expect(result.errorKey).toBe('config.validation.zodError');
       expect(result.errorOptions).toHaveProperty('key', 'events.format');
     });
 
@@ -174,7 +174,7 @@ describe('ConfigService', () => {
       const result = configService.validateValue('defaultCalendar', null);
 
       expect(result.valid).toBe(false);
-      expect(result.errorKey).toEqual('config.validation.zodError');
+      expect(result.errorKey).toBe('config.validation.zodError');
     });
   });
 
@@ -193,8 +193,8 @@ describe('ConfigService', () => {
       const maxResults = await configService.get('events.maxResults');
       const format = await configService.get('events.format');
 
-      expect(maxResults).toEqual(50);
-      expect(format).toEqual('json');
+      expect(maxResults).toBe(50);
+      expect(format).toBe('json');
     });
 
     it('should handle nested set operations', async () => {

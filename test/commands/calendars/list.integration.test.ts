@@ -38,11 +38,12 @@ describe('calendars list integration', () => {
       expect(stderr).toContain('Authenticating with Google Calendar...');
       expect(stderr).toContain('Fetching calendars...');
       expect(stdout).toContain('Available Calendars (50 found)');
-      expect(stdout).toContain('1. Calendar 1 (Primary)');
-      expect(stdout).toContain('50. Calendar 50');
+      expect(stdout).toContain('Calendar 1');
+      expect(stdout).toContain('✓');
+      expect(stdout).toContain('Calendar 50');
 
       // Verify some random entries to ensure all are displayed
-      expect(stdout).toContain('25. Calendar 25');
+      expect(stdout).toContain('Calendar 25');
       expect(stdout).toContain('calendar-24@example.com'); // 0-indexed
     });
 
@@ -59,7 +60,7 @@ describe('calendars list integration', () => {
 
       expect(() => JSON.parse(stdout)).not.toThrow();
       const calendars = JSON.parse(stdout);
-      expect(calendars).to.have.length(100);
+      expect(calendars).toHaveLength(100);
       expect(calendars[0]).toHaveProperty('summary', 'Test Calendar 0');
       expect(calendars[99]).toHaveProperty('summary', 'Test Calendar 99');
     });
@@ -107,24 +108,25 @@ describe('calendars list integration', () => {
       const { stdout } = await runCommand('calendars list');
 
       expect(stdout).toContain('Available Calendars (5 found)');
-      expect(stdout).toContain('1. user@gmail.com (Primary)');
-      expect(stdout).toContain('2. Contacts');
-      expect(stdout).toContain('3. Holidays in United States');
-      expect(stdout).toContain('4. Family Calendar');
-      expect(stdout).toContain('5. Team Calendar');
+      expect(stdout).toContain('user@gmail.com');
+      expect(stdout).toContain('✓');
+      expect(stdout).toContain('Contacts');
+      expect(stdout).toContain('Holidays in United Sta');
+      expect(stdout).toContain('Family Calendar');
+      expect(stdout).toContain('Team Calendar');
 
       // Check access roles are displayed
-      expect(stdout).toContain('Access: owner');
-      expect(stdout).toContain('Access: reader');
-      expect(stdout).toContain('Access: writer');
+      expect(stdout).toContain('owner');
+      expect(stdout).toContain('reader');
+      expect(stdout).toContain('writer');
 
       // Check colors are displayed
-      expect(stdout).toContain('Color: #039be5');
-      expect(stdout).toContain('Color: #d50000');
+      expect(stdout).toContain('#039be5');
+      expect(stdout).toContain('#d50000');
 
       // Check descriptions
-      expect(stdout).toContain('Birthdays and events from your contacts');
-      expect(stdout).toContain('Shared family events and activities');
+      expect(stdout).toContain('Birthdays and events from y');
+      expect(stdout).toContain('Shared family events and ac');
     });
 
     it('should handle Unicode and international calendar names', async () => {
@@ -158,12 +160,12 @@ describe('calendars list integration', () => {
       const { stdout } = await runCommand('calendars list');
 
       expect(stdout).toContain('仕事のカレンダー');
-      expect(stdout).toContain('🎉 イベント & パーティー 🎊');
-      expect(stdout).toContain('Arbeitskalender für München');
+      expect(stdout).toContain('🎉 イベント & パーティ');
+      expect(stdout).toContain('Arbeitskalender für Mü');
       expect(stdout).toContain('تقويم العمل');
       expect(stdout).toContain('会議とプロジェクトの予定');
       expect(stdout).toContain('楽しいイベントの計画 🎈');
-      expect(stdout).toContain('Termine und Besprechungen in München');
+      expect(stdout).toContain('Termine und Besprechungen i');
       expect(stdout).toContain('اجتماعات ومواعيد العمل');
     });
   });
@@ -189,10 +191,10 @@ describe('calendars list integration', () => {
       const { stdout } = await runCommand('calendars list');
 
       expect(stdout).toContain('Available Calendars (2 found)');
-      expect(stdout).toContain('1. Partial Calendar');
-      expect(stdout).toContain('2. (No name)');
-      expect(stdout).toContain('ID: partial@example.com');
-      expect(stdout).toContain('ID: null-props@example.com');
+      expect(stdout).toContain('Partial Calendar');
+      expect(stdout).toContain('(No name)');
+      expect(stdout).toContain('partial@example.com');
+      expect(stdout).toContain('null-props@example.com');
     });
 
     it('should handle calendars with extremely long IDs', async () => {
@@ -208,7 +210,7 @@ describe('calendars list integration', () => {
       const { stdout } = await runCommand('calendars list');
 
       expect(stdout).toContain('Calendar with Long ID');
-      expect(stdout).toContain(`ID: ${longId}`);
+      expect(stdout).toContain('very.long.calendar.id.that.might');
     });
   });
 
@@ -238,7 +240,7 @@ describe('calendars list integration', () => {
 
       // Parse JSON output
       const calendars = JSON.parse(jsonOutput);
-      expect(calendars).to.have.length(2);
+      expect(calendars).toHaveLength(2);
 
       // Verify key information appears in both formats
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -246,8 +248,8 @@ describe('calendars list integration', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const secondaryCalendar = calendars.find((cal: any) => !cal.primary);
 
-      expect(primaryCalendar).to.exist;
-      expect(secondaryCalendar).to.exist;
+      expect(primaryCalendar).toBeDefined();
+      expect(secondaryCalendar).toBeDefined();
 
       // Check table format contains the same information
       expect(tableOutput).toContain('Primary Calendar');
@@ -260,15 +262,15 @@ describe('calendars list integration', () => {
       expect(tableOutput).toContain('My main calendar');
 
       // Verify JSON contains complete data
-      expect(primaryCalendar.id).toEqual('primary');
-      expect(primaryCalendar.summary).toEqual('Primary Calendar');
-      expect(primaryCalendar.accessRole).toEqual('owner');
-      expect(primaryCalendar.backgroundColor).toEqual('#1a73e8');
-      expect(primaryCalendar.description).toEqual('My main calendar');
+      expect(primaryCalendar.id).toBe('primary');
+      expect(primaryCalendar.summary).toBe('Primary Calendar');
+      expect(primaryCalendar.accessRole).toBe('owner');
+      expect(primaryCalendar.backgroundColor).toBe('#1a73e8');
+      expect(primaryCalendar.description).toBe('My main calendar');
 
-      expect(secondaryCalendar.id).toEqual('secondary@example.com');
-      expect(secondaryCalendar.summary).toEqual('Secondary Calendar');
-      expect(secondaryCalendar.accessRole).toEqual('reader');
+      expect(secondaryCalendar.id).toBe('secondary@example.com');
+      expect(secondaryCalendar.summary).toBe('Secondary Calendar');
+      expect(secondaryCalendar.accessRole).toBe('reader');
     });
   });
 });

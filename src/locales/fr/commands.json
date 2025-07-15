@@ -21,7 +21,14 @@
       "noEventsFound": "Aucun événement à venir trouvé.",
       "tableHeader": "\nÉvénements à venir ({{count}} trouvés) :\n",
       "noTitle": "(Sans titre)",
-      "error": "Échec de la liste des événements : {{error}}"
+      "error": "Échec de la liste des événements : {{error}}",
+      "columns": {
+        "title": "Titre",
+        "date": "Date",
+        "time": "Heure",
+        "location": "Lieu",
+        "description": "Description"
+      }
     },
     "show": {
       "description": "Afficher des informations détaillées sur un événement spécifique",
@@ -85,6 +92,14 @@
         "access": "Accès :",
         "description": "Description :",
         "color": "Couleur :"
+      },
+      "columns": {
+        "name": "Nom",
+        "id": "ID",
+        "access": "Accès",
+        "primary": "Principal",
+        "description": "Description",
+        "color": "Couleur"
       }
     }
   },

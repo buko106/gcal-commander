@@ -1,6 +1,7 @@
 import {includeIgnoreFile} from '@eslint/compat'
 import oclif from 'eslint-config-oclif'
 import prettier from 'eslint-config-prettier'
+import vitest from 'eslint-plugin-vitest'
 import path from 'node:path'
 import {fileURLToPath} from 'node:url'
 
@@ -52,6 +53,18 @@ export default [
     rules: {
       'no-restricted-imports': 'off',
       'import/no-named-as-default-member': 'off',
+    },
+  },
+  {
+    files: ['test/**/*.test.ts'],
+    plugins: {
+      vitest,
+    },
+    rules: {
+      ...vitest.configs.recommended.rules,
+      'vitest/prefer-to-be': 'error',
+      'vitest/prefer-to-contain': 'error',
+      'vitest/prefer-to-have-length': 'error',
     },
   },
 ]

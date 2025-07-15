@@ -3,6 +3,7 @@ import { calendar_v3 as calendarV3 } from 'googleapis';
 
 import { BaseCommand, OutputFormat } from '../../base-command';
 import { DateFormatter } from '../../utils/date-formatter';
+import { TableColumn, TableFormatter } from '../../utils/table-formatter';
 
 export default class EventsList extends BaseCommand {
   static args = {
@@ -11,14 +12,14 @@ export default class EventsList extends BaseCommand {
       description: 'Calendar ID to list events from',
     }),
   };
-static description = 'List upcoming calendar events';
-static examples = [
+  static description = 'List upcoming calendar events';
+  static examples = [
     '<%= config.bin %> <%= command.id %>',
     '<%= config.bin %> <%= command.id %> my-calendar@gmail.com',
     '<%= config.bin %> <%= command.id %> --max-results 20',
     '<%= config.bin %> <%= command.id %> --days 7',
   ];
-static flags = {
+  static flags = {
     ...BaseCommand.baseFlags,
     days: Flags.integer({
       char: 'd',
@@ -43,13 +44,13 @@ static flags = {
       // Get configuration values
       // Determine calendar to use: explicit CLI arg > config > default 'primary'
       const defaultCalendar = await this.configService.get<string>('defaultCalendar');
-      const calendarId = args.calendar === 'primary' ? (defaultCalendar || 'primary') : args.calendar;
-      
+      const calendarId = args.calendar === 'primary' ? defaultCalendar || 'primary' : args.calendar;
+
       // Apply config defaults for other settings
-      const configMaxResults = await this.configService.get<number>('events.maxResults') || 10;
-      const configDays = await this.configService.get<number>('events.days') || 30;
-      const configFormat = await this.configService.get<OutputFormat>('events.format') || 'table';
-      
+      const configMaxResults = (await this.configService.get<number>('events.maxResults')) || 10;
+      const configDays = (await this.configService.get<number>('events.days')) || 30;
+      const configFormat = (await this.configService.get<OutputFormat>('events.format')) || 'table';
+
       const maxResults = flags['max-results'] || configMaxResults;
       const days = flags.days || configDays;
       const format = this.format === 'table' ? configFormat : this.format;
@@ -82,26 +83,32 @@ static flags = {
 
   private displayEventsTable(events: calendarV3.Schema$Event[]): void {
     this.logResult(this.t('events.list.tableHeader', { count: events.length }));
-    
-    for (const [index, event] of events.entries()) {
-      const summary = event.summary || this.t('events.list.noTitle');
-      const location = event.location ? ` @ ${event.location}` : '';
-      
-      if (event.start) {
-        const timeInfo = DateFormatter.formatListEventTime(event);
-        if (timeInfo) {
-          this.logResult(`${index + 1}. ${summary}`);
-          this.logResult(`   ${timeInfo.dateStr} • ${timeInfo.timeStr}${location}`);
-          if (event.description) {
-            const description = event.description.length > 100 
-              ? event.description.slice(0, 100) + '...'
-              : event.description;
-            this.logResult(`   ${description}`);
-          }
 
-          this.logResult('');
-        }
-      }
-    }
+    const columns: TableColumn[] = [
+      { key: 'title', label: this.t('events.list.columns.title'), width: 30 },
+      { key: 'date', label: this.t('events.list.columns.date'), width: 15 },
+      { key: 'time', label: this.t('events.list.columns.time'), width: 15 },
+      { key: 'location', label: this.t('events.list.columns.location'), width: 20 },
+      { key: 'description', label: this.t('events.list.columns.description'), width: 30 },
+    ];
+
+    const formatter = new TableFormatter({
+      columns,
+      fields: this.fields,
+    });
+
+    const tableData = events.map((event) => {
+      const timeInfo = DateFormatter.formatListEventTime(event);
+      return {
+        title: event.summary || this.t('events.list.noTitle'),
+        date: timeInfo?.dateStr || '',
+        time: timeInfo?.timeStr || '',
+        location: event.location || '',
+        description: event.description || '',
+      };
+    });
+
+    const table = formatter.format(tableData);
+    this.logResult(table);
   }
 }
