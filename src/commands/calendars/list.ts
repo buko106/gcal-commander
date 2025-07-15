@@ -59,12 +59,8 @@ export default class CalendarsList extends BaseCommand {
       name: calendar.summary || this.t('calendars.list.noName'),
       id: calendar.id || '',
       access: calendar.accessRole || '',
-      primary: calendar.primary ? this.t('calendars.list.labels.primary') : '',
-      description: calendar.description
-        ? calendar.description.length > 40
-          ? calendar.description.slice(0, 40) + '...'
-          : calendar.description
-        : '',
+      primary: calendar.primary ? '✓' : '',
+      description: calendar.description || '',
       color: calendar.backgroundColor || '',
     }));
 

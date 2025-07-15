@@ -65,10 +65,10 @@ describe('calendars list output', () => {
       expect(stdout).toContain('owner');
       expect(stdout).toContain('This is my main calendar');
       expect(stdout).toContain('#1a73e8');
-      expect(stdout).toContain('(Primar');
+      expect(stdout).toContain('✓');
     });
 
-    it('should display secondary calendar without (Primary) label', async () => {
+    it('should display secondary calendar without checkmark', async () => {
       mockCalendarService.listCalendars.mockResolvedValue([
         {
           accessRole: 'reader',
@@ -81,7 +81,7 @@ describe('calendars list output', () => {
       const { stdout } = await runCommand('calendars list');
 
       expect(stdout).toContain('Work Calendar');
-      expect(stdout).not.toContain('(Primary)');
+      expect(stdout).not.toContain('✓');
       expect(stdout).toContain('secondary@example.com');
       expect(stdout).toContain('reader');
     });
@@ -158,7 +158,7 @@ describe('calendars list output', () => {
       expect(stdout).toContain('reader');
       expect(stdout).toContain('Work-related events');
       expect(stdout).toContain('#d50000');
-      expect(stdout).toContain('(Primar');
+      expect(stdout).toContain('✓');
     });
 
     it('should handle calendars with special characters and emojis', async () => {
@@ -249,7 +249,7 @@ describe('calendars list output', () => {
       expect(stdout).toContain('Secondary Calendar');
       expect(stdout).toContain('primary');
       expect(stdout).toContain('owner');
-      expect(stdout).toContain('(Primar');
+      expect(stdout).toContain('✓');
     });
 
     it('should output table format with explicit --format table', async () => {
@@ -257,7 +257,7 @@ describe('calendars list output', () => {
 
       expect(stdout).toContain('Available Calendars (2 found)');
       expect(stdout).toContain('Primary Calendar');
-      expect(stdout).toContain('(Primar');
+      expect(stdout).toContain('✓');
     });
 
     it('should suppress status messages in JSON mode with --quiet', async () => {
@@ -416,6 +416,30 @@ describe('calendars list output', () => {
       expect(calendars).toHaveLength(1);
       expect(calendars[0]).toHaveProperty('summary', 'My Primary Calendar');
       expect(calendars[0]).toHaveProperty('id', 'primary');
+    });
+  });
+
+  describe('table3 automatic truncation', () => {
+    it('should let table3 handle long descriptions without manual truncation', async () => {
+      const veryLongDescription =
+        'This is a very long description that should be handled by table3 library truncation instead of manual truncation in the code';
+
+      mockCalendarService.listCalendars.mockResolvedValue([
+        {
+          accessRole: 'owner',
+          description: veryLongDescription,
+          id: 'long-desc@example.com',
+          summary: 'Long Description Calendar',
+        },
+      ]);
+
+      const { stdout } = await runCommand('calendars list');
+
+      // Should contain beginning of description and use table3's truncation (ends with …)
+      expect(stdout).toContain('This is a very long descrip');
+      expect(stdout).toContain('…');
+      // Should not contain manual truncation indicator
+      expect(stdout).not.toContain('...');
     });
   });
 });

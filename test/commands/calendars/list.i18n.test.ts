@@ -66,7 +66,7 @@ describe('calendars/list i18n integration', () => {
 
       const { stdout } = await runCommand(['calendars:list']);
 
-      expect(stdout).toContain('(Primar');
+      expect(stdout).toContain('✓');
       expect(stdout).toContain('Name');
       expect(stdout).toContain('ID');
       expect(stdout).toContain('Access');
@@ -141,7 +141,7 @@ describe('calendars/list i18n integration', () => {
 
       const { stdout } = await runCommand(['calendars:list']);
 
-      expect(stdout).toContain('(メイン)');
+      expect(stdout).toContain('✓');
       expect(stdout).toContain('ID');
       expect(stdout).toContain('アクセス');
       expect(stdout).toContain('説明');

@@ -39,7 +39,7 @@ describe('calendars list integration', () => {
       expect(stderr).toContain('Fetching calendars...');
       expect(stdout).toContain('Available Calendars (50 found)');
       expect(stdout).toContain('Calendar 1');
-      expect(stdout).toContain('(Primar');
+      expect(stdout).toContain('✓');
       expect(stdout).toContain('Calendar 50');
 
       // Verify some random entries to ensure all are displayed
@@ -109,7 +109,7 @@ describe('calendars list integration', () => {
 
       expect(stdout).toContain('Available Calendars (5 found)');
       expect(stdout).toContain('user@gmail.com');
-      expect(stdout).toContain('(Primar');
+      expect(stdout).toContain('✓');
       expect(stdout).toContain('Contacts');
       expect(stdout).toContain('Holidays in United Sta');
       expect(stdout).toContain('Family Calendar');

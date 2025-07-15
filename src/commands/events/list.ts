@@ -104,11 +104,7 @@ export default class EventsList extends BaseCommand {
         date: timeInfo?.dateStr || '',
         time: timeInfo?.timeStr || '',
         location: event.location || '',
-        description: event.description
-          ? event.description.length > 50
-            ? event.description.slice(0, 50) + '...'
-            : event.description
-          : '',
+        description: event.description || '',
       };
     });
 
