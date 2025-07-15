@@ -3,6 +3,7 @@ import { container } from 'tsyringe';
 
 import { TOKENS } from './di/tokens';
 import { IAuthService, ICalendarService, IConfigService, II18nService } from './interfaces/services';
+import { parseFields } from './utils/fields-parser';
 
 export type OutputFormat = 'json' | 'pretty-json' | 'table';
 
@@ -39,7 +40,7 @@ export abstract class BaseCommand extends Command {
   async init(): Promise<void> {
     await super.init();
     const { flags } = await this.parse(this.constructor as typeof BaseCommand);
-    this.fields = flags.fields ? flags.fields.split(',').map((field) => field.trim()) : undefined;
+    this.fields = parseFields(flags.fields);
     this.format = flags.format as OutputFormat;
     this.quiet = flags.quiet;
 
