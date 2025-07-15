@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { expect } from 'vitest';
 
 /**
  * Helper functions for calendar command testing
@@ -35,7 +35,7 @@ export function validateCalendarObject(calendar: any): void {
   expect(calendar, 'Calendar should be an object').to.be.an('object');
   expect(calendar, 'Calendar should have an id').to.have.property('id');
   expect(calendar.id, 'Calendar id should be a string').to.be.a('string');
-  
+
   // summary can be null or string
   if (calendar.summary !== null && calendar.summary !== undefined) {
     expect(calendar.summary, 'Calendar summary should be a string when present').to.be.a('string');
@@ -52,7 +52,7 @@ export function validateTableOutput(output: string, expectedCount: number): void
   }
 
   expect(output).to.contain(`Available Calendars (${expectedCount} found)`);
-  
+
   // Check that numbered list exists
   for (let i = 1; i <= Math.min(expectedCount, 10); i++) {
     expect(output).to.contain(`${i}. `);
@@ -91,18 +91,18 @@ export function validateOutputSeparation(stdout: string, stderr: string, isQuiet
 export function validateCalendarTableDisplay(output: string, calendar: any, index: number): void {
   const primaryLabel = calendar.primary ? ' (Primary)' : '';
   const expectedName = calendar.summary || '(No name)';
-  
+
   expect(output).to.contain(`${index}. ${expectedName}${primaryLabel}`);
   expect(output).to.contain(`ID: ${calendar.id}`);
-  
+
   if (calendar.accessRole) {
     expect(output).to.contain(`Access: ${calendar.accessRole}`);
   }
-  
+
   if (calendar.description) {
     expect(output).to.contain(`Description: ${calendar.description}`);
   }
-  
+
   if (calendar.backgroundColor) {
     expect(output).to.contain(`Color: ${calendar.backgroundColor}`);
   }
@@ -114,17 +114,26 @@ export function validateCalendarTableDisplay(output: string, calendar: any, inde
 export function validateUnicodeHandling(output: string): void {
   // Should not contain escaped Unicode sequences in the final output
   expect(output).to.not.match(/\\u[0-9a-fA-F]{4}/);
-  
+
   // Should preserve emojis and special characters
   const unicodeTestStrings = [
-    '📅', '🎉', '🎊', '🎈',
-    'émojis', 'spëcial', 'ñøñ-ASCII',
-    '仕事', '会議', '日本語',
-    'العربية', 'تقويم',
-    'München', 'für',
+    '📅',
+    '🎉',
+    '🎊',
+    '🎈',
+    'émojis',
+    'spëcial',
+    'ñøñ-ASCII',
+    '仕事',
+    '会議',
+    '日本語',
+    'العربية',
+    'تقويم',
+    'München',
+    'für',
   ];
-  
-  const containsUnicode = unicodeTestStrings.some(str => output.includes(str));
+
+  const containsUnicode = unicodeTestStrings.some((str) => output.includes(str));
   if (containsUnicode) {
     // If Unicode content is present, verify it's displayed correctly
     for (const str of unicodeTestStrings) {
@@ -143,12 +152,12 @@ export function validateCleanJsonOutput(jsonOutput: string): void {
   expect(jsonOutput).to.not.contain('Authenticating');
   expect(jsonOutput).to.not.contain('Fetching');
   expect(jsonOutput).to.not.contain('Available Calendars');
-  
+
   // Should start with [ and end with ]
   const trimmed = jsonOutput.trim();
   expect(trimmed.startsWith('[')).to.equal(true, 'JSON should start with [');
   expect(trimmed.endsWith(']')).to.equal(true, 'JSON should end with ]');
-  
+
   // Should be parseable
   expect(() => JSON.parse(trimmed)).to.not.throw();
 }
@@ -170,7 +179,7 @@ export function expectCalendarCount(output: string, count: number): void {
 export function validateColorCodes(output: string): void {
   // Find all color references in output
   const colorMatches = output.match(/Color: #[a-fA-F0-9]{6}/g);
-  
+
   if (colorMatches) {
     for (const colorMatch of colorMatches) {
       const colorCode = colorMatch.replace('Color: ', '');
@@ -184,5 +193,8 @@ export function validateColorCodes(output: string): void {
  */
 export function validatePerformance(startTime: number, maxDurationMs: number): void {
   const duration = Date.now() - startTime;
-  expect(duration).to.be.below(maxDurationMs, `Operation should complete within ${maxDurationMs}ms but took ${duration}ms`);
+  expect(duration).to.be.below(
+    maxDurationMs,
+    `Operation should complete within ${maxDurationMs}ms but took ${duration}ms`,
+  );
 }

@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { expect } from 'vitest';
 
 import { SUPPORTED_LANGUAGES } from '../../src/constants/languages';
 import { I18nService } from '../../src/services/i18n';

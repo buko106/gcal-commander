@@ -1,6 +1,6 @@
-import { expect } from 'chai';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
+import { expect } from 'vitest';
 
 import { AppPaths } from '../../src/utils/paths';
 
