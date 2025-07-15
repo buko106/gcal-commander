@@ -27,7 +27,8 @@
     "@semantic-release/github": "^11.0.3",
     "@semantic-release/npm": "^12.0.1",
     "@semantic-release/release-notes-generator": "^14.0.3",
-    "@types/node": "^18",
+    "@types/node": "^20.19.7",
+    "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
     "cross-env": "^7.0.3",
     "eslint": "^9",
@@ -35,7 +36,6 @@
     "eslint-config-prettier": "^10",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
-    "nyc": "^17.1.0",
     "oclif": "^4",
     "prettier": "^3.5.3",
     "semantic-release": "^24.2.5",
@@ -85,7 +85,7 @@
   "repository": "buko106/gcal-commander",
   "scripts": {
     "build": "shx rm -rf dist && tsc -b && shx cp -r src/locales dist/locales",
-    "coverage": "nyc npm test",
+    "coverage": "vitest run --coverage",
     "lint": "eslint --cache",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "npm run lint",
@@ -95,29 +95,5 @@
     "version": "oclif readme && git add README.md",
     "prepare": "husky"
   },
-  "types": "dist/index.d.ts",
-  "nyc": {
-    "include": [
-      "src/**/*.ts"
-    ],
-    "exclude": [
-      "dist/**/*",
-      "test/**/*",
-      "**/*.d.ts"
-    ],
-    "extension": [
-      ".ts"
-    ],
-    "require": [
-      "ts-node/register"
-    ],
-    "reporter": [
-      "html",
-      "text",
-      "lcov"
-    ],
-    "sourceMap": true,
-    "instrument": true,
-    "all": true
-  }
+  "types": "dist/index.d.ts"
 }
