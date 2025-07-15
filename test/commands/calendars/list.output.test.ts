@@ -36,8 +36,8 @@ describe('calendars list output', () => {
 
       const { stderr, stdout } = await runCommand('calendars list --quiet');
 
-      expect(stderr).to.not.contain('Authenticating with Google Calendar...');
-      expect(stderr).to.not.contain('Fetching calendars...');
+      expect(stderr).not.toContain('Authenticating with Google Calendar...');
+      expect(stderr).not.toContain('Fetching calendars...');
       expect(stdout).toContain('No calendars found.');
     });
   });
@@ -81,7 +81,7 @@ describe('calendars list output', () => {
       const { stdout } = await runCommand('calendars list');
 
       expect(stdout).toContain('Work Calendar');
-      expect(stdout).to.not.contain('(Primary)');
+      expect(stdout).not.toContain('(Primary)');
       expect(stdout).toContain('secondary@example.com');
       expect(stdout).toContain('reader');
     });
@@ -206,15 +206,15 @@ describe('calendars list output', () => {
       expect(() => JSON.parse(stdout)).not.toThrow();
 
       const calendars = JSON.parse(stdout);
-      expect(Array.isArray(calendars)).to.be.true;
-      expect(calendars).to.have.length(2);
+      expect(Array.isArray(calendars)).toBe(true);
+      expect(calendars).toHaveLength(2);
       expect(calendars[0]).toHaveProperty('id', 'primary');
       expect(calendars[0]).toHaveProperty('summary', 'Primary Calendar');
       expect(calendars[1]).toHaveProperty('id', 'secondary@example.com');
 
       // Should be minified (no indentation)
-      expect(stdout).to.not.contain('\n  ');
-      expect(stdout.trim().split('\n')).to.have.length(1);
+      expect(stdout).not.toContain('\n  ');
+      expect(stdout.trim().split('\n')).toHaveLength(1);
     });
 
     it('should output formatted JSON with --format pretty-json', async () => {
@@ -227,18 +227,18 @@ describe('calendars list output', () => {
       expect(() => JSON.parse(stdout)).not.toThrow();
 
       const calendars = JSON.parse(stdout);
-      expect(Array.isArray(calendars)).to.be.true;
-      expect(calendars).to.have.length(2);
+      expect(Array.isArray(calendars)).toBe(true);
+      expect(calendars).toHaveLength(2);
       expect(calendars[0]).toHaveProperty('id', 'primary');
       expect(calendars[0]).toHaveProperty('summary', 'Primary Calendar');
       expect(calendars[1]).toHaveProperty('id', 'secondary@example.com');
 
       // Should be formatted (with indentation)
       expect(stdout).toContain('\n  ');
-      expect(stdout.trim().split('\n').length).to.be.greaterThan(1);
+      expect(stdout.trim().split('\n').length).toBeGreaterThan(1);
 
       // Should start with array bracket and proper indentation
-      expect(stdout.trim()).to.match(/^\[\s*\n\s+{/);
+      expect(stdout.trim()).toMatch(/^\[\s*\n\s+{/);
     });
 
     it('should output table format by default', async () => {
@@ -263,11 +263,11 @@ describe('calendars list output', () => {
     it('should suppress status messages in JSON mode with --quiet', async () => {
       const { stderr, stdout } = await runCommand('calendars list --format json --quiet');
 
-      expect(stderr).to.not.contain('Authenticating with Google Calendar...');
-      expect(stderr).to.not.contain('Fetching calendars...');
+      expect(stderr).not.toContain('Authenticating with Google Calendar...');
+      expect(stderr).not.toContain('Fetching calendars...');
 
       const calendars = JSON.parse(stdout);
-      expect(calendars).to.have.length(2);
+      expect(calendars).toHaveLength(2);
     });
   });
 
@@ -294,8 +294,8 @@ describe('calendars list output', () => {
       expect(stdout).toContain('Test Calendar');
 
       // Cross-contamination check
-      expect(stdout).to.not.contain('Authenticating with Google Calendar...');
-      expect(stderr).to.not.contain('Available Calendars');
+      expect(stdout).not.toContain('Authenticating with Google Calendar...');
+      expect(stderr).not.toContain('Available Calendars');
     });
 
     it('should produce clean JSON output for piping', async () => {
@@ -305,11 +305,11 @@ describe('calendars list output', () => {
       expect(() => JSON.parse(stdout)).not.toThrow();
 
       const calendars = JSON.parse(stdout);
-      expect(calendars).to.be.an('array');
+      expect(Array.isArray(calendars)).toBe(true);
 
       // Should not contain any status messages
-      expect(stdout).to.not.contain('Authenticating');
-      expect(stdout).to.not.contain('Fetching');
+      expect(stdout).not.toContain('Authenticating');
+      expect(stdout).not.toContain('Fetching');
     });
   });
 
@@ -389,9 +389,9 @@ describe('calendars list output', () => {
       expect(stdout).toContain('primary');
 
       // These columns should NOT be present
-      expect(stdout).to.not.contain('Access');
-      expect(stdout).to.not.contain('Description');
-      expect(stdout).to.not.contain('Color');
+      expect(stdout).not.toContain('Access');
+      expect(stdout).not.toContain('Description');
+      expect(stdout).not.toContain('Color');
     });
 
     it('should handle single field with --fields flag', async () => {
@@ -401,10 +401,10 @@ describe('calendars list output', () => {
       expect(stdout).toContain('My Primary Calendar');
 
       // These columns should NOT be present
-      expect(stdout).to.not.contain('ID');
-      expect(stdout).to.not.contain('Access');
-      expect(stdout).to.not.contain('Description');
-      expect(stdout).to.not.contain('Color');
+      expect(stdout).not.toContain('ID');
+      expect(stdout).not.toContain('Access');
+      expect(stdout).not.toContain('Description');
+      expect(stdout).not.toContain('Color');
     });
 
     it('should work with --fields and --format json', async () => {
@@ -413,9 +413,9 @@ describe('calendars list output', () => {
       // JSON output should not be affected by --fields flag
       expect(() => JSON.parse(stdout)).not.toThrow();
       const calendars = JSON.parse(stdout);
-      expect(calendars).to.have.length(1);
-      expect(calendars[0]).to.have.property('summary', 'My Primary Calendar');
-      expect(calendars[0]).to.have.property('id', 'primary');
+      expect(calendars).toHaveLength(1);
+      expect(calendars[0]).toHaveProperty('summary', 'My Primary Calendar');
+      expect(calendars[0]).toHaveProperty('id', 'primary');
     });
   });
 });

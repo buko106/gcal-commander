@@ -1,5 +1,5 @@
 import { runCommand } from '@oclif/test';
-import { expect } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { TestContainerFactory } from '../../test-utils/mock-factories';
 
@@ -14,14 +14,14 @@ describe('events list', () => {
 
   it('shows authentication message in stderr', async () => {
     const { stderr } = await runCommand('events list');
-    expect(stderr).to.contain('Authenticating with Google Calendar...');
-    expect(stderr).to.contain('Fetching events from');
+    expect(stderr).toContain('Authenticating with Google Calendar...');
+    expect(stderr).toContain('Fetching events from');
   });
 
   it('accepts calendar argument', async () => {
     const { stderr } = await runCommand('events list my-calendar@gmail.com');
-    expect(stderr).to.contain('Authenticating with Google Calendar...');
-    expect(stderr).to.contain('Fetching events from');
+    expect(stderr).toContain('Authenticating with Google Calendar...');
+    expect(stderr).toContain('Fetching events from');
   });
 
   it('accepts format flag', async () => {
@@ -29,7 +29,7 @@ describe('events list', () => {
       await runCommand('events list --format json');
     } catch (error) {
       // Command should parse flags correctly even if authentication fails
-      expect(String(error)).to.not.contain('Unknown flag');
+      expect(String(error)).not.toContain('Unknown flag');
     }
   });
 
@@ -38,7 +38,7 @@ describe('events list', () => {
       await runCommand('events list --format invalid');
       expect.fail('Should have thrown an error for invalid format');
     } catch (error) {
-      expect(String(error)).to.match(/Expected.*format.*to be one of|invalid.*format/i);
+      expect(String(error)).toMatch(/Expected.*format.*to be one of|invalid.*format/i);
     }
   });
 
@@ -47,7 +47,7 @@ describe('events list', () => {
       await runCommand('events list --format pretty-json');
     } catch (error) {
       // Command should parse flags correctly even if authentication fails
-      expect(String(error)).to.not.contain('Unknown flag');
+      expect(String(error)).not.toContain('Unknown flag');
     }
   });
 
@@ -56,7 +56,7 @@ describe('events list', () => {
       await runCommand('events list --format table');
     } catch (error) {
       // Command should parse flags correctly even if authentication fails
-      expect(String(error)).to.not.contain('Unknown flag');
+      expect(String(error)).not.toContain('Unknown flag');
     }
   });
 
@@ -65,7 +65,7 @@ describe('events list', () => {
       await runCommand('events list --days 7');
     } catch (error) {
       // Command should parse flags correctly even if authentication fails
-      expect(String(error)).to.not.contain('Unknown flag');
+      expect(String(error)).not.toContain('Unknown flag');
     }
   });
 
@@ -74,7 +74,7 @@ describe('events list', () => {
       await runCommand('events list --max-results 20');
     } catch (error) {
       // Command should parse flags correctly even if authentication fails
-      expect(String(error)).to.not.contain('Unknown flag');
+      expect(String(error)).not.toContain('Unknown flag');
     }
   });
 
@@ -83,7 +83,7 @@ describe('events list', () => {
       await runCommand('events list --max-results abc');
       expect.fail('Should have thrown an error for invalid max-results');
     } catch (error) {
-      expect(String(error)).to.match(/Expected.*integer|Invalid.*max-results/i);
+      expect(String(error)).toMatch(/Expected.*integer|Invalid.*max-results/i);
     }
   });
 
@@ -92,7 +92,7 @@ describe('events list', () => {
       await runCommand('events list --days xyz');
       expect.fail('Should have thrown an error for invalid days');
     } catch (error) {
-      expect(String(error)).to.match(/Expected.*integer|Invalid.*days/i);
+      expect(String(error)).toMatch(/Expected.*integer|Invalid.*days/i);
     }
   });
 
@@ -101,7 +101,7 @@ describe('events list', () => {
       await runCommand('events list -f json -d 7 -n 5');
     } catch (error) {
       // Command should parse short flags correctly even if authentication fails
-      expect(String(error)).to.not.contain('Unknown flag');
+      expect(String(error)).not.toContain('Unknown flag');
     }
   });
 
@@ -110,7 +110,7 @@ describe('events list', () => {
       await runCommand('events list --quiet');
     } catch (error) {
       // Command should parse --quiet flag correctly even if authentication fails
-      expect(String(error)).to.not.contain('Unknown flag');
+      expect(String(error)).not.toContain('Unknown flag');
     }
   });
 });

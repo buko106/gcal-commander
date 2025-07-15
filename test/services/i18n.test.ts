@@ -1,4 +1,4 @@
-import { expect } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { SUPPORTED_LANGUAGES } from '../../src/constants/languages';
 import { I18nService } from '../../src/services/i18n';
@@ -13,7 +13,7 @@ describe('I18nService', () => {
   describe('#init', () => {
     it('should initialize without error', async () => {
       await i18nService.init();
-      // Test passes if no error is thrown
+      expect(true).toBe(true); // Test passes if no error is thrown
     });
 
     it('should initialize with specified language', async () => {
@@ -21,7 +21,7 @@ describe('I18nService', () => {
 
       // Should start with Japanese language
       const translation = i18nService.t('common:yes');
-      expect(translation).to.equal('はい');
+      expect(translation).toBe('はい');
     });
 
     it('should default to English if no language specified', async () => {
@@ -29,24 +29,24 @@ describe('I18nService', () => {
 
       // Should start with English language
       const translation = i18nService.t('common:yes');
-      expect(translation).to.equal('Yes');
+      expect(translation).toBe('Yes');
     });
   });
 
   describe('supported languages constant', () => {
     it('should have all supported languages in constant', () => {
-      expect(SUPPORTED_LANGUAGES).to.be.an('array');
-      expect(SUPPORTED_LANGUAGES).to.include('de');
-      expect(SUPPORTED_LANGUAGES).to.include('en');
-      expect(SUPPORTED_LANGUAGES).to.include('es');
-      expect(SUPPORTED_LANGUAGES).to.include('fr');
-      expect(SUPPORTED_LANGUAGES).to.include('ja');
-      expect(SUPPORTED_LANGUAGES).to.include('ko');
-      expect(SUPPORTED_LANGUAGES).to.include('pt');
+      expect(Array.isArray(SUPPORTED_LANGUAGES)).toBe(true);
+      expect(SUPPORTED_LANGUAGES).toContain('de');
+      expect(SUPPORTED_LANGUAGES).toContain('en');
+      expect(SUPPORTED_LANGUAGES).toContain('es');
+      expect(SUPPORTED_LANGUAGES).toContain('fr');
+      expect(SUPPORTED_LANGUAGES).toContain('ja');
+      expect(SUPPORTED_LANGUAGES).toContain('ko');
+      expect(SUPPORTED_LANGUAGES).toContain('pt');
     });
 
     it('should have exactly 7 supported languages', () => {
-      expect(SUPPORTED_LANGUAGES).to.have.length(7);
+      expect(SUPPORTED_LANGUAGES).toHaveLength(7);
     });
   });
 
@@ -55,18 +55,18 @@ describe('I18nService', () => {
       await i18nService.init();
 
       const translation = i18nService.t('common:loading');
-      expect(translation).to.equal('Loading...');
+      expect(translation).toBe('Loading...');
     });
 
     it('should support language switching', async () => {
       await i18nService.init();
 
       // Default should be English
-      expect(i18nService.t('common:yes')).to.equal('Yes');
+      expect(i18nService.t('common:yes')).toBe('Yes');
 
       // Switch to Japanese
       await i18nService.changeLanguage('ja');
-      expect(i18nService.t('common:yes')).to.equal('はい');
+      expect(i18nService.t('common:yes')).toBe('はい');
     });
 
     it('should translate commands namespace keys', async () => {
@@ -75,8 +75,8 @@ describe('I18nService', () => {
       const statusResult = i18nService.t('commands:init.messages.status');
       const confirmResult = i18nService.t('commands:init.messages.confirm');
 
-      expect(statusResult).to.equal('This will verify your Google Calendar authentication.');
-      expect(confirmResult).to.equal('Do you want to verify authentication?');
+      expect(statusResult).toBe('This will verify your Google Calendar authentication.');
+      expect(confirmResult).toBe('Do you want to verify authentication?');
     });
 
     it('should translate commands to Japanese', async () => {
@@ -86,8 +86,8 @@ describe('I18nService', () => {
       const statusResult = i18nService.t('commands:init.messages.status');
       const confirmResult = i18nService.t('commands:init.messages.confirm');
 
-      expect(statusResult).to.equal('Google Calendar の認証を確認します。');
-      expect(confirmResult).to.equal('認証を確認しますか？');
+      expect(statusResult).toBe('Google Calendar の認証を確認します。');
+      expect(confirmResult).toBe('認証を確認しますか？');
     });
 
     it('should translate to Spanish', async () => {
@@ -97,8 +97,8 @@ describe('I18nService', () => {
       const yesResult = i18nService.t('common:yes');
       const noResult = i18nService.t('common:no');
 
-      expect(yesResult).to.equal('Sí');
-      expect(noResult).to.equal('No');
+      expect(yesResult).toBe('Sí');
+      expect(noResult).toBe('No');
     });
 
     it('should translate to German', async () => {
@@ -108,8 +108,8 @@ describe('I18nService', () => {
       const yesResult = i18nService.t('common:yes');
       const loadingResult = i18nService.t('common:loading');
 
-      expect(yesResult).to.equal('Ja');
-      expect(loadingResult).to.equal('Lädt...');
+      expect(yesResult).toBe('Ja');
+      expect(loadingResult).toBe('Lädt...');
     });
 
     it('should translate to Portuguese', async () => {
@@ -119,8 +119,8 @@ describe('I18nService', () => {
       const yesResult = i18nService.t('common:yes');
       const cancelResult = i18nService.t('common:cancel');
 
-      expect(yesResult).to.equal('Sim');
-      expect(cancelResult).to.equal('Cancelar');
+      expect(yesResult).toBe('Sim');
+      expect(cancelResult).toBe('Cancelar');
     });
 
     it('should translate to French', async () => {
@@ -130,8 +130,8 @@ describe('I18nService', () => {
       const yesResult = i18nService.t('common:yes');
       const loadingResult = i18nService.t('common:loading');
 
-      expect(yesResult).to.equal('Oui');
-      expect(loadingResult).to.equal('Chargement...');
+      expect(yesResult).toBe('Oui');
+      expect(loadingResult).toBe('Chargement...');
     });
 
     it('should translate to Korean', async () => {
@@ -141,8 +141,8 @@ describe('I18nService', () => {
       const yesResult = i18nService.t('common:yes');
       const noResult = i18nService.t('common:no');
 
-      expect(yesResult).to.equal('예');
-      expect(noResult).to.equal('아니오');
+      expect(yesResult).toBe('예');
+      expect(noResult).toBe('아니오');
     });
   });
 });

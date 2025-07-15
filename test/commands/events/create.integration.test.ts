@@ -1,5 +1,5 @@
 import { runCommand } from '@oclif/test';
-import { expect } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { TestContainerFactory } from '../../test-utils/mock-factories';
 
@@ -17,19 +17,19 @@ describe('events create integration', () => {
       const { stderr, stdout } = await runCommand('events create "Test Meeting" --start "2024-06-25T14:00:00"');
 
       // Status messages should go to stderr
-      expect(stderr).to.contain('Authenticating with Google Calendar...');
-      expect(stderr).to.contain('Creating event...');
+      expect(stderr).toContain('Authenticating with Google Calendar...');
+      expect(stderr).toContain('Creating event...');
 
       // Success message and event details go to stdout
-      expect(stdout).to.contain('Event created successfully!');
-      expect(stdout).to.contain('Title: Test Meeting');
-      expect(stdout).to.contain('ID: mock-event-');
-      expect(stdout).to.contain('Start:');
-      expect(stdout).to.contain('End:');
+      expect(stdout).toContain('Event created successfully!');
+      expect(stdout).toContain('Title: Test Meeting');
+      expect(stdout).toContain('ID: mock-event-');
+      expect(stdout).toContain('Start:');
+      expect(stdout).toContain('End:');
 
       // Status messages should NOT be in stdout
-      expect(stdout).to.not.contain('Authenticating');
-      expect(stdout).to.not.contain('Creating event...');
+      expect(stdout).not.toContain('Authenticating');
+      expect(stdout).not.toContain('Creating event...');
     });
 
     it('should create event with end time', async () => {
@@ -37,27 +37,27 @@ describe('events create integration', () => {
         'events create "Meeting" --start "2024-06-25T14:00:00" --end "2024-06-25T15:30:00"',
       );
 
-      expect(stdout).to.contain('Event created successfully!');
-      expect(stdout).to.contain('Title: Meeting');
-      expect(stdout).to.contain('Start:');
-      expect(stdout).to.contain('End:');
+      expect(stdout).toContain('Event created successfully!');
+      expect(stdout).toContain('Title: Meeting');
+      expect(stdout).toContain('Start:');
+      expect(stdout).toContain('End:');
     });
 
     it('should create event with duration', async () => {
       const { stdout } = await runCommand('events create "Meeting" --start "2024-06-25T14:00:00" --duration 90');
 
-      expect(stdout).to.contain('Event created successfully!');
-      expect(stdout).to.contain('Title: Meeting');
+      expect(stdout).toContain('Event created successfully!');
+      expect(stdout).toContain('Title: Meeting');
     });
 
     it('should create all-day event', async () => {
       const { stdout } = await runCommand('events create "Holiday" --start "2024-06-25" --all-day');
 
-      expect(stdout).to.contain('Event created successfully!');
-      expect(stdout).to.contain('Title: Holiday');
-      expect(stdout).to.contain('Date:');
-      expect(stdout).to.not.contain('Start:');
-      expect(stdout).to.not.contain('End:');
+      expect(stdout).toContain('Event created successfully!');
+      expect(stdout).toContain('Title: Holiday');
+      expect(stdout).toContain('Date:');
+      expect(stdout).not.toContain('Start:');
+      expect(stdout).not.toContain('End:');
     });
   });
 
@@ -67,9 +67,9 @@ describe('events create integration', () => {
         'events create "Meeting" --start "2024-06-25T14:00:00" --location "Conference Room A"',
       );
 
-      expect(stdout).to.contain('Event created successfully!');
-      expect(stdout).to.contain('Title: Meeting');
-      expect(stdout).to.contain('Location: Conference Room A');
+      expect(stdout).toContain('Event created successfully!');
+      expect(stdout).toContain('Title: Meeting');
+      expect(stdout).toContain('Location: Conference Room A');
     });
 
     it('should create event with description', async () => {
@@ -77,8 +77,8 @@ describe('events create integration', () => {
         'events create "Meeting" --start "2024-06-25T14:00:00" --description "Important project discussion"',
       );
 
-      expect(stdout).to.contain('Event created successfully!');
-      expect(stdout).to.contain('Title: Meeting');
+      expect(stdout).toContain('Event created successfully!');
+      expect(stdout).toContain('Title: Meeting');
     });
 
     it('should create event with attendees', async () => {
@@ -86,8 +86,8 @@ describe('events create integration', () => {
         'events create "Meeting" --start "2024-06-25T14:00:00" --attendees "alice@example.com,bob@example.com"',
       );
 
-      expect(stdout).to.contain('Event created successfully!');
-      expect(stdout).to.contain('Title: Meeting');
+      expect(stdout).toContain('Event created successfully!');
+      expect(stdout).toContain('Title: Meeting');
     });
 
     it('should create event with all optional fields', async () => {
@@ -95,9 +95,9 @@ describe('events create integration', () => {
         'events create "Team Meeting" --start "2024-06-25T14:00:00" --end "2024-06-25T15:00:00" --location "Room A" --description "Sprint planning" --attendees "alice@example.com,bob@example.com" --calendar "work@company.com"',
       );
 
-      expect(stdout).to.contain('Event created successfully!');
-      expect(stdout).to.contain('Title: Team Meeting');
-      expect(stdout).to.contain('Location: Room A');
+      expect(stdout).toContain('Event created successfully!');
+      expect(stdout).toContain('Title: Team Meeting');
+      expect(stdout).toContain('Location: Room A');
     });
   });
 
@@ -108,21 +108,21 @@ describe('events create integration', () => {
       );
 
       // Status messages still go to stderr
-      expect(stderr).to.contain('Authenticating with Google Calendar...');
-      expect(stderr).to.contain('Creating event...');
+      expect(stderr).toContain('Authenticating with Google Calendar...');
+      expect(stderr).toContain('Creating event...');
 
       // stdout should contain only clean JSON
-      expect(() => JSON.parse(stdout)).to.not.throw();
+      expect(() => JSON.parse(stdout)).not.toThrow();
       const event = JSON.parse(stdout);
-      expect(event).to.have.property('summary', 'Test Event');
-      expect(event).to.have.property('id');
-      expect(event).to.have.property('start');
-      expect(event).to.have.property('end');
+      expect(event).toHaveProperty('summary', 'Test Event');
+      expect(event).toHaveProperty('id');
+      expect(event).toHaveProperty('start');
+      expect(event).toHaveProperty('end');
 
       // No status messages should contaminate JSON output
-      expect(stdout).to.not.contain('Authenticating');
-      expect(stdout).to.not.contain('Creating');
-      expect(stdout).to.not.contain('Event created successfully');
+      expect(stdout).not.toContain('Authenticating');
+      expect(stdout).not.toContain('Creating');
+      expect(stdout).not.toContain('Event created successfully');
     });
 
     it('should produce formatted JSON with --format pretty-json', async () => {
@@ -131,13 +131,13 @@ describe('events create integration', () => {
       );
 
       // Should be valid JSON
-      expect(() => JSON.parse(stdout)).to.not.throw();
+      expect(() => JSON.parse(stdout)).not.toThrow();
       const event = JSON.parse(stdout);
-      expect(event).to.have.property('summary', 'Test Event');
+      expect(event).toHaveProperty('summary', 'Test Event');
 
       // Should be formatted JSON (with indentation)
-      expect(stdout).to.contain('\n  ');
-      expect(stdout.trim().split('\n').length).to.be.greaterThan(1);
+      expect(stdout).toContain('\n  ');
+      expect(stdout.trim().split('\n').length).toBeGreaterThan(1);
     });
 
     it('should include all event data in JSON format', async () => {
@@ -146,11 +146,11 @@ describe('events create integration', () => {
       );
 
       const event = JSON.parse(stdout);
-      expect(event.summary).to.equal('Full Event');
-      expect(event.location).to.equal('Meeting Room');
-      expect(event.description).to.equal('Detailed description');
-      expect(event.attendees).to.have.length(1);
-      expect(event.attendees[0].email).to.equal('user@example.com');
+      expect(event.summary).toBe('Full Event');
+      expect(event.location).toBe('Meeting Room');
+      expect(event.description).toBe('Detailed description');
+      expect(event.attendees).toHaveLength(1);
+      expect(event.attendees[0].email).toBe('user@example.com');
     });
   });
 
@@ -158,7 +158,7 @@ describe('events create integration', () => {
     it('should create event in primary calendar by default', async () => {
       const { stdout } = await runCommand('events create "Test Event" --start "2024-06-25T14:00:00"');
 
-      expect(stdout).to.contain('Event created successfully!');
+      expect(stdout).toContain('Event created successfully!');
     });
 
     it('should create event in specified calendar', async () => {
@@ -166,7 +166,7 @@ describe('events create integration', () => {
         'events create "Test Event" --start "2024-06-25T14:00:00" --calendar "work@company.com"',
       );
 
-      expect(stdout).to.contain('Event created successfully!');
+      expect(stdout).toContain('Event created successfully!');
     });
 
     it('should accept short flag for calendar', async () => {
@@ -174,7 +174,7 @@ describe('events create integration', () => {
         'events create "Test Event" --start "2024-06-25T14:00:00" -c "personal@gmail.com"',
       );
 
-      expect(stdout).to.contain('Event created successfully!');
+      expect(stdout).toContain('Event created successfully!');
     });
   });
 
@@ -182,20 +182,20 @@ describe('events create integration', () => {
     it('should handle ISO datetime format', async () => {
       const { stdout } = await runCommand('events create "Meeting" --start "2024-06-25T14:00:00Z"');
 
-      expect(stdout).to.contain('Event created successfully!');
+      expect(stdout).toContain('Event created successfully!');
     });
 
     it('should handle local datetime format', async () => {
       const { stdout } = await runCommand('events create "Meeting" --start "2024-06-25T14:00:00"');
 
-      expect(stdout).to.contain('Event created successfully!');
+      expect(stdout).toContain('Event created successfully!');
     });
 
     it('should handle date-only format for all-day events', async () => {
       const { stdout } = await runCommand('events create "Holiday" --start "2024-06-25" --all-day');
 
-      expect(stdout).to.contain('Event created successfully!');
-      expect(stdout).to.contain('Date:');
+      expect(stdout).toContain('Event created successfully!');
+      expect(stdout).toContain('Date:');
     });
   });
 
@@ -203,8 +203,8 @@ describe('events create integration', () => {
     it('should handle Unicode characters in event title', async () => {
       const { stdout } = await runCommand('events create "会議 📅" --start "2024-06-25T14:00:00"');
 
-      expect(stdout).to.contain('Event created successfully!');
-      expect(stdout).to.contain('Title: 会議 📅');
+      expect(stdout).toContain('Event created successfully!');
+      expect(stdout).toContain('Title: 会議 📅');
     });
 
     it('should handle Unicode in location and description', async () => {
@@ -212,8 +212,8 @@ describe('events create integration', () => {
         'events create "Meeting" --start "2024-06-25T14:00:00" --location "東京オフィス 🏢" --description "重要な会議です"',
       );
 
-      expect(stdout).to.contain('Event created successfully!');
-      expect(stdout).to.contain('Location: 東京オフィス 🏢');
+      expect(stdout).toContain('Event created successfully!');
+      expect(stdout).toContain('Location: 東京オフィス 🏢');
     });
 
     it('should handle special characters in attendee emails', async () => {
@@ -221,7 +221,7 @@ describe('events create integration', () => {
         'events create "Meeting" --start "2024-06-25T14:00:00" --attendees "user+tag@example.com,another.user@example-domain.com"',
       );
 
-      expect(stdout).to.contain('Event created successfully!');
+      expect(stdout).toContain('Event created successfully!');
     });
   });
 
@@ -232,8 +232,8 @@ describe('events create integration', () => {
       );
 
       const event = JSON.parse(stdout);
-      expect(event.attendees).to.have.length(1);
-      expect(event.attendees[0].email).to.equal('user@example.com');
+      expect(event.attendees).toHaveLength(1);
+      expect(event.attendees[0].email).toBe('user@example.com');
     });
 
     it('should parse multiple attendees', async () => {
@@ -242,10 +242,10 @@ describe('events create integration', () => {
       );
 
       const event = JSON.parse(stdout);
-      expect(event.attendees).to.have.length(3);
-      expect(event.attendees[0].email).to.equal('alice@example.com');
-      expect(event.attendees[1].email).to.equal('bob@example.com');
-      expect(event.attendees[2].email).to.equal('charlie@example.com');
+      expect(event.attendees).toHaveLength(3);
+      expect(event.attendees[0].email).toBe('alice@example.com');
+      expect(event.attendees[1].email).toBe('bob@example.com');
+      expect(event.attendees[2].email).toBe('charlie@example.com');
     });
 
     it('should handle attendees with spaces around commas', async () => {
@@ -254,10 +254,10 @@ describe('events create integration', () => {
       );
 
       const event = JSON.parse(stdout);
-      expect(event.attendees).to.have.length(3);
-      expect(event.attendees[0].email).to.equal('alice@example.com');
-      expect(event.attendees[1].email).to.equal('bob@example.com');
-      expect(event.attendees[2].email).to.equal('charlie@example.com');
+      expect(event.attendees).toHaveLength(3);
+      expect(event.attendees[0].email).toBe('alice@example.com');
+      expect(event.attendees[1].email).toBe('bob@example.com');
+      expect(event.attendees[2].email).toBe('charlie@example.com');
     });
   });
 
@@ -266,12 +266,12 @@ describe('events create integration', () => {
       const { stderr, stdout } = await runCommand('events create "Test Event" --start "2024-06-25T14:00:00" --quiet');
 
       // Status messages should be suppressed
-      expect(stderr).to.not.contain('Authenticating with Google Calendar...');
-      expect(stderr).to.not.contain('Creating event...');
+      expect(stderr).not.toContain('Authenticating with Google Calendar...');
+      expect(stderr).not.toContain('Creating event...');
 
       // But results should still be shown
-      expect(stdout).to.contain('Event created successfully!');
-      expect(stdout).to.contain('Title: Test Event');
+      expect(stdout).toContain('Event created successfully!');
+      expect(stdout).toContain('Title: Test Event');
     });
 
     it('should suppress status messages in JSON format with --quiet flag', async () => {
@@ -280,13 +280,13 @@ describe('events create integration', () => {
       );
 
       // Status messages should be suppressed
-      expect(stderr).to.not.contain('Authenticating with Google Calendar...');
-      expect(stderr).to.not.contain('Creating event...');
+      expect(stderr).not.toContain('Authenticating with Google Calendar...');
+      expect(stderr).not.toContain('Creating event...');
 
       // JSON output should still be clean and valid
-      expect(() => JSON.parse(stdout)).to.not.throw();
+      expect(() => JSON.parse(stdout)).not.toThrow();
       const event = JSON.parse(stdout);
-      expect(event.summary).to.equal('Test Event');
+      expect(event.summary).toBe('Test Event');
     });
   });
 
@@ -295,15 +295,15 @@ describe('events create integration', () => {
       const { stdout } = await runCommand('events create "" --start "2024-06-25T14:00:00" --format json');
 
       const event = JSON.parse(stdout);
-      expect(event.summary).to.equal('');
+      expect(event.summary).toBe('');
     });
 
     it('should handle very long event titles', async () => {
       const longTitle = 'A'.repeat(500);
       const { stdout } = await runCommand(`events create "${longTitle}" --start "2024-06-25T14:00:00"`);
 
-      expect(stdout).to.contain('Event created successfully!');
-      expect(stdout).to.contain(`Title: ${longTitle}`);
+      expect(stdout).toContain('Event created successfully!');
+      expect(stdout).toContain(`Title: ${longTitle}`);
     });
 
     it('should handle very long descriptions', async () => {
@@ -312,14 +312,14 @@ describe('events create integration', () => {
         `events create "Meeting" --start "2024-06-25T14:00:00" --description "${longDescription}"`,
       );
 
-      expect(stdout).to.contain('Event created successfully!');
+      expect(stdout).toContain('Event created successfully!');
     });
 
     it('should handle events with empty location', async () => {
       const { stdout } = await runCommand('events create "Meeting" --start "2024-06-25T14:00:00" --location ""');
 
-      expect(stdout).to.contain('Event created successfully!');
-      expect(stdout).to.not.contain('Location:');
+      expect(stdout).toContain('Event created successfully!');
+      expect(stdout).not.toContain('Location:');
     });
   });
 
@@ -329,16 +329,16 @@ describe('events create integration', () => {
         'events create "Meeting" -s "2024-06-25T14:00:00" -e "2024-06-25T15:00:00" -c primary -l "Room A" -f json',
       );
 
-      expect(() => JSON.parse(stdout)).to.not.throw();
+      expect(() => JSON.parse(stdout)).not.toThrow();
       const event = JSON.parse(stdout);
-      expect(event.summary).to.equal('Meeting');
-      expect(event.location).to.equal('Room A');
+      expect(event.summary).toBe('Meeting');
+      expect(event.location).toBe('Room A');
     });
 
     it('should accept duration short flag', async () => {
       const { stdout } = await runCommand('events create "Meeting" -s "2024-06-25T14:00:00" -d 120');
 
-      expect(stdout).to.contain('Event created successfully!');
+      expect(stdout).toContain('Event created successfully!');
     });
   });
 
@@ -354,15 +354,15 @@ describe('events create integration', () => {
         'events create "Meeting" --start "2024-06-25T14:00:00" --send-updates none',
       );
 
-      expect(allOutput).to.contain('Event created successfully!');
-      expect(externalOutput).to.contain('Event created successfully!');
-      expect(noneOutput).to.contain('Event created successfully!');
+      expect(allOutput).toContain('Event created successfully!');
+      expect(externalOutput).toContain('Event created successfully!');
+      expect(noneOutput).toContain('Event created successfully!');
     });
 
     it('should default to none for send-updates', async () => {
       const { stdout } = await runCommand('events create "Meeting" --start "2024-06-25T14:00:00"');
 
-      expect(stdout).to.contain('Event created successfully!');
+      expect(stdout).toContain('Event created successfully!');
     });
   });
 });

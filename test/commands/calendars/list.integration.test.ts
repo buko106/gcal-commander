@@ -60,7 +60,7 @@ describe('calendars list integration', () => {
 
       expect(() => JSON.parse(stdout)).not.toThrow();
       const calendars = JSON.parse(stdout);
-      expect(calendars).to.have.length(100);
+      expect(calendars).toHaveLength(100);
       expect(calendars[0]).toHaveProperty('summary', 'Test Calendar 0');
       expect(calendars[99]).toHaveProperty('summary', 'Test Calendar 99');
     });
@@ -240,7 +240,7 @@ describe('calendars list integration', () => {
 
       // Parse JSON output
       const calendars = JSON.parse(jsonOutput);
-      expect(calendars).to.have.length(2);
+      expect(calendars).toHaveLength(2);
 
       // Verify key information appears in both formats
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -248,8 +248,8 @@ describe('calendars list integration', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const secondaryCalendar = calendars.find((cal: any) => !cal.primary);
 
-      expect(primaryCalendar).to.exist;
-      expect(secondaryCalendar).to.exist;
+      expect(primaryCalendar).toBeDefined();
+      expect(secondaryCalendar).toBeDefined();
 
       // Check table format contains the same information
       expect(tableOutput).toContain('Primary Calendar');
@@ -262,15 +262,15 @@ describe('calendars list integration', () => {
       expect(tableOutput).toContain('My main calendar');
 
       // Verify JSON contains complete data
-      expect(primaryCalendar.id).toEqual('primary');
-      expect(primaryCalendar.summary).toEqual('Primary Calendar');
-      expect(primaryCalendar.accessRole).toEqual('owner');
-      expect(primaryCalendar.backgroundColor).toEqual('#1a73e8');
-      expect(primaryCalendar.description).toEqual('My main calendar');
+      expect(primaryCalendar.id).toBe('primary');
+      expect(primaryCalendar.summary).toBe('Primary Calendar');
+      expect(primaryCalendar.accessRole).toBe('owner');
+      expect(primaryCalendar.backgroundColor).toBe('#1a73e8');
+      expect(primaryCalendar.description).toBe('My main calendar');
 
-      expect(secondaryCalendar.id).toEqual('secondary@example.com');
-      expect(secondaryCalendar.summary).toEqual('Secondary Calendar');
-      expect(secondaryCalendar.accessRole).toEqual('reader');
+      expect(secondaryCalendar.id).toBe('secondary@example.com');
+      expect(secondaryCalendar.summary).toBe('Secondary Calendar');
+      expect(secondaryCalendar.accessRole).toBe('reader');
     });
   });
 });

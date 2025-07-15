@@ -25,12 +25,12 @@ describe('config', () => {
 
     it('supports JSON format', async () => {
       const { stdout } = await runCommand('config list --format json');
-      expect(stdout.trim()).toEqual('{}');
+      expect(stdout.trim()).toBe('{}');
     });
 
     it('supports pretty-json format', async () => {
       const { stdout } = await runCommand('config list --format pretty-json');
-      expect(stdout.trim()).toEqual('{}');
+      expect(stdout.trim()).toBe('{}');
     });
 
     it('outputs formatted JSON when config has data with --format pretty-json', async () => {
@@ -44,16 +44,16 @@ describe('config', () => {
       expect(() => JSON.parse(stdout)).not.toThrow();
       const config = JSON.parse(stdout);
 
-      expect(config).to.have.property('defaultCalendar', 'test@example.com');
-      expect(config).to.have.property('events');
-      expect(config.events).to.have.property('maxResults', 25);
+      expect(config).toHaveProperty('defaultCalendar', 'test@example.com');
+      expect(config).toHaveProperty('events');
+      expect(config.events).toHaveProperty('maxResults', 25);
 
       // Should be formatted (with indentation)
       expect(stdout).toContain('\n  ');
-      expect(stdout.trim().split('\n').length).to.be.greaterThan(1);
+      expect(stdout.trim().split('\n').length).toBeGreaterThan(1);
 
       // Should start with object bracket and proper indentation
-      expect(stdout.trim()).to.match(/^{\s*\n\s+"/);
+      expect(stdout.trim()).toMatch(/^{\s*\n\s+"/);
     });
 
     it('outputs minified JSON with --format json', async () => {
@@ -67,12 +67,12 @@ describe('config', () => {
       expect(() => JSON.parse(stdout)).not.toThrow();
       const config = JSON.parse(stdout);
 
-      expect(config).to.have.property('defaultCalendar', 'test@example.com');
-      expect(config.events).to.have.property('format', 'table');
+      expect(config).toHaveProperty('defaultCalendar', 'test@example.com');
+      expect(config.events).toHaveProperty('format', 'table');
 
       // Should be minified (no indentation)
-      expect(stdout).to.not.contain('\n  ');
-      expect(stdout.trim().split('\n')).to.have.length(1);
+      expect(stdout).not.toContain('\n  ');
+      expect(stdout.trim().split('\n')).toHaveLength(1);
     });
 
     it('produces same data in json and pretty-json formats', async () => {
@@ -92,15 +92,15 @@ describe('config', () => {
       const prettyJsonConfig = JSON.parse(prettyJsonOutput);
 
       // Should contain exactly the same data
-      expect(jsonConfig).to.deep.equal(prettyJsonConfig);
-      expect(jsonConfig).to.have.property('defaultCalendar', 'test@example.com');
-      expect(prettyJsonConfig.events).to.have.property('days', 14);
+      expect(jsonConfig).toEqual(prettyJsonConfig);
+      expect(jsonConfig).toHaveProperty('defaultCalendar', 'test@example.com');
+      expect(prettyJsonConfig.events).toHaveProperty('days', 14);
 
       // But the string representations should be different
-      expect(jsonOutput).to.not.equal(prettyJsonOutput);
+      expect(jsonOutput).not.toBe(prettyJsonOutput);
 
       // json should be minified, pretty-json should be formatted
-      expect(jsonOutput).to.not.contain('\n  ');
+      expect(jsonOutput).not.toContain('\n  ');
       expect(prettyJsonOutput).toContain('\n  ');
     });
   });
@@ -148,10 +148,6 @@ describe('config', () => {
       const { stdout } = await runCommand('config get defaultCalendar');
       expect(stdout).toContain("Configuration key 'defaultCalendar' is not set");
     });
-
-    // it.skip('validates configuration keys', async () => {
-    //   // This test is skipped - manual testing confirms it works
-    // });
   });
 
   describe('config unset', () => {
@@ -165,10 +161,6 @@ describe('config', () => {
       const { stdout } = await runCommand('config unset defaultCalendar');
       expect(stdout).toContain("Configuration key 'defaultCalendar' is not set");
     });
-
-    // it.skip('validates configuration keys', async () => {
-    //   // This test is skipped - manual testing confirms it works
-    // });
   });
 
   describe('config reset', () => {
