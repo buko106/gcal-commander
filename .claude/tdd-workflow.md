@@ -79,9 +79,9 @@ describe('command name', () => {
 
   it('should separate status from data output', async () => {
     const {stderr, stdout} = await runCommand('command --format json');
-    expect(stderr).to.contain('Status message');
-    expect(stdout).to.not.contain('Status message');
-    expect(() => JSON.parse(stdout)).to.not.throw();
+    expect(stderr).toContain('Status message');
+    expect(stdout).not.toContain('Status message');
+    expect(() => JSON.parse(stdout)).not.toThrow();
   });
 });
 ```
@@ -107,7 +107,7 @@ beforeEach(() => {
   const mocks = TestContainerFactory.create();
   mockCalendarService = mocks.mockCalendarService;
   // Set up test data
-  mockCalendarService.setMockEvents([...testEvents]);
+  mockCalendarService.listEvents.mockResolvedValue(testEvents);
 });
 
 afterEach(() => {

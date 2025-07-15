@@ -1,9 +1,7 @@
 import 'reflect-metadata';
-import * as sinon from 'sinon';
-import { container, DependencyContainer } from 'tsyringe';
+import { container, type DependencyContainer } from 'tsyringe';
+import { MockedObject, vi } from 'vitest';
 
-import { setContainerProvider } from '../../../src/di/container-provider';
-import { ProductionContainerProvider } from '../../../src/di/production-container-provider';
 import { TOKENS } from '../../../src/di/tokens';
 import { IConfigStorage } from '../../../src/interfaces/config-storage';
 import {
@@ -15,8 +13,6 @@ import {
 } from '../../../src/interfaces/services';
 import { ConfigService } from '../../../src/services/config';
 import { I18nService } from '../../../src/services/i18n';
-import { setTestContainer } from '../../di/test-container';
-import { TestContainerProvider } from '../../di/test-container-provider';
 import { AuthServiceMockFactory, AuthServiceMockOptions } from './auth-service-mock-factory';
 import { CalendarServiceMockFactory, CalendarServiceMockOptions } from './calendar-service-mock-factory';
 import { ConfigStorageMockFactory, ConfigStorageMockOptions } from './config-storage-mock-factory';
@@ -45,11 +41,8 @@ export class TestContainerFactory {
       this.currentContainer = null;
     }
 
-    // Clear the test container reference
-    setTestContainer(null as unknown as DependencyContainer);
-
-    // Restore production container provider
-    setContainerProvider(new ProductionContainerProvider());
+    container.clearInstances();
+    vi.resetAllMocks();
   }
 
   /**
@@ -58,22 +51,16 @@ export class TestContainerFactory {
   static create(options: TestContainerOptions = {}): {
     container: DependencyContainer;
     mocks: {
-      authService: IAuthService & sinon.SinonStubbedInstance<IAuthService>;
-      calendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
+      authService: IAuthService & MockedObject<IAuthService>;
+      calendarService: ICalendarService & MockedObject<ICalendarService>;
       configService: IConfigService;
-      configStorage: IConfigStorage & sinon.SinonStubbedInstance<IConfigStorage>;
+      configStorage: IConfigStorage & MockedObject<IConfigStorage>;
       i18nService: II18nService;
-      promptService: IPromptService & sinon.SinonStubbedInstance<IPromptService>;
+      promptService: IPromptService & MockedObject<IPromptService>;
     };
   } {
     // Clean up any existing container
     this.cleanup();
-
-    // Create child container for test isolation
-    this.currentContainer = container.createChildContainer();
-
-    // Set the container for the existing DI system
-    setTestContainer(this.currentContainer);
 
     // Create mocks
     const authServiceMock = AuthServiceMockFactory.create(options.authService);
@@ -86,35 +73,35 @@ export class TestContainerFactory {
     const configService = new ConfigService(configStorageMock);
 
     // Register mocks in container
-    this.currentContainer.register<ICalendarService>(TOKENS.CalendarService, {
+    container.register<ICalendarService>(TOKENS.CalendarService, {
       useValue: calendarServiceMock,
     });
 
-    this.currentContainer.register<IAuthService>(TOKENS.AuthService, {
+    container.register<IAuthService>(TOKENS.AuthService, {
       useValue: authServiceMock,
     });
 
-    this.currentContainer.register<IConfigStorage>(TOKENS.ConfigStorage, {
+    container.register<IConfigStorage>(TOKENS.ConfigStorage, {
       useValue: configStorageMock,
     });
 
-    this.currentContainer.register<IConfigService>(TOKENS.ConfigService, {
+    container.register<IConfigService>(TOKENS.ConfigService, {
       useValue: configService,
     });
 
-    this.currentContainer.register<II18nService>(TOKENS.I18nService, {
+    container.register<II18nService>(TOKENS.I18nService, {
       useValue: i18nService,
     });
 
-    this.currentContainer.register<IPromptService>(TOKENS.PromptService, {
+    container.register<IPromptService>(TOKENS.PromptService, {
       useValue: promptServiceMock,
     });
 
-    // Set the test container provider
-    setContainerProvider(new TestContainerProvider());
+    // Set current container for registerService method
+    this.currentContainer = container;
 
     return {
-      container: this.currentContainer,
+      container,
       mocks: {
         authService: authServiceMock,
         calendarService: calendarServiceMock,
@@ -132,12 +119,12 @@ export class TestContainerFactory {
   static createSuccessful(options: TestContainerOptions = {}): {
     container: DependencyContainer;
     mocks: {
-      authService: IAuthService & sinon.SinonStubbedInstance<IAuthService>;
-      calendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
+      authService: IAuthService & MockedObject<IAuthService>;
+      calendarService: ICalendarService & MockedObject<ICalendarService>;
       configService: IConfigService;
-      configStorage: IConfigStorage & sinon.SinonStubbedInstance<IConfigStorage>;
+      configStorage: IConfigStorage & MockedObject<IConfigStorage>;
       i18nService: II18nService;
-      promptService: IPromptService & sinon.SinonStubbedInstance<IPromptService>;
+      promptService: IPromptService & MockedObject<IPromptService>;
     };
   } {
     const calendarOptions = options.calendarService || {};

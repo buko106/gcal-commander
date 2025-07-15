@@ -1,44 +1,48 @@
 import * as localAuth from '@google-cloud/local-auth';
-import { expect } from 'chai';
-import fs from 'node:fs/promises';
-import { SinonStub, stub } from 'sinon';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as auth from '../../src/auth';
 import { AppPaths } from '../../src/utils/paths';
+
+// Mock the entire fs/promises module
+vi.mock('node:fs/promises', () => ({
+  readFile: vi.fn(),
+  writeFile: vi.fn(),
+  mkdir: vi.fn(),
+}));
 
 describe('auth service', () => {
   describe('getCredentialsPath', () => {
     it('should return the correct credentials path', () => {
       const expectedPath = AppPaths.getCredentialsPath();
-      expect(auth.getCredentialsPath()).to.equal(expectedPath);
+      expect(auth.getCredentialsPath()).toEqual(expectedPath);
     });
   });
 
   describe('getTokenPath', () => {
     it('should return the correct token path', () => {
       const expectedPath = AppPaths.getTokenPath();
-      expect(auth.getTokenPath()).to.equal(expectedPath);
+      expect(auth.getTokenPath()).toEqual(expectedPath);
     });
   });
 
   describe('getCalendarAuth', () => {
-    let authenticateStub: SinonStub;
-    let readFileStub: SinonStub;
+    let authenticateMock: unknown;
 
-    beforeEach(() => {
-      authenticateStub = stub(localAuth, 'authenticate');
+    beforeEach(async () => {
+      authenticateMock = vi.spyOn(localAuth, 'authenticate').mockResolvedValue({});
       // Mock readFile to simulate no saved credentials
-      readFileStub = stub(fs, 'readFile').rejects(new Error('No saved credentials'));
+      const { readFile } = await import('node:fs/promises');
+      vi.mocked(readFile).mockRejectedValue(new Error('No saved credentials'));
     });
 
     afterEach(() => {
-      authenticateStub.restore();
-      readFileStub.restore();
+      vi.restoreAllMocks();
     });
 
     it('should call authenticate with correct arguments when no saved credentials exist', async () => {
       const mockClient = { credentials: {} };
-      authenticateStub.resolves(mockClient);
+      authenticateMock.mockResolvedValue(mockClient);
 
       try {
         await auth.getCalendarAuth();
@@ -46,8 +50,8 @@ describe('auth service', () => {
         // Authentication may fail due to other dependencies, but we only care about the authenticate call
       }
 
-      expect(authenticateStub.calledOnce).to.be.true;
-      expect(authenticateStub.firstCall.args[0]).to.deep.equal({
+      expect(authenticateMock).toHaveBeenCalledTimes(1);
+      expect(authenticateMock).toHaveBeenCalledWith({
         keyfilePath: auth.getCredentialsPath(),
         scopes: [
           'https://www.googleapis.com/auth/calendar.events',

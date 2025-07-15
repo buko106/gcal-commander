@@ -1,14 +1,14 @@
-import type * as sinon from 'sinon';
+import type { MockedObject } from 'vitest';
 
 import { runCommand } from '@oclif/test';
-import { expect } from 'chai';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import type { ICalendarService } from '../../../src/interfaces/services';
 
 import { TestContainerFactory } from '../../test-utils/mock-factories';
 
 describe('events list integration', () => {
-  let mockCalendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
+  let mockCalendarService: MockedObject<ICalendarService>;
 
   beforeEach(() => {
     const { mocks } = TestContainerFactory.create();
@@ -24,13 +24,13 @@ describe('events list integration', () => {
       const { stderr, stdout } = await runCommand('events list');
 
       // Status messages should go to stderr
-      expect(stderr).to.contain('Authenticating with Google Calendar...');
-      expect(stderr).to.contain('Fetching events from primary...');
+      expect(stderr).toContain('Authenticating with Google Calendar...');
+      expect(stderr).toContain('Fetching events from primary...');
 
       // Event data should go to stdout
-      expect(stdout).to.contain('Upcoming Events (2 found)');
-      expect(stdout).to.contain('Mock Event 1');
-      expect(stdout).to.contain('Mock Event 2');
+      expect(stdout).toContain('Upcoming Events (2 found)');
+      expect(stdout).toContain('Mock Event 1');
+      expect(stdout).toContain('Mock Event 2');
 
       // Status messages should NOT be in stdout
       expect(stdout).to.not.contain('Authenticating with Google Calendar...');
@@ -41,11 +41,11 @@ describe('events list integration', () => {
       const { stderr, stdout } = await runCommand('events list --format json');
 
       // Status messages still go to stderr
-      expect(stderr).to.contain('Authenticating with Google Calendar...');
-      expect(stderr).to.contain('Fetching events from primary...');
+      expect(stderr).toContain('Authenticating with Google Calendar...');
+      expect(stderr).toContain('Fetching events from primary...');
 
       // stdout should contain only clean JSON
-      expect(() => JSON.parse(stdout)).to.not.throw();
+      expect(() => JSON.parse(stdout)).not.toThrow();
       const events = JSON.parse(stdout);
       expect(Array.isArray(events)).to.be.true;
       expect(events).to.have.length(2);
@@ -92,28 +92,28 @@ describe('events list integration', () => {
         },
       ];
 
-      mockCalendarService.listEvents.resolves(mixedEvents);
+      mockCalendarService.listEvents.mockResolvedValue(mixedEvents);
 
       const { stdout } = await runCommand('events list');
 
-      expect(stdout).to.contain('Upcoming Events (4 found)');
-      expect(stdout).to.contain('1. Meeting with client');
-      expect(stdout).to.contain('Conference Room A');
-      expect(stdout).to.contain('2. Company Holiday');
-      expect(stdout).to.contain('All day');
-      expect(stdout).to.contain('3. (No title)');
-      expect(stdout).to.contain('4. Event with long description');
-      expect(stdout).to.contain(
+      expect(stdout).toContain('Upcoming Events (4 found)');
+      expect(stdout).toContain('1. Meeting with client');
+      expect(stdout).toContain('Conference Room A');
+      expect(stdout).toContain('2. Company Holiday');
+      expect(stdout).toContain('All day');
+      expect(stdout).toContain('3. (No title)');
+      expect(stdout).toContain('4. Event with long description');
+      expect(stdout).toContain(
         'This is a very long description that exceeds 100 characters and should be truncated in the table vie...',
       );
     });
 
     it('should handle empty events list', async () => {
-      mockCalendarService.listEvents.resolves([]);
+      mockCalendarService.listEvents.mockResolvedValue([]);
 
       const { stdout } = await runCommand('events list');
 
-      expect(stdout).to.contain('No upcoming events found.');
+      expect(stdout).toContain('No upcoming events found.');
     });
 
     it('should handle events with Unicode characters', async () => {
@@ -144,18 +144,18 @@ describe('events list integration', () => {
         },
       ];
 
-      mockCalendarService.listEvents.resolves(unicodeEvents);
+      mockCalendarService.listEvents.mockResolvedValue(unicodeEvents);
 
       const { stdout } = await runCommand('events list');
 
-      expect(stdout).to.contain('会議 📅');
-      expect(stdout).to.contain('東京オフィス 🏢');
-      expect(stdout).to.contain('重要な会議です。資料を準備してください。');
-      expect(stdout).to.contain('🎉 Birthday Party 🎂');
-      expect(stdout).to.contain('🏠 Home');
-      expect(stdout).to.contain('Celebrating with 🍰 and 🎈');
-      expect(stdout).to.contain('Besprechung über Änderungen');
-      expect(stdout).to.contain('München Büro');
+      expect(stdout).toContain('会議 📅');
+      expect(stdout).toContain('東京オフィス 🏢');
+      expect(stdout).toContain('重要な会議です。資料を準備してください。');
+      expect(stdout).toContain('🎉 Birthday Party 🎂');
+      expect(stdout).toContain('🏠 Home');
+      expect(stdout).toContain('Celebrating with 🍰 and 🎈');
+      expect(stdout).toContain('Besprechung über Änderungen');
+      expect(stdout).toContain('München Büro');
     });
   });
 
@@ -163,19 +163,19 @@ describe('events list integration', () => {
     it('should fetch events from specified calendar', async () => {
       const { stderr } = await runCommand('events list work@company.com');
 
-      expect(stderr).to.contain('Fetching events from work@company.com...');
+      expect(stderr).toContain('Fetching events from work@company.com...');
     });
 
     it('should default to primary calendar', async () => {
       const { stderr } = await runCommand('events list');
 
-      expect(stderr).to.contain('Fetching events from primary...');
+      expect(stderr).toContain('Fetching events from primary...');
     });
 
     it('should handle primary calendar explicitly', async () => {
       const { stderr } = await runCommand('events list primary');
 
-      expect(stderr).to.contain('Fetching events from primary...');
+      expect(stderr).toContain('Fetching events from primary...');
     });
   });
 
@@ -188,25 +188,25 @@ describe('events list integration', () => {
         start: { dateTime: `2024-06-${25 + Math.floor(i / 10)}T${10 + (i % 10)}:00:00Z` },
         summary: `Event ${i + 1}`,
       }));
-      // Use callsFake to respect maxResults parameter
-      mockCalendarService.listEvents.callsFake(async (params) => manyEvents.slice(0, params.maxResults));
+      // Use mockImplementation to respect maxResults parameter
+      mockCalendarService.listEvents.mockImplementation(async (params) => manyEvents.slice(0, params.maxResults));
     });
 
     it('should respect max-results flag', async () => {
       const { stdout } = await runCommand('events list --max-results 5');
 
-      expect(stdout).to.contain('Upcoming Events (5 found)');
-      expect(stdout).to.contain('1. Event 1');
-      expect(stdout).to.contain('5. Event 5');
+      expect(stdout).toContain('Upcoming Events (5 found)');
+      expect(stdout).toContain('1. Event 1');
+      expect(stdout).toContain('5. Event 5');
       expect(stdout).to.not.contain('6. Event 6');
     });
 
     it('should respect max-results short flag', async () => {
       const { stdout } = await runCommand('events list -n 3');
 
-      expect(stdout).to.contain('Upcoming Events (3 found)');
-      expect(stdout).to.contain('1. Event 1');
-      expect(stdout).to.contain('3. Event 3');
+      expect(stdout).toContain('Upcoming Events (3 found)');
+      expect(stdout).toContain('1. Event 1');
+      expect(stdout).toContain('3. Event 3');
       expect(stdout).to.not.contain('4. Event 4');
     });
 
@@ -214,8 +214,8 @@ describe('events list integration', () => {
       const { stdout } = await runCommand('events list');
 
       // Default should be 10, but we have 15 events, so should see 10
-      expect(stdout).to.contain('Upcoming Events (10 found)');
-      expect(stdout).to.contain('10. Event 10');
+      expect(stdout).toContain('Upcoming Events (10 found)');
+      expect(stdout).toContain('10. Event 10');
       expect(stdout).to.not.contain('11. Event 11');
     });
   });
@@ -242,7 +242,7 @@ describe('events list integration', () => {
           summary: 'All Day Event',
         },
       ];
-      mockCalendarService.listEvents.resolves(testEvents);
+      mockCalendarService.listEvents.mockResolvedValue(testEvents);
     });
 
     it('should include same events in both table and JSON formats', async () => {
@@ -285,11 +285,11 @@ describe('events list integration', () => {
       const { stderr, stdout } = await runCommand('events list --format pretty-json');
 
       // Status messages still go to stderr
-      expect(stderr).to.contain('Authenticating with Google Calendar...');
-      expect(stderr).to.contain('Fetching events from');
+      expect(stderr).toContain('Authenticating with Google Calendar...');
+      expect(stderr).toContain('Fetching events from');
 
       // Should be valid JSON
-      expect(() => JSON.parse(stdout)).to.not.throw();
+      expect(() => JSON.parse(stdout)).not.toThrow();
       const events = JSON.parse(stdout);
       expect(events).to.have.length(2);
 
@@ -306,7 +306,7 @@ describe('events list integration', () => {
       expect(secondEvent.summary).to.equal('All Day Event');
 
       // Should be formatted JSON (with indentation)
-      expect(stdout).to.contain('\n  ');
+      expect(stdout).toContain('\n  ');
       expect(stdout.trim().split('\n').length).to.be.greaterThan(1);
 
       // Should start with array bracket and proper indentation
@@ -363,11 +363,11 @@ describe('events list integration', () => {
         },
       ];
 
-      mockCalendarService.listEvents.resolves(complexEvents);
+      mockCalendarService.listEvents.mockResolvedValue(complexEvents);
 
       const { stdout } = await runCommand('events list --format json');
 
-      expect(() => JSON.parse(stdout)).to.not.throw();
+      expect(() => JSON.parse(stdout)).not.toThrow();
       const events = JSON.parse(stdout);
       expect(events).to.have.length(1);
       expect(events[0].summary).to.contain('quotes');
@@ -385,8 +385,8 @@ describe('events list integration', () => {
       expect(stderr).to.not.contain('Fetching events from');
 
       // But results should still be shown
-      expect(stdout).to.contain('Upcoming Events (2 found)');
-      expect(stdout).to.contain('Mock Event 1');
+      expect(stdout).toContain('Upcoming Events (2 found)');
+      expect(stdout).toContain('Mock Event 1');
     });
 
     it('should suppress status messages in JSON format with --quiet flag', async () => {
@@ -397,7 +397,7 @@ describe('events list integration', () => {
       expect(stderr).to.not.contain('Fetching events from');
 
       // JSON output should still be clean and valid
-      expect(() => JSON.parse(stdout)).to.not.throw();
+      expect(() => JSON.parse(stdout)).not.toThrow();
       const events = JSON.parse(stdout);
       expect(events).to.have.length(2);
     });

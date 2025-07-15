@@ -1,5 +1,5 @@
 import { runCommand } from '@oclif/test';
-import { expect } from 'chai';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { TOKENS } from '../../src/di/tokens';
 import { I18nService } from '../../src/services/i18n';
@@ -23,22 +23,22 @@ describe('init command i18n integration', () => {
       TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
 
       // Set up mocks for Japanese test
-      mocks.promptService.select.resolves('ja');
-      mocks.promptService.confirm.resolves(false); // Skip auth verification
+      mocks.promptService.select.mockResolvedValue('ja');
+      mocks.promptService.confirm.mockResolvedValue(false); // Skip auth verification
     });
 
     it('should display messages in Japanese when language is selected', async () => {
       const { stderr } = await runCommand('init');
 
       // Should display Japanese translations
-      expect(stderr).to.include('Google Calendar の認証を確認します。');
+      expect(stderr).toContain('Google Calendar の認証を確認します。');
     });
 
     it('should display status messages in Japanese', async () => {
       const { stderr } = await runCommand('init');
 
       // Should display Japanese status message
-      expect(stderr).to.include('Google Calendar の認証を確認します。');
+      expect(stderr).toContain('Google Calendar の認証を確認します。');
     });
 
     it('should display authentication verification message in Japanese', async () => {
@@ -49,14 +49,14 @@ describe('init command i18n integration', () => {
       TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
 
       // Set up mocks for Japanese test with authentication
-      mocks.promptService.select.resolves('ja');
-      mocks.promptService.confirm.resolves(true); // User confirms to proceed
-      mocks.calendarService.listCalendars.resolves([]);
+      mocks.promptService.select.mockResolvedValue('ja');
+      mocks.promptService.confirm.mockResolvedValue(true); // User confirms to proceed
+      mocks.calendarService.listCalendars.mockResolvedValue([]);
 
       const { stderr } = await runCommand('init');
 
       // Should display Japanese authentication verification message
-      expect(stderr).to.include('Google Calendar の認証を確認中...');
+      expect(stderr).toContain('Google Calendar の認証を確認中...');
     });
   });
 
@@ -69,15 +69,15 @@ describe('init command i18n integration', () => {
       TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
 
       // Set up mocks for English test
-      mocks.promptService.select.resolves('en');
-      mocks.promptService.confirm.resolves(false); // Skip auth verification
+      mocks.promptService.select.mockResolvedValue('en');
+      mocks.promptService.confirm.mockResolvedValue(false); // Skip auth verification
     });
 
     it('should display messages in English by default', async () => {
       const { stderr } = await runCommand('init');
 
       // Should display English translations
-      expect(stderr).to.include('This will verify your Google Calendar authentication.');
+      expect(stderr).toContain('This will verify your Google Calendar authentication.');
     });
 
     it('should display authentication verification message in English', async () => {
@@ -88,14 +88,14 @@ describe('init command i18n integration', () => {
       TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
 
       // Set up mocks for English test with authentication
-      mocks.promptService.select.resolves('en');
-      mocks.promptService.confirm.resolves(true); // User confirms to proceed
-      mocks.calendarService.listCalendars.resolves([]);
+      mocks.promptService.select.mockResolvedValue('en');
+      mocks.promptService.confirm.mockResolvedValue(true); // User confirms to proceed
+      mocks.calendarService.listCalendars.mockResolvedValue([]);
 
       const { stderr } = await runCommand('init');
 
       // Should display English authentication verification message
-      expect(stderr).to.include('Verifying Google Calendar authentication...');
+      expect(stderr).toContain('Verifying Google Calendar authentication...');
     });
   });
 });

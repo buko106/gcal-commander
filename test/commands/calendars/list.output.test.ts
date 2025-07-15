@@ -1,14 +1,14 @@
-import type * as sinon from 'sinon';
+import type { MockedObject } from 'vitest';
 
 import { runCommand } from '@oclif/test';
-import { expect } from 'chai';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import type { ICalendarService } from '../../../src/interfaces/services';
 
 import { TestContainerFactory } from '../../test-utils/mock-factories';
 
 describe('calendars list output', () => {
-  let mockCalendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
+  let mockCalendarService: ICalendarService & MockedObject<ICalendarService>;
 
   beforeEach(() => {
     // Set up mock services for testing
@@ -22,29 +22,29 @@ describe('calendars list output', () => {
 
   describe('empty scenarios', () => {
     it('should show "No calendars found" when no calendars exist', async () => {
-      mockCalendarService.listCalendars.resolves([]);
+      mockCalendarService.listCalendars.mockResolvedValue([]);
 
       const { stderr, stdout } = await runCommand('calendars list');
 
-      expect(stderr).to.contain('Authenticating with Google Calendar...');
-      expect(stderr).to.contain('Fetching calendars...');
-      expect(stdout).to.contain('No calendars found.');
+      expect(stderr).toContain('Authenticating with Google Calendar...');
+      expect(stderr).toContain('Fetching calendars...');
+      expect(stdout).toContain('No calendars found.');
     });
 
     it('should suppress status messages with --quiet flag for empty calendars', async () => {
-      mockCalendarService.listCalendars.resolves([]);
+      mockCalendarService.listCalendars.mockResolvedValue([]);
 
       const { stderr, stdout } = await runCommand('calendars list --quiet');
 
       expect(stderr).to.not.contain('Authenticating with Google Calendar...');
       expect(stderr).to.not.contain('Fetching calendars...');
-      expect(stdout).to.contain('No calendars found.');
+      expect(stdout).toContain('No calendars found.');
     });
   });
 
   describe('single calendar scenarios', () => {
     it('should display primary calendar information correctly', async () => {
-      mockCalendarService.listCalendars.resolves([
+      mockCalendarService.listCalendars.mockResolvedValue([
         {
           accessRole: 'owner',
           backgroundColor: '#1a73e8',
@@ -57,18 +57,18 @@ describe('calendars list output', () => {
 
       const { stderr, stdout } = await runCommand('calendars list');
 
-      expect(stderr).to.contain('Authenticating with Google Calendar...');
-      expect(stderr).to.contain('Fetching calendars...');
-      expect(stdout).to.contain('Available Calendars (1 found)');
-      expect(stdout).to.contain('1. My Primary Calendar (Primary)');
-      expect(stdout).to.contain('ID: primary');
-      expect(stdout).to.contain('Access: owner');
-      expect(stdout).to.contain('Description: This is my main calendar');
-      expect(stdout).to.contain('Color: #1a73e8');
+      expect(stderr).toContain('Authenticating with Google Calendar...');
+      expect(stderr).toContain('Fetching calendars...');
+      expect(stdout).toContain('Available Calendars (1 found)');
+      expect(stdout).toContain('1. My Primary Calendar (Primary)');
+      expect(stdout).toContain('ID: primary');
+      expect(stdout).toContain('Access: owner');
+      expect(stdout).toContain('Description: This is my main calendar');
+      expect(stdout).toContain('Color: #1a73e8');
     });
 
     it('should display secondary calendar without (Primary) label', async () => {
-      mockCalendarService.listCalendars.resolves([
+      mockCalendarService.listCalendars.mockResolvedValue([
         {
           accessRole: 'reader',
           id: 'secondary@example.com',
@@ -79,14 +79,14 @@ describe('calendars list output', () => {
 
       const { stdout } = await runCommand('calendars list');
 
-      expect(stdout).to.contain('1. Work Calendar');
+      expect(stdout).toContain('1. Work Calendar');
       expect(stdout).to.not.contain('(Primary)');
-      expect(stdout).to.contain('ID: secondary@example.com');
-      expect(stdout).to.contain('Access: reader');
+      expect(stdout).toContain('ID: secondary@example.com');
+      expect(stdout).toContain('Access: reader');
     });
 
     it('should handle calendar with minimal information', async () => {
-      mockCalendarService.listCalendars.resolves([
+      mockCalendarService.listCalendars.mockResolvedValue([
         {
           id: 'minimal@example.com',
           summary: 'Minimal Calendar',
@@ -95,15 +95,15 @@ describe('calendars list output', () => {
 
       const { stdout } = await runCommand('calendars list');
 
-      expect(stdout).to.contain('1. Minimal Calendar');
-      expect(stdout).to.contain('ID: minimal@example.com');
-      expect(stdout).to.contain('Access:'); // Empty value should still show the label
+      expect(stdout).toContain('1. Minimal Calendar');
+      expect(stdout).toContain('ID: minimal@example.com');
+      expect(stdout).toContain('Access:'); // Empty value should still show the label
       expect(stdout).to.not.contain('Description:');
       expect(stdout).to.not.contain('Color:');
     });
 
     it('should handle calendar with no name', async () => {
-      mockCalendarService.listCalendars.resolves([
+      mockCalendarService.listCalendars.mockResolvedValue([
         {
           accessRole: 'writer',
           id: 'unnamed@example.com',
@@ -112,15 +112,15 @@ describe('calendars list output', () => {
 
       const { stdout } = await runCommand('calendars list');
 
-      expect(stdout).to.contain('1. (No name)');
-      expect(stdout).to.contain('ID: unnamed@example.com');
-      expect(stdout).to.contain('Access: writer');
+      expect(stdout).toContain('1. (No name)');
+      expect(stdout).toContain('ID: unnamed@example.com');
+      expect(stdout).toContain('Access: writer');
     });
   });
 
   describe('multiple calendars scenarios', () => {
     it('should display multiple calendars in correct order', async () => {
-      mockCalendarService.listCalendars.resolves([
+      mockCalendarService.listCalendars.mockResolvedValue([
         {
           accessRole: 'owner',
           id: 'primary',
@@ -145,23 +145,23 @@ describe('calendars list output', () => {
 
       const { stdout } = await runCommand('calendars list');
 
-      expect(stdout).to.contain('Available Calendars (3 found)');
+      expect(stdout).toContain('Available Calendars (3 found)');
 
       // Check order and numbering
-      expect(stdout).to.contain('1. Primary Calendar (Primary)');
-      expect(stdout).to.contain('2. Work Calendar');
-      expect(stdout).to.contain('3. Personal Calendar');
+      expect(stdout).toContain('1. Primary Calendar (Primary)');
+      expect(stdout).toContain('2. Work Calendar');
+      expect(stdout).toContain('3. Personal Calendar');
 
       // Check specific details
-      expect(stdout).to.contain('Access: owner');
-      expect(stdout).to.contain('Access: writer');
-      expect(stdout).to.contain('Access: reader');
-      expect(stdout).to.contain('Description: Work-related events');
-      expect(stdout).to.contain('Color: #d50000');
+      expect(stdout).toContain('Access: owner');
+      expect(stdout).toContain('Access: writer');
+      expect(stdout).toContain('Access: reader');
+      expect(stdout).toContain('Description: Work-related events');
+      expect(stdout).toContain('Color: #d50000');
     });
 
     it('should handle calendars with special characters and emojis', async () => {
-      mockCalendarService.listCalendars.resolves([
+      mockCalendarService.listCalendars.mockResolvedValue([
         {
           accessRole: 'owner',
           description: 'Calendar with 日本語 and other ñøñ-ASCII chars',
@@ -172,14 +172,14 @@ describe('calendars list output', () => {
 
       const { stdout } = await runCommand('calendars list');
 
-      expect(stdout).to.contain('📅 My Calendar with émojis & spëcial chars');
-      expect(stdout).to.contain('Calendar with 日本語 and other ñøñ-ASCII chars');
+      expect(stdout).toContain('📅 My Calendar with émojis & spëcial chars');
+      expect(stdout).toContain('Calendar with 日本語 and other ñøñ-ASCII chars');
     });
   });
 
   describe('format flags', () => {
     beforeEach(() => {
-      mockCalendarService.listCalendars.resolves([
+      mockCalendarService.listCalendars.mockResolvedValue([
         {
           accessRole: 'owner',
           id: 'primary',
@@ -198,18 +198,18 @@ describe('calendars list output', () => {
     it('should output valid JSON with --format json', async () => {
       const { stderr, stdout } = await runCommand('calendars list --format json');
 
-      expect(stderr).to.contain('Authenticating with Google Calendar...');
-      expect(stderr).to.contain('Fetching calendars...');
+      expect(stderr).toContain('Authenticating with Google Calendar...');
+      expect(stderr).toContain('Fetching calendars...');
 
       // Should be valid JSON
-      expect(() => JSON.parse(stdout)).to.not.throw();
+      expect(() => JSON.parse(stdout)).not.toThrow();
 
       const calendars = JSON.parse(stdout);
       expect(Array.isArray(calendars)).to.be.true;
       expect(calendars).to.have.length(2);
-      expect(calendars[0]).to.have.property('id', 'primary');
-      expect(calendars[0]).to.have.property('summary', 'Primary Calendar');
-      expect(calendars[1]).to.have.property('id', 'secondary@example.com');
+      expect(calendars[0]).toHaveProperty('id', 'primary');
+      expect(calendars[0]).toHaveProperty('summary', 'Primary Calendar');
+      expect(calendars[1]).toHaveProperty('id', 'secondary@example.com');
 
       // Should be minified (no indentation)
       expect(stdout).to.not.contain('\n  ');
@@ -219,21 +219,21 @@ describe('calendars list output', () => {
     it('should output formatted JSON with --format pretty-json', async () => {
       const { stderr, stdout } = await runCommand('calendars list --format pretty-json');
 
-      expect(stderr).to.contain('Authenticating with Google Calendar...');
-      expect(stderr).to.contain('Fetching calendars...');
+      expect(stderr).toContain('Authenticating with Google Calendar...');
+      expect(stderr).toContain('Fetching calendars...');
 
       // Should be valid JSON
-      expect(() => JSON.parse(stdout)).to.not.throw();
+      expect(() => JSON.parse(stdout)).not.toThrow();
 
       const calendars = JSON.parse(stdout);
       expect(Array.isArray(calendars)).to.be.true;
       expect(calendars).to.have.length(2);
-      expect(calendars[0]).to.have.property('id', 'primary');
-      expect(calendars[0]).to.have.property('summary', 'Primary Calendar');
-      expect(calendars[1]).to.have.property('id', 'secondary@example.com');
+      expect(calendars[0]).toHaveProperty('id', 'primary');
+      expect(calendars[0]).toHaveProperty('summary', 'Primary Calendar');
+      expect(calendars[1]).toHaveProperty('id', 'secondary@example.com');
 
       // Should be formatted (with indentation)
-      expect(stdout).to.contain('\n  ');
+      expect(stdout).toContain('\n  ');
       expect(stdout.trim().split('\n').length).to.be.greaterThan(1);
 
       // Should start with array bracket and proper indentation
@@ -243,18 +243,18 @@ describe('calendars list output', () => {
     it('should output table format by default', async () => {
       const { stdout } = await runCommand('calendars list');
 
-      expect(stdout).to.contain('Available Calendars (2 found)');
-      expect(stdout).to.contain('1. Primary Calendar (Primary)');
-      expect(stdout).to.contain('2. Secondary Calendar');
-      expect(stdout).to.contain('ID: primary');
-      expect(stdout).to.contain('Access: owner');
+      expect(stdout).toContain('Available Calendars (2 found)');
+      expect(stdout).toContain('1. Primary Calendar (Primary)');
+      expect(stdout).toContain('2. Secondary Calendar');
+      expect(stdout).toContain('ID: primary');
+      expect(stdout).toContain('Access: owner');
     });
 
     it('should output table format with explicit --format table', async () => {
       const { stdout } = await runCommand('calendars list --format table');
 
-      expect(stdout).to.contain('Available Calendars (2 found)');
-      expect(stdout).to.contain('1. Primary Calendar (Primary)');
+      expect(stdout).toContain('Available Calendars (2 found)');
+      expect(stdout).toContain('1. Primary Calendar (Primary)');
     });
 
     it('should suppress status messages in JSON mode with --quiet', async () => {
@@ -270,7 +270,7 @@ describe('calendars list output', () => {
 
   describe('stdout/stderr separation', () => {
     beforeEach(() => {
-      mockCalendarService.listCalendars.resolves([
+      mockCalendarService.listCalendars.mockResolvedValue([
         {
           accessRole: 'owner',
           id: 'test@example.com',
@@ -283,12 +283,12 @@ describe('calendars list output', () => {
       const { stderr, stdout } = await runCommand('calendars list');
 
       // Status messages should be in stderr
-      expect(stderr).to.contain('Authenticating with Google Calendar...');
-      expect(stderr).to.contain('Fetching calendars...');
+      expect(stderr).toContain('Authenticating with Google Calendar...');
+      expect(stderr).toContain('Fetching calendars...');
 
       // Results should be in stdout
-      expect(stdout).to.contain('Available Calendars (1 found)');
-      expect(stdout).to.contain('Test Calendar');
+      expect(stdout).toContain('Available Calendars (1 found)');
+      expect(stdout).toContain('Test Calendar');
 
       // Cross-contamination check
       expect(stdout).to.not.contain('Authenticating with Google Calendar...');
@@ -299,7 +299,7 @@ describe('calendars list output', () => {
       const { stdout } = await runCommand('calendars list --format json');
 
       // Should be parseable JSON without any extra text
-      expect(() => JSON.parse(stdout)).to.not.throw();
+      expect(() => JSON.parse(stdout)).not.toThrow();
 
       const calendars = JSON.parse(stdout);
       expect(calendars).to.be.an('array');
@@ -313,7 +313,7 @@ describe('calendars list output', () => {
   describe('edge cases', () => {
     it('should handle very long calendar names', async () => {
       const longName = 'A'.repeat(200);
-      mockCalendarService.listCalendars.resolves([
+      mockCalendarService.listCalendars.mockResolvedValue([
         {
           accessRole: 'owner',
           id: 'long@example.com',
@@ -323,13 +323,13 @@ describe('calendars list output', () => {
 
       const { stdout } = await runCommand('calendars list');
 
-      expect(stdout).to.contain(longName);
-      expect(stdout).to.contain('ID: long@example.com');
+      expect(stdout).toContain(longName);
+      expect(stdout).toContain('ID: long@example.com');
     });
 
     it('should handle very long descriptions', async () => {
       const longDescription = 'This is a very long description that goes on and on. '.repeat(10);
-      mockCalendarService.listCalendars.resolves([
+      mockCalendarService.listCalendars.mockResolvedValue([
         {
           accessRole: 'owner',
           description: longDescription,
@@ -340,12 +340,12 @@ describe('calendars list output', () => {
 
       const { stdout } = await runCommand('calendars list');
 
-      expect(stdout).to.contain('Calendar with Long Description');
-      expect(stdout).to.contain(longDescription);
+      expect(stdout).toContain('Calendar with Long Description');
+      expect(stdout).toContain(longDescription);
     });
 
     it('should handle empty string values gracefully', async () => {
-      mockCalendarService.listCalendars.resolves([
+      mockCalendarService.listCalendars.mockResolvedValue([
         {
           accessRole: '',
           backgroundColor: '',
@@ -357,9 +357,9 @@ describe('calendars list output', () => {
 
       const { stdout } = await runCommand('calendars list');
 
-      expect(stdout).to.contain('1. (No name)');
-      expect(stdout).to.contain('ID: empty@example.com');
-      expect(stdout).to.contain('Access:');
+      expect(stdout).toContain('1. (No name)');
+      expect(stdout).toContain('ID: empty@example.com');
+      expect(stdout).toContain('Access:');
       expect(stdout).to.not.contain('Description:');
       expect(stdout).to.not.contain('Color:');
     });

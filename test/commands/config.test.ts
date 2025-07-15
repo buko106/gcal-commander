@@ -1,5 +1,5 @@
 import { runCommand } from '@oclif/test';
-import { expect } from 'chai';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { TOKENS } from '../../src/di/tokens';
 import { I18nService } from '../../src/services/i18n';
@@ -19,18 +19,18 @@ describe('config', () => {
   describe('config list', () => {
     it('shows empty configuration when no config exists', async () => {
       const { stderr, stdout } = await runCommand('config list');
-      expect(stdout).to.contain('No configuration set');
-      expect(stderr).to.contain('Config file:');
+      expect(stdout).toContain('No configuration set');
+      expect(stderr).toContain('Config file:');
     });
 
     it('supports JSON format', async () => {
       const { stdout } = await runCommand('config list --format json');
-      expect(stdout.trim()).to.equal('{}');
+      expect(stdout.trim()).toEqual('{}');
     });
 
     it('supports pretty-json format', async () => {
       const { stdout } = await runCommand('config list --format pretty-json');
-      expect(stdout.trim()).to.equal('{}');
+      expect(stdout.trim()).toEqual('{}');
     });
 
     it('outputs formatted JSON when config has data with --format pretty-json', async () => {
@@ -41,7 +41,7 @@ describe('config', () => {
       const { stdout } = await runCommand('config list --format pretty-json');
 
       // Should be valid JSON
-      expect(() => JSON.parse(stdout)).to.not.throw();
+      expect(() => JSON.parse(stdout)).not.toThrow();
       const config = JSON.parse(stdout);
 
       expect(config).to.have.property('defaultCalendar', 'test@example.com');
@@ -49,7 +49,7 @@ describe('config', () => {
       expect(config.events).to.have.property('maxResults', 25);
 
       // Should be formatted (with indentation)
-      expect(stdout).to.contain('\n  ');
+      expect(stdout).toContain('\n  ');
       expect(stdout.trim().split('\n').length).to.be.greaterThan(1);
 
       // Should start with object bracket and proper indentation
@@ -64,7 +64,7 @@ describe('config', () => {
       const { stdout } = await runCommand('config list --format json');
 
       // Should be valid JSON
-      expect(() => JSON.parse(stdout)).to.not.throw();
+      expect(() => JSON.parse(stdout)).not.toThrow();
       const config = JSON.parse(stdout);
 
       expect(config).to.have.property('defaultCalendar', 'test@example.com');
@@ -84,8 +84,8 @@ describe('config', () => {
       const { stdout: prettyJsonOutput } = await runCommand('config list --format pretty-json');
 
       // Both should be valid JSON
-      expect(() => JSON.parse(jsonOutput)).to.not.throw();
-      expect(() => JSON.parse(prettyJsonOutput)).to.not.throw();
+      expect(() => JSON.parse(jsonOutput)).not.toThrow();
+      expect(() => JSON.parse(prettyJsonOutput)).not.toThrow();
 
       // Parse both outputs
       const jsonConfig = JSON.parse(jsonOutput);
@@ -101,19 +101,19 @@ describe('config', () => {
 
       // json should be minified, pretty-json should be formatted
       expect(jsonOutput).to.not.contain('\n  ');
-      expect(prettyJsonOutput).to.contain('\n  ');
+      expect(prettyJsonOutput).toContain('\n  ');
     });
   });
 
   describe('config set', () => {
     it('sets a simple configuration value', async () => {
       const { stdout } = await runCommand('config set defaultCalendar test@example.com');
-      expect(stdout).to.contain('Set defaultCalendar = "test@example.com"');
+      expect(stdout).toContain('Set defaultCalendar = "test@example.com"');
     });
 
     it('sets nested configuration values', async () => {
       const { stdout } = await runCommand('config set events.maxResults 25');
-      expect(stdout).to.contain('Set events.maxResults = 25');
+      expect(stdout).toContain('Set events.maxResults = 25');
     });
 
     it('calls i18nService.changeLanguage when setting language', async () => {
@@ -123,7 +123,7 @@ describe('config', () => {
 
       const { stdout } = await runCommand('config set language ja');
       // When setting language to 'ja', the success message is immediately displayed in Japanese
-      expect(stdout).to.contain('language = "ja" に設定しました');
+      expect(stdout).toContain('language = "ja" に設定しました');
     });
 
     // Note: Error validation tests are removed due to @oclif/test complexity
@@ -134,7 +134,7 @@ describe('config', () => {
     it('gets a configuration value', async () => {
       await runCommand('config set defaultCalendar test@example.com');
       const { stdout } = await runCommand('config get defaultCalendar');
-      expect(stdout).to.contain('defaultCalendar = "test@example.com"');
+      expect(stdout).toContain('defaultCalendar = "test@example.com"');
     });
 
     it('shows message for unset values', async () => {
@@ -146,7 +146,7 @@ describe('config', () => {
       }
 
       const { stdout } = await runCommand('config get defaultCalendar');
-      expect(stdout).to.contain("Configuration key 'defaultCalendar' is not set");
+      expect(stdout).toContain("Configuration key 'defaultCalendar' is not set");
     });
 
     // it.skip('validates configuration keys', async () => {
@@ -158,12 +158,12 @@ describe('config', () => {
     it('unsets a configuration value', async () => {
       await runCommand('config set defaultCalendar test@example.com');
       const { stdout } = await runCommand('config unset defaultCalendar');
-      expect(stdout).to.contain('Unset defaultCalendar');
+      expect(stdout).toContain('Unset defaultCalendar');
     });
 
     it('shows message for already unset values', async () => {
       const { stdout } = await runCommand('config unset defaultCalendar');
-      expect(stdout).to.contain("Configuration key 'defaultCalendar' is not set");
+      expect(stdout).toContain("Configuration key 'defaultCalendar' is not set");
     });
 
     // it.skip('validates configuration keys', async () => {
@@ -175,7 +175,7 @@ describe('config', () => {
     it('requires confirmation flag', async () => {
       await runCommand('config set defaultCalendar test@example.com');
       const { stdout } = await runCommand('config reset');
-      expect(stdout).to.contain('Use --confirm flag to proceed');
+      expect(stdout).toContain('Use --confirm flag to proceed');
     });
 
     it('resets all configuration with confirmation', async () => {
@@ -183,24 +183,25 @@ describe('config', () => {
       await runCommand('config set events.maxResults 25');
 
       const { stdout } = await runCommand('config reset --confirm');
-      expect(stdout).to.contain('All configuration settings have been reset');
+      expect(stdout).toContain('All configuration settings have been reset');
 
       const { stdout: listOutput } = await runCommand('config list');
-      expect(listOutput).to.contain('No configuration set');
+      expect(listOutput).toContain('No configuration set');
     });
   });
 
   describe('error handling', () => {
-    // Note: Error handling tests are skipped due to @oclif/test complexity
-    // Manual testing confirms all error cases work correctly
-    // it.skip('requires subcommand', async () => {
-    //   // This test is skipped - manual testing confirms it works
-    // });
-    // it.skip('requires key for get command', async () => {
-    //   // This test is skipped - manual testing confirms it works
-    // });
-    // it.skip('requires key and value for set command', async () => {
-    //   // This test is skipped - manual testing confirms it works
-    // });
+    it.skip('requires subcommand', () => {
+      // This test is skipped - manual testing confirms it works
+      // Error handling tests are skipped due to @oclif/test complexity
+    });
+
+    it.skip('requires key for get command', () => {
+      // This test is skipped - manual testing confirms it works
+    });
+
+    it.skip('requires key and value for set command', () => {
+      // This test is skipped - manual testing confirms it works
+    });
   });
 });

@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { expect } from 'vitest';
 
 import { FileSystemConfigStorage, InMemoryConfigStorage } from '../../src/services/config-storage';
 import { AppPaths } from '../../src/utils/paths';

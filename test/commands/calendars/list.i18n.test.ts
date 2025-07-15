@@ -1,5 +1,5 @@
 import { runCommand } from '@oclif/test';
-import { expect } from 'chai';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { TOKENS } from '../../../src/di/tokens';
 import { I18nService } from '../../../src/services/i18n';
@@ -11,7 +11,7 @@ describe('calendars/list i18n integration', () => {
       const { mocks } = TestContainerFactory.create();
       const realI18nService = new I18nService();
       TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
-      mocks.calendarService.listCalendars.resolves([]);
+      mocks.calendarService.listCalendars.mockResolvedValue([]);
     });
 
     afterEach(() => {
@@ -21,14 +21,14 @@ describe('calendars/list i18n integration', () => {
     it('should display status messages in English', async () => {
       const { stderr } = await runCommand(['calendars:list']);
 
-      expect(stderr).to.include('Authenticating with Google Calendar...');
-      expect(stderr).to.include('Fetching calendars...');
+      expect(stderr).toContain('Authenticating with Google Calendar...');
+      expect(stderr).toContain('Fetching calendars...');
     });
 
     it('should display no calendars message in English', async () => {
       const { stdout } = await runCommand(['calendars:list']);
 
-      expect(stdout).to.include('No calendars found.');
+      expect(stdout).toContain('No calendars found.');
     });
 
     it('should display table header in English with calendar count', async () => {
@@ -40,11 +40,11 @@ describe('calendars/list i18n integration', () => {
         { id: 'cal1', summary: 'Calendar 1', accessRole: 'owner' },
         { id: 'cal2', summary: 'Calendar 2', accessRole: 'reader' },
       ];
-      mocks.calendarService.listCalendars.resolves(mockCalendars);
+      mocks.calendarService.listCalendars.mockResolvedValue(mockCalendars);
 
       const { stdout } = await runCommand(['calendars:list']);
 
-      expect(stdout).to.include('Available Calendars (2 found):');
+      expect(stdout).toContain('Available Calendars (2 found):');
     });
 
     it('should display calendar labels in English', async () => {
@@ -62,15 +62,15 @@ describe('calendars/list i18n integration', () => {
           backgroundColor: '#3174ad',
         },
       ];
-      mocks.calendarService.listCalendars.resolves(mockCalendars);
+      mocks.calendarService.listCalendars.mockResolvedValue(mockCalendars);
 
       const { stdout } = await runCommand(['calendars:list']);
 
-      expect(stdout).to.include('(Primary)');
-      expect(stdout).to.include('ID:');
-      expect(stdout).to.include('Access:');
-      expect(stdout).to.include('Description:');
-      expect(stdout).to.include('Color:');
+      expect(stdout).toContain('(Primary)');
+      expect(stdout).toContain('ID:');
+      expect(stdout).toContain('Access:');
+      expect(stdout).toContain('Description:');
+      expect(stdout).toContain('Color:');
     });
   });
 
@@ -81,7 +81,7 @@ describe('calendars/list i18n integration', () => {
       await realI18nService.init();
       await realI18nService.changeLanguage('ja');
       TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
-      mocks.calendarService.listCalendars.resolves([]);
+      mocks.calendarService.listCalendars.mockResolvedValue([]);
     });
 
     afterEach(() => {
@@ -91,14 +91,14 @@ describe('calendars/list i18n integration', () => {
     it('should display status messages in Japanese', async () => {
       const { stderr } = await runCommand(['calendars:list']);
 
-      expect(stderr).to.include('Google Calendar で認証中...');
-      expect(stderr).to.include('カレンダーを取得中...');
+      expect(stderr).toContain('Google Calendar で認証中...');
+      expect(stderr).toContain('カレンダーを取得中...');
     });
 
     it('should display no calendars message in Japanese', async () => {
       const { stdout } = await runCommand(['calendars:list']);
 
-      expect(stdout).to.include('カレンダーが見つかりませんでした。');
+      expect(stdout).toContain('カレンダーが見つかりませんでした。');
     });
 
     it('should display table header in Japanese with calendar count', async () => {
@@ -112,11 +112,11 @@ describe('calendars/list i18n integration', () => {
         { id: 'cal1', summary: 'Calendar 1', accessRole: 'owner' },
         { id: 'cal2', summary: 'Calendar 2', accessRole: 'reader' },
       ];
-      mocks.calendarService.listCalendars.resolves(mockCalendars);
+      mocks.calendarService.listCalendars.mockResolvedValue(mockCalendars);
 
       const { stdout } = await runCommand(['calendars:list']);
 
-      expect(stdout).to.include('利用可能なカレンダー (2件):');
+      expect(stdout).toContain('利用可能なカレンダー (2件):');
     });
 
     it('should display calendar labels in Japanese', async () => {
@@ -136,15 +136,15 @@ describe('calendars/list i18n integration', () => {
           backgroundColor: '#3174ad',
         },
       ];
-      mocks.calendarService.listCalendars.resolves(mockCalendars);
+      mocks.calendarService.listCalendars.mockResolvedValue(mockCalendars);
 
       const { stdout } = await runCommand(['calendars:list']);
 
-      expect(stdout).to.include('(メイン)');
-      expect(stdout).to.include('ID:');
-      expect(stdout).to.include('アクセス:');
-      expect(stdout).to.include('説明:');
-      expect(stdout).to.include('色:');
+      expect(stdout).toContain('(メイン)');
+      expect(stdout).toContain('ID:');
+      expect(stdout).toContain('アクセス:');
+      expect(stdout).toContain('説明:');
+      expect(stdout).toContain('色:');
     });
   });
 });

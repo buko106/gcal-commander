@@ -1,4 +1,4 @@
-import * as sinon from 'sinon';
+import { MockedObject, vi } from 'vitest';
 
 import { IConfigStorage } from '../../../src/interfaces/config-storage';
 
@@ -10,50 +10,37 @@ export interface ConfigStorageMockOptions {
 }
 
 export const ConfigStorageMockFactory = {
-  create(options: ConfigStorageMockOptions = {}): IConfigStorage & sinon.SinonStubbedInstance<IConfigStorage> {
-    const mock = sinon.createStubInstance<IConfigStorage>(
-      class implements IConfigStorage {
-        async exists(): Promise<boolean> {
-          return false;
-        }
-
-        getConfigPath(): string {
-          return '';
-        }
-
-        async read(): Promise<string> {
-          return '';
-        }
-
-        async write(_content: string): Promise<void> {
-          // No implementation needed for stub
-        }
-      },
-    );
+  create(options: ConfigStorageMockOptions = {}): IConfigStorage & MockedObject<IConfigStorage> {
+    const mock = {
+      exists: vi.fn(),
+      getConfigPath: vi.fn(),
+      read: vi.fn(),
+      write: vi.fn(),
+    } as MockedObject<IConfigStorage>;
 
     // Set up default behaviors
     const exists = options.exists ?? false;
     const initialContent = options.initialContent || '{}';
 
-    mock.exists.resolves(exists);
-    mock.getConfigPath.returns('in-memory');
+    mock.exists.mockResolvedValue(exists);
+    mock.getConfigPath.mockReturnValue('in-memory');
 
     if (exists) {
-      mock.read.resolves(initialContent);
+      mock.read.mockResolvedValue(initialContent);
     } else {
-      mock.read.rejects(new Error('ENOENT: no such file or directory'));
+      mock.read.mockRejectedValue(new Error('ENOENT: no such file or directory'));
     }
 
     // Set up default write behavior
-    mock.write.resolves();
+    mock.write.mockResolvedValue();
 
     // Handle error scenarios
     if (options.readError) {
-      mock.read.rejects(options.readError);
+      mock.read.mockRejectedValue(options.readError);
     }
 
     if (options.writeError) {
-      mock.write.rejects(options.writeError);
+      mock.write.mockRejectedValue(options.writeError);
     }
 
     return mock;

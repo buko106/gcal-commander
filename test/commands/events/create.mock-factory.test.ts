@@ -1,5 +1,5 @@
 import { runCommand } from '@oclif/test';
-import { expect } from 'chai';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import { TOKENS } from '../../../src/di/tokens';
 import { I18nService } from '../../../src/services/i18n';
@@ -28,12 +28,12 @@ describe('events create with Mock Factory', () => {
     await runCommand('events create "Team Meeting" --start "2024-01-15T14:00:00"');
 
     // Assert: Verify createEvent was called with correct parameters
-    expect(mocks.calendarService.createEvent.calledOnce).to.be.true;
+    expect(mocks.calendarService.createEvent).toHaveBeenCalledTimes(1);
 
-    const createEventCall = mocks.calendarService.createEvent.getCall(0);
-    const params = createEventCall.args[0];
+    const createEventCall = mocks.calendarService.createEvent.mock.calls[0];
+    const params = createEventCall[0];
 
-    expect(params).to.deep.include({
+    expect(params).toMatchObject({
       summary: 'Team Meeting',
       calendarId: 'primary',
       sendUpdates: 'none',
@@ -41,14 +41,14 @@ describe('events create with Mock Factory', () => {
 
     // Verify start time is correctly parsed (adjust for timezone conversion)
     const expectedStartTime = new Date('2024-01-15T14:00:00').toISOString();
-    expect(params.start).to.deep.equal({
+    expect(params.start).toEqual({
       dateTime: expectedStartTime,
     });
 
     // Verify end time is calculated (default 1 hour duration)
     const expectedEndTime = new Date(expectedStartTime);
     expectedEndTime.setHours(expectedEndTime.getHours() + 1);
-    expect(params.end).to.deep.equal({
+    expect(params.end).toEqual({
       dateTime: expectedEndTime.toISOString(),
     });
   });
@@ -72,12 +72,12 @@ describe('events create with Mock Factory', () => {
     const result = await runCommand('events create "Important Meeting" --start "2024-01-15T14:00:00"');
 
     // Assert: Verify createEvent was called and error handling occurred
-    expect(mocks.calendarService.createEvent.calledOnce).to.be.true;
+    expect(mocks.calendarService.createEvent).toHaveBeenCalledTimes(1);
 
     // Verify error was properly caught and displayed
-    expect(result.error).to.exist;
-    expect(result.error?.message).to.contain('Failed to create event');
-    expect(result.error?.message).to.contain('Network request failed');
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toContain('Failed to create event');
+    expect(result.error?.message).toContain('Network request failed');
   });
 
   it('should display API error message when CalendarService#createEvent fails with Google API error', async () => {
@@ -98,12 +98,12 @@ describe('events create with Mock Factory', () => {
     const result = await runCommand('events create "Team Sync" --start "2024-01-15T09:00:00"');
 
     // Assert: Verify createEvent was called and error handling occurred
-    expect(mocks.calendarService.createEvent.calledOnce).to.be.true;
+    expect(mocks.calendarService.createEvent).toHaveBeenCalledTimes(1);
 
     // Verify error was properly caught and displayed
-    expect(result.error).to.exist;
-    expect(result.error?.message).to.contain('Failed to create event');
-    expect(result.error?.message).to.contain('insufficient authentication scopes');
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toContain('Failed to create event');
+    expect(result.error?.message).toContain('insufficient authentication scopes');
   });
 
   it('should handle quota exceeded error gracefully', async () => {
@@ -126,12 +126,12 @@ describe('events create with Mock Factory', () => {
     const result = await runCommand('events create "Project Review" --start "2024-01-15T16:00:00" --duration 120');
 
     // Assert: Verify createEvent was called and error handling occurred
-    expect(mocks.calendarService.createEvent.calledOnce).to.be.true;
+    expect(mocks.calendarService.createEvent).toHaveBeenCalledTimes(1);
 
     // Verify error was properly caught and displayed
-    expect(result.error).to.exist;
-    expect(result.error?.message).to.contain('Failed to create event');
-    expect(result.error?.message).to.contain('Quota exceeded');
+    expect(result.error).toBeDefined();
+    expect(result.error?.message).toContain('Failed to create event');
+    expect(result.error?.message).toContain('Quota exceeded');
   });
 
   describe('error output behavior', () => {
@@ -153,9 +153,9 @@ describe('events create with Mock Factory', () => {
       const result = await runCommand('events create "Meeting" --start "2024-01-15T14:00:00"');
 
       // Assert: Verify status messages appear in stderr before error
-      expect(result.error).to.exist;
-      expect(result.error?.message).to.contain('Failed to create event');
-      expect(result.error?.message).to.contain('Connection timeout');
+      expect(result.error).toBeDefined();
+      expect(result.error?.message).toContain('Failed to create event');
+      expect(result.error?.message).toContain('Connection timeout');
     });
 
     it('should suppress status messages with --quiet flag even when error occurs', async () => {
@@ -176,9 +176,9 @@ describe('events create with Mock Factory', () => {
       const result = await runCommand('events create "Meeting" --start "2024-01-15T14:00:00" --quiet');
 
       // Assert: Error message should still appear (always shown) but status messages suppressed
-      expect(result.error).to.exist;
-      expect(result.error?.message).to.contain('Failed to create event');
-      expect(result.error?.message).to.contain('Service temporarily unavailable');
+      expect(result.error).toBeDefined();
+      expect(result.error?.message).toContain('Failed to create event');
+      expect(result.error?.message).toContain('Service temporarily unavailable');
     });
 
     it('should handle calendar service error before authentication completes', async () => {
@@ -199,9 +199,9 @@ describe('events create with Mock Factory', () => {
       const result = await runCommand('events create "Daily Standup" --start "2024-01-15T10:00:00"');
 
       // Assert: Should still call createEvent and handle auth error properly
-      expect(result.error).to.exist;
-      expect(result.error?.message).to.contain('Failed to create event');
-      expect(result.error?.message).to.contain('Authentication failed');
+      expect(result.error).toBeDefined();
+      expect(result.error?.message).toContain('Failed to create event');
+      expect(result.error?.message).toContain('Authentication failed');
     });
   });
 });

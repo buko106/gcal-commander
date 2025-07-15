@@ -1,5 +1,5 @@
 import { runCommand } from '@oclif/test';
-import { expect } from 'chai';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { TOKENS } from '../../../src/di/tokens';
 import { I18nService } from '../../../src/services/i18n';
@@ -11,7 +11,7 @@ describe('events create i18n integration', () => {
       const { mocks } = TestContainerFactory.create();
       const realI18nService = new I18nService();
       TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
-      mocks.calendarService.createEvent.resolves({
+      mocks.calendarService.createEvent.mockResolvedValue({
         id: 'test-event-123',
         summary: 'Team Meeting',
         start: { dateTime: '2024-01-15T14:00:00.000Z' },
@@ -27,22 +27,22 @@ describe('events create i18n integration', () => {
     it('should display authentication message in English', async () => {
       const { stderr } = await runCommand('events create "Team Meeting" --start "2024-01-15T14:00:00"');
 
-      expect(stderr).to.include('Authenticating with Google Calendar...');
+      expect(stderr).toContain('Authenticating with Google Calendar...');
     });
 
     it('should display creating event message in English', async () => {
       const { stderr } = await runCommand('events create "Team Meeting" --start "2024-01-15T14:00:00"');
 
-      expect(stderr).to.include('Creating event...');
+      expect(stderr).toContain('Creating event...');
     });
 
     it('should display success message in English', async () => {
       const { stdout } = await runCommand('events create "Team Meeting" --start "2024-01-15T14:00:00"');
 
-      expect(stdout).to.include('Event created successfully!');
-      expect(stdout).to.include('Title: Team Meeting');
-      expect(stdout).to.include('ID: test-event-123');
-      expect(stdout).to.include('Google Calendar Link:');
+      expect(stdout).toContain('Event created successfully!');
+      expect(stdout).toContain('Title: Team Meeting');
+      expect(stdout).toContain('ID: test-event-123');
+      expect(stdout).toContain('Google Calendar Link:');
     });
   });
 
@@ -53,7 +53,7 @@ describe('events create i18n integration', () => {
       await realI18nService.init();
       await realI18nService.changeLanguage('ja');
       TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
-      mocks.calendarService.createEvent.resolves({
+      mocks.calendarService.createEvent.mockResolvedValue({
         id: 'test-event-123',
         summary: 'チーム会議',
         start: { dateTime: '2024-01-15T14:00:00.000Z' },
@@ -69,22 +69,22 @@ describe('events create i18n integration', () => {
     it('should display authentication message in Japanese', async () => {
       const { stderr } = await runCommand('events create "チーム会議" --start "2024-01-15T14:00:00"');
 
-      expect(stderr).to.include('Google Calendar で認証中...');
+      expect(stderr).toContain('Google Calendar で認証中...');
     });
 
     it('should display creating event message in Japanese', async () => {
       const { stderr } = await runCommand('events create "チーム会議" --start "2024-01-15T14:00:00"');
 
-      expect(stderr).to.include('イベントを作成中...');
+      expect(stderr).toContain('イベントを作成中...');
     });
 
     it('should display success message in Japanese', async () => {
       const { stdout } = await runCommand('events create "チーム会議" --start "2024-01-15T14:00:00"');
 
-      expect(stdout).to.include('イベントが正常に作成されました！');
-      expect(stdout).to.include('タイトル: チーム会議');
-      expect(stdout).to.include('ID: test-event-123');
-      expect(stdout).to.include('Google Calendar リンク:');
+      expect(stdout).toContain('イベントが正常に作成されました！');
+      expect(stdout).toContain('タイトル: チーム会議');
+      expect(stdout).toContain('ID: test-event-123');
+      expect(stdout).toContain('Google Calendar リンク:');
     });
   });
 
@@ -93,7 +93,7 @@ describe('events create i18n integration', () => {
       const { mocks } = TestContainerFactory.create();
       const realI18nService = new I18nService();
       TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
-      mocks.calendarService.createEvent.rejects(new Error('Network error'));
+      mocks.calendarService.createEvent.mockRejectedValue(new Error('Network error'));
     });
 
     afterEach(() => {
@@ -103,9 +103,9 @@ describe('events create i18n integration', () => {
     it('should display error message in English with proper formatting', async () => {
       const result = await runCommand('events create "Test Event" --start "2024-01-15T14:00:00"');
 
-      expect(result.error).to.exist;
-      expect(result.error?.message).to.include('Failed to create event');
-      expect(result.error?.message).to.include('Network error');
+      expect(result.error).toBeDefined();
+      expect(result.error?.message).toContain('Failed to create event');
+      expect(result.error?.message).toContain('Network error');
     });
   });
 
@@ -116,7 +116,7 @@ describe('events create i18n integration', () => {
       await realI18nService.init();
       await realI18nService.changeLanguage('ja');
       TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
-      mocks.calendarService.createEvent.rejects(new Error('ネットワークエラー'));
+      mocks.calendarService.createEvent.mockRejectedValue(new Error('ネットワークエラー'));
     });
 
     afterEach(() => {
@@ -126,9 +126,9 @@ describe('events create i18n integration', () => {
     it('should display error message with Japanese context', async () => {
       const result = await runCommand('events create "テストイベント" --start "2024-01-15T14:00:00"');
 
-      expect(result.error).to.exist;
-      expect(result.error?.message).to.include('イベントの作成に失敗しました');
-      expect(result.error?.message).to.include('ネットワークエラー');
+      expect(result.error).toBeDefined();
+      expect(result.error?.message).toContain('イベントの作成に失敗しました');
+      expect(result.error?.message).toContain('ネットワークエラー');
     });
   });
 
@@ -137,7 +137,7 @@ describe('events create i18n integration', () => {
       const { mocks } = TestContainerFactory.create();
       const realI18nService = new I18nService();
       TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
-      mocks.calendarService.createEvent.resolves({
+      mocks.calendarService.createEvent.mockResolvedValue({
         id: 'test-event-123',
         summary: 'Test Event',
         start: { dateTime: '2024-01-15T14:00:00.000Z' },
@@ -154,8 +154,8 @@ describe('events create i18n integration', () => {
         'events create "Test Event" --start "2024-01-15T14:00:00" --end "2024-01-15T15:00:00" --duration 60',
       );
 
-      expect(result.error).to.exist;
-      expect(result.error?.message).to.include('Cannot specify both --end and --duration flags');
+      expect(result.error).toBeDefined();
+      expect(result.error?.message).toContain('Cannot specify both --end and --duration flags');
     });
 
     it('should use translation key for conflicting flags error in Japanese', async () => {
@@ -170,10 +170,10 @@ describe('events create i18n integration', () => {
         'events create "Test Event" --start "2024-01-15T14:00:00" --end "2024-01-15T15:00:00" --duration 60',
       );
 
-      expect(result.error).to.exist;
+      expect(result.error).toBeDefined();
       // Should show Japanese translation, not English hardcoded text
-      expect(result.error?.message).to.include('--end と --duration フラグを同時に指定することはできません');
-      expect(result.error?.message).to.not.include('Cannot specify both --end and --duration flags');
+      expect(result.error?.message).toContain('--end と --duration フラグを同時に指定することはできません');
+      expect(result.error?.message).not.toContain('Cannot specify both --end and --duration flags');
     });
   });
 });

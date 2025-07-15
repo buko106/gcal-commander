@@ -1,5 +1,5 @@
 import { runCommand } from '@oclif/test';
-import { expect } from 'chai';
+import { expect } from 'vitest';
 
 import { TestContainerFactory } from '../../test-utils/mock-factories';
 
