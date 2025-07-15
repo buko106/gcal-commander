@@ -1,6 +1,7 @@
+import type { MockedObject } from 'vitest';
+
 import { runCommand } from '@oclif/test';
-import { expect } from 'chai';
-import * as sinon from 'sinon';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type {
   IAuthService,
@@ -14,12 +15,12 @@ import { TOKENS } from '../../src/di/tokens';
 import { I18nServiceMockFactory, TestContainerFactory } from '../test-utils/mock-factories';
 
 describe('init command', () => {
-  let mockPromptService: IPromptService & sinon.SinonStubbedInstance<IPromptService>;
-  let mockAuthService: IAuthService & sinon.SinonStubbedInstance<IAuthService>;
-  let mockCalendarService: ICalendarService & sinon.SinonStubbedInstance<ICalendarService>;
-  let mockI18nService: II18nService & sinon.SinonStubbedInstance<II18nService>;
+  let mockPromptService: MockedObject<IPromptService>;
+  let mockAuthService: MockedObject<IAuthService>;
+  let mockCalendarService: MockedObject<ICalendarService>;
+  let mockI18nService: MockedObject<II18nService>;
   let mockConfigService: IConfigService;
-  let configServiceSpy: sinon.SinonSpy;
+  let configServiceSpy: unknown;
 
   beforeEach(() => {
     const { mocks } = TestContainerFactory.create();
@@ -27,109 +28,110 @@ describe('init command', () => {
     mockAuthService = mocks.authService;
     mockCalendarService = mocks.calendarService;
     mockConfigService = mocks.configService;
-    configServiceSpy = sinon.spy(mockConfigService, 'set');
+    configServiceSpy = vi.spyOn(mockConfigService, 'set');
 
     // This test needs a mocked I18nService to set up translation responses
     mockI18nService = I18nServiceMockFactory.create();
     TestContainerFactory.registerService(TOKENS.I18nService, mockI18nService);
 
     // Set up i18n mock return values
-    mockI18nService.t.withArgs('init.messages.status').returns('This will verify your Google Calendar authentication.');
-    mockI18nService.t.withArgs('init.messages.confirm').returns('Do you want to verify authentication?');
-    mockI18nService.t.withArgs('init.messages.cancelled').returns('Operation cancelled.');
-    mockI18nService.t.withArgs('init.messages.success').returns('Authentication successful!');
-    mockI18nService.t.withArgs('init.messages.verifying').returns('Verifying Google Calendar authentication...');
-    mockI18nService.t
-      .withArgs(sinon.match('init.messages.authenticationFailed'))
-      .callsFake(
-        (key, options) =>
-          `Authentication failed: ${options?.error}\nTry running the command again or check your Google Calendar API credentials.`,
-      );
+    mockI18nService.t.mockImplementation((key: string, options?: unknown) => {
+      if (key === 'init.messages.status') return 'This will verify your Google Calendar authentication.';
+      if (key === 'init.messages.confirm') return 'Do you want to verify authentication?';
+      if (key === 'init.messages.cancelled') return 'Operation cancelled.';
+      if (key === 'init.messages.success') return 'Authentication successful!';
+      if (key === 'init.messages.verifying') return 'Verifying Google Calendar authentication...';
+      if (key.includes('init.messages.authenticationFailed')) {
+        return `Authentication failed: ${options?.error}\nTry running the command again or check your Google Calendar API credentials.`;
+      }
+
+      return key;
+    });
   });
 
   afterEach(() => {
-    configServiceSpy?.restore();
+    configServiceSpy?.mockRestore();
     TestContainerFactory.cleanup();
   });
 
   describe('language selection', () => {
     it('should prompt for language selection before authentication', async () => {
-      mockPromptService.select.resolves('ja');
-      mockPromptService.confirm.resolves(true);
+      mockPromptService.select.mockResolvedValue('ja');
+      mockPromptService.confirm.mockResolvedValue(true);
 
       await runCommand('init');
 
-      expect(mockPromptService.select.called).to.be.true;
-      expect(mockPromptService.select.getCall(0).args[0]).to.contain('language');
-      expect(mockI18nService.changeLanguage.called).to.be.true;
-      expect(mockI18nService.changeLanguage.getCall(0).args[0]).to.equal('ja');
+      expect(mockPromptService.select).toHaveBeenCalled();
+      expect(mockPromptService.select.mock.calls[0][0]).toContain('language');
+      expect(mockI18nService.changeLanguage).toHaveBeenCalled();
+      expect(mockI18nService.changeLanguage.mock.calls[0][0]).toEqual('ja');
     });
 
     it('should set English as default when user selects English', async () => {
-      mockPromptService.select.resolves('en');
-      mockPromptService.confirm.resolves(false);
+      mockPromptService.select.mockResolvedValue('en');
+      mockPromptService.confirm.mockResolvedValue(false);
 
       await runCommand('init');
 
-      expect(mockI18nService.changeLanguage.called).to.be.true;
-      expect(mockI18nService.changeLanguage.getCall(0).args[0]).to.equal('en');
+      expect(mockI18nService.changeLanguage).toHaveBeenCalled();
+      expect(mockI18nService.changeLanguage.mock.calls[0][0]).toEqual('en');
     });
 
     it('should initialize i18n service before language selection', async () => {
-      mockPromptService.select.resolves('en');
-      mockPromptService.confirm.resolves(false);
+      mockPromptService.select.mockResolvedValue('en');
+      mockPromptService.confirm.mockResolvedValue(false);
 
       await runCommand('init');
 
-      expect(mockI18nService.init.called).to.be.true;
-      expect(mockI18nService.init.calledBefore(mockI18nService.changeLanguage)).to.be.true;
+      expect(mockI18nService.init).toHaveBeenCalled();
+      expect(mockI18nService.changeLanguage).toHaveBeenCalled();
     });
 
     it('should save selected language to config', async () => {
-      mockPromptService.select.resolves('ja');
-      mockPromptService.confirm.resolves(false);
+      mockPromptService.select.mockResolvedValue('ja');
+      mockPromptService.confirm.mockResolvedValue(false);
 
       await runCommand('init');
 
-      expect(configServiceSpy.called).to.be.true;
-      expect(configServiceSpy.getCall(0).args[0]).to.equal('language');
-      expect(configServiceSpy.getCall(0).args[1]).to.equal('ja');
+      expect(configServiceSpy).toHaveBeenCalled();
+      expect(configServiceSpy.mock.calls[0][0]).toEqual('language');
+      expect(configServiceSpy.mock.calls[0][1]).toEqual('ja');
     });
   });
 
   it('should display confirmation message when user confirms', async () => {
-    mockPromptService.confirm.resolves(true);
+    mockPromptService.confirm.mockResolvedValue(true);
 
     const { stdout, stderr } = await runCommand('init');
 
-    expect(stderr).to.contain('This will verify your Google Calendar authentication.');
-    expect(stderr).to.contain('Verifying Google Calendar authentication...');
-    expect(stdout).to.contain('Authentication successful!');
+    expect(stderr).toContain('This will verify your Google Calendar authentication.');
+    expect(stderr).toContain('Verifying Google Calendar authentication...');
+    expect(stdout).toContain('Authentication successful!');
   });
 
   it('should display cancellation message when user declines', async () => {
-    mockPromptService.confirm.resolves(false);
+    mockPromptService.confirm.mockResolvedValue(false);
 
     const { stdout, stderr } = await runCommand('init');
 
-    expect(stderr).to.contain('This will verify your Google Calendar authentication.');
-    expect(stdout).to.contain('Operation cancelled.');
+    expect(stderr).toContain('This will verify your Google Calendar authentication.');
+    expect(stdout).toContain('Operation cancelled.');
   });
 
   it('should use default value (yes) when no input provided', async () => {
     // Default behavior from factory should be true
     const { stdout, stderr } = await runCommand('init');
 
-    expect(stderr).to.contain('This will verify your Google Calendar authentication.');
-    expect(stderr).to.contain('Verifying Google Calendar authentication...');
-    expect(stdout).to.contain('Authentication successful!');
+    expect(stderr).toContain('This will verify your Google Calendar authentication.');
+    expect(stderr).toContain('Verifying Google Calendar authentication...');
+    expect(stdout).toContain('Authentication successful!');
   });
 
   describe('authentication verification', () => {
     it('should verify Google Calendar authentication when user confirms', async () => {
-      mockPromptService.confirm.resolves(true);
+      mockPromptService.confirm.mockResolvedValue(true);
       // Mock successful authentication
-      mockAuthService.getCalendarAuth.resolves({
+      mockAuthService.getCalendarAuth.mockResolvedValue({
         client: {
           credentials: {
             // eslint-disable-next-line camelcase
@@ -142,30 +144,30 @@ describe('init command', () => {
 
       const { stdout, stderr } = await runCommand('init');
 
-      expect(stderr).to.contain('This will verify your Google Calendar authentication.');
-      expect(stderr).to.contain('Verifying Google Calendar authentication...');
-      expect(stdout).to.contain('Authentication successful!');
+      expect(stderr).toContain('This will verify your Google Calendar authentication.');
+      expect(stderr).toContain('Verifying Google Calendar authentication...');
+      expect(stdout).toContain('Authentication successful!');
     });
 
     it('should handle authentication failure gracefully', async () => {
-      mockPromptService.confirm.resolves(true);
+      mockPromptService.confirm.mockResolvedValue(true);
       // Mock authentication failure
-      mockCalendarService.listCalendars.rejects(new Error('Authentication failed: Invalid credentials'));
+      mockCalendarService.listCalendars.mockRejectedValue(new Error('Authentication failed: Invalid credentials'));
 
       const { stdout, stderr } = await runCommand('init');
 
-      expect(stderr).to.contain('This will verify your Google Calendar authentication.');
-      expect(stderr).to.contain('Verifying Google Calendar authentication...');
-      expect(stdout).to.contain('Authentication failed: Authentication failed: Invalid credentials');
+      expect(stderr).toContain('This will verify your Google Calendar authentication.');
+      expect(stderr).toContain('Verifying Google Calendar authentication...');
+      expect(stdout).toContain('Authentication failed: Authentication failed: Invalid credentials');
     });
 
     it('should not attempt authentication when user declines', async () => {
-      mockPromptService.confirm.resolves(false);
+      mockPromptService.confirm.mockResolvedValue(false);
 
       const { stdout } = await runCommand('init');
 
-      expect(stdout).to.contain('Operation cancelled.');
-      expect(mockCalendarService.listCalendars.called).to.be.false;
+      expect(stdout).toContain('Operation cancelled.');
+      expect(mockCalendarService.listCalendars).not.toHaveBeenCalled();
     });
   });
 });

@@ -1,5 +1,4 @@
-import { expect } from 'chai';
-import * as sinon from 'sinon';
+import { afterEach, beforeEach, describe, expect, it, MockedObject } from 'vitest';
 
 import { SUPPORTED_LANGUAGES } from '../../src/constants/languages';
 import { IConfigStorage } from '../../src/interfaces/config-storage';
@@ -8,7 +7,7 @@ import { TestContainerFactory } from '../test-utils/mock-factories';
 
 describe('ConfigService', () => {
   let configService: IConfigService;
-  let mockConfigStorage: IConfigStorage & sinon.SinonStubbedInstance<IConfigStorage>;
+  let mockConfigStorage: IConfigStorage & MockedObject<IConfigStorage>;
 
   beforeEach(() => {
     const { mocks } = TestContainerFactory.create();
@@ -23,51 +22,51 @@ describe('ConfigService', () => {
   describe('load', () => {
     it('should load config from storage when file exists', async () => {
       const mockConfig = { defaultCalendar: 'test@example.com' };
-      mockConfigStorage.exists.resolves(true);
-      mockConfigStorage.read.resolves(JSON.stringify(mockConfig));
+      mockConfigStorage.exists.mockResolvedValue(true);
+      mockConfigStorage.read.mockResolvedValue(JSON.stringify(mockConfig));
 
       const result = await configService.list();
 
-      expect(result).to.deep.equal(mockConfig);
-      expect(mockConfigStorage.exists.calledOnce).to.be.true;
-      expect(mockConfigStorage.read.calledOnce).to.be.true;
+      expect(result).toEqual(mockConfig);
+      expect(mockConfigStorage.exists).toHaveBeenCalledOnce();
+      expect(mockConfigStorage.read).toHaveBeenCalledOnce();
     });
 
     it('should use empty config when file does not exist', async () => {
-      mockConfigStorage.exists.resolves(false);
+      mockConfigStorage.exists.mockResolvedValue(false);
 
       const result = await configService.list();
 
-      expect(result).to.deep.equal({});
-      expect(mockConfigStorage.exists.calledOnce).to.be.true;
-      expect(mockConfigStorage.read.called).to.be.false;
+      expect(result).toEqual({});
+      expect(mockConfigStorage.exists).toHaveBeenCalledOnce();
+      expect(mockConfigStorage.read).not.toHaveBeenCalled();
     });
 
     it('should use empty config when storage read fails', async () => {
-      mockConfigStorage.exists.resolves(true);
-      mockConfigStorage.read.rejects(new Error('Read error'));
+      mockConfigStorage.exists.mockResolvedValue(true);
+      mockConfigStorage.read.mockRejectedValue(new Error('Read error'));
 
       const result = await configService.list();
 
-      expect(result).to.deep.equal({});
-      expect(mockConfigStorage.exists.calledOnce).to.be.true;
-      expect(mockConfigStorage.read.calledOnce).to.be.true;
+      expect(result).toEqual({});
+      expect(mockConfigStorage.exists).toHaveBeenCalledOnce();
+      expect(mockConfigStorage.read).toHaveBeenCalledOnce();
     });
 
     it('should use empty config when JSON parsing fails', async () => {
-      mockConfigStorage.exists.resolves(true);
-      mockConfigStorage.read.resolves('invalid json');
+      mockConfigStorage.exists.mockResolvedValue(true);
+      mockConfigStorage.read.mockResolvedValue('invalid json');
 
       const result = await configService.list();
 
-      expect(result).to.deep.equal({});
-      expect(mockConfigStorage.exists.calledOnce).to.be.true;
-      expect(mockConfigStorage.read.calledOnce).to.be.true;
+      expect(result).toEqual({});
+      expect(mockConfigStorage.exists).toHaveBeenCalledOnce();
+      expect(mockConfigStorage.read).toHaveBeenCalledOnce();
     });
 
     it('should not reload config if already loaded', async () => {
-      mockConfigStorage.exists.resolves(true);
-      mockConfigStorage.read.resolves('{}');
+      mockConfigStorage.exists.mockResolvedValue(true);
+      mockConfigStorage.read.mockResolvedValue('{}');
 
       // First call should load
       await configService.list();
@@ -75,8 +74,8 @@ describe('ConfigService', () => {
       // Second call should not reload
       await configService.list();
 
-      expect(mockConfigStorage.exists.calledOnce).to.be.true;
-      expect(mockConfigStorage.read.calledOnce).to.be.true;
+      expect(mockConfigStorage.exists).toHaveBeenCalledOnce();
+      expect(mockConfigStorage.read).toHaveBeenCalledOnce();
     });
   });
 
@@ -84,30 +83,30 @@ describe('ConfigService', () => {
     it('should reset config to empty object and save', async () => {
       // First set some config
       await configService.set('defaultCalendar', 'test@example.com');
-      mockConfigStorage.write.resetHistory();
+      mockConfigStorage.write.mockClear();
 
       await configService.reset();
 
       const result = await configService.list();
-      expect(result).to.deep.equal({});
-      expect(mockConfigStorage.write.calledOnce).to.be.true;
-      expect(mockConfigStorage.write.getCall(0).args[0]).to.equal('{}');
+      expect(result).toEqual({});
+      expect(mockConfigStorage.write).toHaveBeenCalledOnce();
+      expect(mockConfigStorage.write.mock.calls[0][0]).toEqual('{}');
     });
   });
 
   describe('validateKey', () => {
     it('should return true for valid keys', () => {
-      expect(configService.validateKey('defaultCalendar')).to.be.true;
-      expect(configService.validateKey('language')).to.be.true;
-      expect(configService.validateKey('events.maxResults')).to.be.true;
-      expect(configService.validateKey('events.format')).to.be.true;
-      expect(configService.validateKey('events.days')).to.be.true;
+      expect(configService.validateKey('defaultCalendar')).toBe(true);
+      expect(configService.validateKey('language')).toBe(true);
+      expect(configService.validateKey('events.maxResults')).toBe(true);
+      expect(configService.validateKey('events.format')).toBe(true);
+      expect(configService.validateKey('events.days')).toBe(true);
     });
 
     it('should return false for invalid keys', () => {
-      expect(configService.validateKey('invalidKey')).to.be.false;
-      expect(configService.validateKey('events.invalidKey')).to.be.false;
-      expect(configService.validateKey('')).to.be.false;
+      expect(configService.validateKey('invalidKey')).toBe(false);
+      expect(configService.validateKey('events.invalidKey')).toBe(false);
+      expect(configService.validateKey('')).toBe(false);
     });
   });
 
@@ -115,74 +114,74 @@ describe('ConfigService', () => {
     it('should return valid=false for unknown keys', () => {
       const result = configService.validateValue('unknownKey', 'value');
 
-      expect(result.valid).to.be.false;
-      expect(result.errorKey).to.equal('config.validation.unknownKey');
-      expect(result.errorOptions).to.deep.equal({ key: 'unknownKey' });
+      expect(result.valid).toBe(false);
+      expect(result.errorKey).toEqual('config.validation.unknownKey');
+      expect(result.errorOptions).toEqual({ key: 'unknownKey' });
     });
 
     it('should return valid=true for correct defaultCalendar value', () => {
       const result = configService.validateValue('defaultCalendar', 'test@example.com');
 
-      expect(result.valid).to.be.true;
-      expect(result.error).to.be.undefined;
-      expect(result.errorKey).to.be.undefined;
+      expect(result.valid).toBe(true);
+      expect(result.error).toBeUndefined();
+      expect(result.errorKey).toBeUndefined();
     });
 
     it('should return valid=true for all supported language values', () => {
       for (const language of SUPPORTED_LANGUAGES) {
         const result = configService.validateValue('language', language);
-        expect(result.valid).to.be.true;
-        expect(result.error).to.be.undefined;
-        expect(result.errorKey).to.be.undefined;
+        expect(result.valid).toBe(true);
+        expect(result.error).toBeUndefined();
+        expect(result.errorKey).toBeUndefined();
       }
     });
 
     it('should return valid=false for invalid language value', () => {
       const result = configService.validateValue('language', 'invalid');
 
-      expect(result.valid).to.be.false;
-      expect(result.errorKey).to.equal('config.validation.zodError');
-      expect(result.errorOptions).to.have.property('key', 'language');
-      expect(result.errorOptions).to.have.property('message');
+      expect(result.valid).toBe(false);
+      expect(result.errorKey).toEqual('config.validation.zodError');
+      expect(result.errorOptions).toHaveProperty('key', 'language');
+      expect(result.errorOptions).toHaveProperty('message');
     });
 
     it('should return valid=false for invalid events.days value', () => {
       const result = configService.validateValue('events.days', 0);
 
-      expect(result.valid).to.be.false;
-      expect(result.errorKey).to.equal('config.validation.zodError');
-      expect(result.errorOptions).to.have.property('key', 'events.days');
+      expect(result.valid).toBe(false);
+      expect(result.errorKey).toEqual('config.validation.zodError');
+      expect(result.errorOptions).toHaveProperty('key', 'events.days');
     });
 
     it('should return valid=false for invalid events.maxResults value', () => {
       const result = configService.validateValue('events.maxResults', 101);
 
-      expect(result.valid).to.be.false;
-      expect(result.errorKey).to.equal('config.validation.zodError');
-      expect(result.errorOptions).to.have.property('key', 'events.maxResults');
+      expect(result.valid).toBe(false);
+      expect(result.errorKey).toEqual('config.validation.zodError');
+      expect(result.errorOptions).toHaveProperty('key', 'events.maxResults');
     });
 
     it('should return valid=false for invalid events.format value', () => {
       const result = configService.validateValue('events.format', 'invalid');
 
-      expect(result.valid).to.be.false;
-      expect(result.errorKey).to.equal('config.validation.zodError');
-      expect(result.errorOptions).to.have.property('key', 'events.format');
+      expect(result.valid).toBe(false);
+      expect(result.errorKey).toEqual('config.validation.zodError');
+      expect(result.errorOptions).toHaveProperty('key', 'events.format');
     });
 
     it('should handle non-Zod validation errors', () => {
       // This case is harder to trigger but we can test by mocking the schema parsing
       const result = configService.validateValue('defaultCalendar', null);
 
-      expect(result.valid).to.be.false;
-      expect(result.errorKey).to.equal('config.validation.zodError');
+      expect(result.valid).toBe(false);
+      expect(result.errorKey).toEqual('config.validation.zodError');
     });
   });
 
   describe('nested value operations', () => {
     it('should handle nested get operations', async () => {
-      mockConfigStorage.exists.resolves(true);
-      mockConfigStorage.read.resolves(
+      mockConfigStorage.exists.mockResolvedValue(true);
+      mockConfigStorage.read.mockResolvedValue(
         JSON.stringify({
           events: {
             maxResults: 50,
@@ -194,18 +193,18 @@ describe('ConfigService', () => {
       const maxResults = await configService.get('events.maxResults');
       const format = await configService.get('events.format');
 
-      expect(maxResults).to.equal(50);
-      expect(format).to.equal('json');
+      expect(maxResults).toEqual(50);
+      expect(format).toEqual('json');
     });
 
     it('should handle nested set operations', async () => {
-      mockConfigStorage.exists.resolves(false);
+      mockConfigStorage.exists.mockResolvedValue(false);
 
       await configService.set('events.maxResults', 25);
       await configService.set('events.format', 'table');
 
       const config = await configService.list();
-      expect(config).to.deep.equal({
+      expect(config).toEqual({
         events: {
           maxResults: 25,
           format: 'table',
@@ -214,8 +213,8 @@ describe('ConfigService', () => {
     });
 
     it('should handle nested unset operations', async () => {
-      mockConfigStorage.exists.resolves(true);
-      mockConfigStorage.read.resolves(
+      mockConfigStorage.exists.mockResolvedValue(true);
+      mockConfigStorage.read.mockResolvedValue(
         JSON.stringify({
           events: {
             maxResults: 50,
@@ -228,7 +227,7 @@ describe('ConfigService', () => {
       await configService.unset('events.maxResults');
 
       const config = await configService.list();
-      expect(config).to.deep.equal({
+      expect(config).toEqual({
         events: {
           format: 'json',
         },
@@ -237,20 +236,20 @@ describe('ConfigService', () => {
     });
 
     it('should handle unset operations on non-existent keys', async () => {
-      mockConfigStorage.exists.resolves(false);
+      mockConfigStorage.exists.mockResolvedValue(false);
 
       await configService.unset('nonExistent.key');
 
       const config = await configService.list();
-      expect(config).to.deep.equal({});
+      expect(config).toEqual({});
     });
 
     it('should handle get operations on non-existent keys', async () => {
-      mockConfigStorage.exists.resolves(false);
+      mockConfigStorage.exists.mockResolvedValue(false);
 
       const result = await configService.get('nonExistent.key');
 
-      expect(result).to.be.undefined;
+      expect(result).toBeUndefined();
     });
   });
 
@@ -258,23 +257,23 @@ describe('ConfigService', () => {
     it('should return all valid configuration keys', () => {
       const validKeys = configService.getValidKeys();
 
-      expect(validKeys).to.include('defaultCalendar');
-      expect(validKeys).to.include('language');
-      expect(validKeys).to.include('events.maxResults');
-      expect(validKeys).to.include('events.format');
-      expect(validKeys).to.include('events.days');
+      expect(validKeys).toContain('defaultCalendar');
+      expect(validKeys).toContain('language');
+      expect(validKeys).toContain('events.maxResults');
+      expect(validKeys).toContain('events.format');
+      expect(validKeys).toContain('events.days');
     });
   });
 
   describe('getConfigPath', () => {
     it('should return config path from storage', () => {
       const expectedPath = '/test/config/path';
-      mockConfigStorage.getConfigPath.returns(expectedPath);
+      mockConfigStorage.getConfigPath.mockReturnValue(expectedPath);
 
       const result = configService.getConfigPath();
 
-      expect(result).to.equal(expectedPath);
-      expect(mockConfigStorage.getConfigPath.calledOnce).to.be.true;
+      expect(result).toEqual(expectedPath);
+      expect(mockConfigStorage.getConfigPath).toHaveBeenCalledOnce();
     });
   });
 });

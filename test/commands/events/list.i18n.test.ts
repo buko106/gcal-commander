@@ -1,5 +1,5 @@
 import { runCommand } from '@oclif/test';
-import { expect } from 'chai';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { TOKENS } from '../../../src/di/tokens';
 import { I18nService } from '../../../src/services/i18n';
@@ -23,25 +23,25 @@ describe('events list i18n integration', () => {
       TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
 
       // Set up empty events response for "No upcoming events found" test
-      mocks.calendarService.listEvents.resolves([]);
+      mocks.calendarService.listEvents.mockResolvedValue([]);
     });
 
     it('should display authentication message in English', async () => {
       const { stderr } = await runCommand('events list');
 
-      expect(stderr).to.include('Authenticating with Google Calendar...');
+      expect(stderr).toContain('Authenticating with Google Calendar...');
     });
 
     it('should display fetching message in English', async () => {
       const { stderr } = await runCommand('events list');
 
-      expect(stderr).to.include('Fetching events from primary...');
+      expect(stderr).toContain('Fetching events from primary...');
     });
 
     it('should display "No upcoming events found" message in English', async () => {
       const { stdout } = await runCommand('events list');
 
-      expect(stdout).to.include('No upcoming events found.');
+      expect(stdout).toContain('No upcoming events found.');
     });
 
     it('should display events table header in English with event count', async () => {
@@ -52,7 +52,7 @@ describe('events list i18n integration', () => {
       TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
 
       // Set up events response with data
-      mocks.calendarService.listEvents.resolves([
+      mocks.calendarService.listEvents.mockResolvedValue([
         {
           id: 'test-event-1',
           summary: 'Test Meeting',
@@ -69,7 +69,7 @@ describe('events list i18n integration', () => {
 
       const { stdout } = await runCommand('events list');
 
-      expect(stdout).to.include('Upcoming Events (2 found):');
+      expect(stdout).toContain('Upcoming Events (2 found):');
     });
 
     it('should display "(No title)" in English for events without summary', async () => {
@@ -80,7 +80,7 @@ describe('events list i18n integration', () => {
       TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
 
       // Set up event without summary
-      mocks.calendarService.listEvents.resolves([
+      mocks.calendarService.listEvents.mockResolvedValue([
         {
           id: 'test-event-no-title',
           summary: '', // Empty summary to trigger "No title" translation
@@ -91,7 +91,7 @@ describe('events list i18n integration', () => {
 
       const { stdout } = await runCommand('events list');
 
-      expect(stdout).to.include('(No title)');
+      expect(stdout).toContain('(No title)');
     });
   });
 
@@ -106,25 +106,25 @@ describe('events list i18n integration', () => {
       TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
 
       // Set up empty events response for "No upcoming events found" test
-      mocks.calendarService.listEvents.resolves([]);
+      mocks.calendarService.listEvents.mockResolvedValue([]);
     });
 
     it('should display authentication message in Japanese', async () => {
       const { stderr } = await runCommand('events list');
 
-      expect(stderr).to.include('Google Calendar で認証中...');
+      expect(stderr).toContain('Google Calendar で認証中...');
     });
 
     it('should display fetching message in Japanese', async () => {
       const { stderr } = await runCommand('events list');
 
-      expect(stderr).to.include('primary から予定を取得中...');
+      expect(stderr).toContain('primary から予定を取得中...');
     });
 
     it('should display "No upcoming events found" message in Japanese', async () => {
       const { stdout } = await runCommand('events list');
 
-      expect(stdout).to.include('今後の予定は見つかりませんでした。');
+      expect(stdout).toContain('今後の予定は見つかりませんでした。');
     });
 
     it('should display events table header in Japanese with event count', async () => {
@@ -137,7 +137,7 @@ describe('events list i18n integration', () => {
       TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
 
       // Set up events response with data
-      mocks.calendarService.listEvents.resolves([
+      mocks.calendarService.listEvents.mockResolvedValue([
         {
           id: 'test-event-1',
           summary: 'テストミーティング',
@@ -154,7 +154,7 @@ describe('events list i18n integration', () => {
 
       const { stdout } = await runCommand('events list');
 
-      expect(stdout).to.include('今後の予定 (2件):');
+      expect(stdout).toContain('今後の予定 (2件):');
     });
 
     it('should display "(No title)" in Japanese for events without summary', async () => {
@@ -167,7 +167,7 @@ describe('events list i18n integration', () => {
       TestContainerFactory.registerService(TOKENS.I18nService, realI18nService);
 
       // Set up event without summary
-      mocks.calendarService.listEvents.resolves([
+      mocks.calendarService.listEvents.mockResolvedValue([
         {
           id: 'test-event-no-title',
           summary: '', // Empty summary to trigger "No title" translation
@@ -178,7 +178,7 @@ describe('events list i18n integration', () => {
 
       const { stdout } = await runCommand('events list');
 
-      expect(stdout).to.include('(タイトルなし)');
+      expect(stdout).toContain('(タイトルなし)');
     });
   });
 });

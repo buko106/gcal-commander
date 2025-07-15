@@ -1,5 +1,5 @@
 import { runCommand } from '@oclif/test';
-import { expect } from 'chai';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { TOKENS } from '../../../src/di/tokens';
 import { I18nService } from '../../../src/services/i18n';
@@ -23,17 +23,17 @@ describe('events show i18n integration', () => {
         start: { dateTime: '2024-06-25T10:00:00+09:00' },
         end: { dateTime: '2024-06-25T11:00:00+09:00' },
       };
-      mocks.calendarService.getEvent.resolves(testEvent);
+      mocks.calendarService.getEvent.mockResolvedValue(testEvent);
     });
 
     it('should display authentication message in English', async () => {
       const { stderr } = await runCommand('events show test-event-123');
-      expect(stderr).to.include('Authenticating with Google Calendar...');
+      expect(stderr).toContain('Authenticating with Google Calendar...');
     });
 
     it('should display fetching message in English', async () => {
       const { stderr } = await runCommand('events show test-event-123');
-      expect(stderr).to.include('Fetching event details...');
+      expect(stderr).toContain('Fetching event details...');
     });
   });
 
@@ -52,17 +52,17 @@ describe('events show i18n integration', () => {
         start: { dateTime: '2024-06-25T10:00:00+09:00' },
         end: { dateTime: '2024-06-25T11:00:00+09:00' },
       };
-      mocks.calendarService.getEvent.resolves(testEvent);
+      mocks.calendarService.getEvent.mockResolvedValue(testEvent);
     });
 
     it('should display authentication message in Japanese', async () => {
       const { stderr } = await runCommand('events show test-event-123');
-      expect(stderr).to.include('Google Calendar で認証中...');
+      expect(stderr).toContain('Google Calendar で認証中...');
     });
 
     it('should display fetching message in Japanese', async () => {
       const { stderr } = await runCommand('events show test-event-123');
-      expect(stderr).to.include('イベントの詳細を取得中...');
+      expect(stderr).toContain('イベントの詳細を取得中...');
     });
   });
 });

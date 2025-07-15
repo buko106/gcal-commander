@@ -97,6 +97,9 @@ export class TestContainerFactory {
       useValue: promptServiceMock,
     });
 
+    // Set current container for registerService method
+    this.currentContainer = container;
+
     return {
       container,
       mocks: {
