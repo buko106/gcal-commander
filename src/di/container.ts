@@ -9,6 +9,7 @@ import { ConfigService } from '../services/config';
 import { FileSystemConfigStorage } from '../services/config-storage';
 import { I18nService } from '../services/i18n';
 import { InquirerPromptService } from '../services/prompt';
+import { AppPaths } from '../utils/paths';
 import { TOKENS } from './tokens';
 
 // Container setup
@@ -23,7 +24,7 @@ export function setupContainer(): void {
   });
 
   container.register<IConfigStorage>(TOKENS.ConfigStorage, {
-    useClass: FileSystemConfigStorage,
+    useFactory: () => new FileSystemConfigStorage(AppPaths.getConfigPath()),
   });
 
   container.registerSingleton<IConfigService>(TOKENS.ConfigService, ConfigService);

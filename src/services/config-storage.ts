@@ -8,8 +8,8 @@ import { AppPaths } from '../utils/paths';
 export class FileSystemConfigStorage implements IConfigStorage {
   private readonly configPath: string;
 
-  constructor() {
-    this.configPath = AppPaths.getConfigPath();
+  constructor(configPath?: string) {
+    this.configPath = configPath || AppPaths.getConfigPath();
   }
 
   public async exists(): Promise<boolean> {

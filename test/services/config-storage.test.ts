@@ -1,14 +1,17 @@
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { FileSystemConfigStorage, InMemoryConfigStorage } from '../../src/services/config-storage';
-import { AppPaths } from '../../src/utils/paths';
 
 describe('Config Storage', () => {
   describe('FileSystemConfigStorage', () => {
     let storage: FileSystemConfigStorage;
 
     beforeEach(() => {
-      storage = new FileSystemConfigStorage();
+      // Use temporary directory for tests to avoid affecting actual config
+      const testConfigPath = join(tmpdir(), 'gcal-commander-test-config.json');
+      storage = new FileSystemConfigStorage(testConfigPath);
     });
 
     it('should be instantiated', () => {
@@ -16,7 +19,7 @@ describe('Config Storage', () => {
     });
 
     it('should return correct config path', () => {
-      const expectedPath = AppPaths.getConfigPath();
+      const expectedPath = join(tmpdir(), 'gcal-commander-test-config.json');
       expect(storage.getConfigPath()).toEqual(expectedPath);
     });
 
