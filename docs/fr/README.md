@@ -19,6 +19,7 @@ Une interface en ligne de commande pour les opérations Google Calendar. Gérez 
 - 🔐 **Authentification OAuth2 sécurisée** - Configuration unique avec actualisation automatique du token
 - 💻 **Sortie conviviale pour le terminal** - Format de tableau propre ou JSON pour les scripts
 - 🔇 **Support du mode silencieux** - Utilisez le flag `--quiet` pour supprimer les messages de statut dans les scripts
+- 🎯 **Colonnes de tableau personnalisables** - Utilisez le flag `--fields` pour afficher seulement des colonnes spécifiques en format tableau
 - 🚀 **Rapide et léger** - Construit avec le framework oclif
 
 ## Langues
@@ -123,6 +124,10 @@ gcal events list --max-results 5 --days 7
 
 # Utiliser le mode silencieux pour les scripts (supprime les messages de statut, conserve la sortie de données)
 gcal events list --quiet --format json | jq '.[] | .summary'
+
+# Personnaliser les colonnes de tableau
+gcal events list --fields title,date,time
+gcal calendars list --fields name,id
 
 # Exemples de configuration
 gcal config set defaultCalendar work@company.com

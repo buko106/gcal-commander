@@ -27,6 +27,7 @@ gcal events create <요약> [옵션]
 | `--description` | | 이벤트 설명 | - |
 | `--attendees` | | 참석자 이메일 주소의 쉼표 구분 목록 | - |
 | `--send-updates` | | 이벤트 초대 보내기 (all/externalOnly/none) | `none` |
+| `--fields` | | 테이블 형식으로 표시할 필드의 쉼표 구분 목록 | 모든 필드 |
 | `--format` | `-f` | 출력 형식 (table, json, pretty-json) | `table` |
 | `--quiet` | `-q` | 필수가 아닌 출력 숨기기 (상태 메시지, 진행률 표시기) | `false` |
 

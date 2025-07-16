@@ -19,6 +19,7 @@ gcal events list [calendar] [options]
 | Flag | Short | Description | Default |
 |------|-------|-------------|---------|
 | `--days` | `-d` | Number of days to look ahead (1-365) | `30` |
+| `--fields` | | Comma-separated list of fields to display in table format | All fields |
 | `--format` | `-f` | Output format (table, json, or pretty-json) | `table` |
 | `--max-results` | `-n` | Maximum number of events to return (1-100) | `10` |
 | `--quiet` | `-q` | Suppress non-essential output (status messages, progress indicators) | `false` |
@@ -65,6 +66,10 @@ gcal events list --quiet --format json | jq '.[] | .summary'
 gcal config set defaultCalendar work@company.com
 gcal config set events.days 14
 gcal events list  # Uses work@company.com for 14 days
+
+# Customize table columns
+gcal events list --fields title,date,time
+gcal events list --fields title,location --max-results 20
 ```
 
 ### Output Formats
@@ -97,6 +102,31 @@ Upcoming Events (2 found):
   }
 ]
 ```
+
+## Table Field Customization
+
+You can customize which columns are displayed in table format using the `--fields` flag:
+
+### Available Fields
+- `title` - Event title/summary
+- `date` - Event date 
+- `time` - Event time
+- `location` - Event location
+- `description` - Event description
+
+### Examples
+```bash
+# Show only title and date
+gcal events list --fields title,date
+
+# Show title, time, and location
+gcal events list --fields title,time,location
+
+# Show only titles (useful for quick overview)
+gcal events list --fields title
+```
+
+**Note**: The `--fields` flag only affects table format output. JSON output always includes all available fields.
 
 ## Time Range and Limits
 

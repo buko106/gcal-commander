@@ -27,6 +27,7 @@ gcal events create <resumen> [opciones]
 | `--description` | | Descripción del evento | - |
 | `--attendees` | | Lista separada por comas de direcciones de correo de asistentes | - |
 | `--send-updates` | | Enviar invitaciones de evento (all/externalOnly/none) | `none` |
+| `--fields` | | Lista separada por comas de campos a mostrar en formato tabla | Todos los campos |
 | `--format` | `-f` | Formato de salida (table, json, pretty-json) | `table` |
 | `--quiet` | `-q` | Ocultar salida no esencial (mensajes de estado, indicadores de progreso) | `false` |
 

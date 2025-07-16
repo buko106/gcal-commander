@@ -12,6 +12,7 @@ gcal calendars list [options]
 
 | Flag | Short | Description | Default |
 |------|-------|-------------|---------|
+| `--fields` | | Comma-separated list of fields to display in table format | All fields |
 | `--format` | `-f` | Output format (table, json, or pretty-json) | `table` |
 | `--quiet` | `-q` | Suppress non-essential output (status messages, progress indicators) | `false` |
 
@@ -28,6 +29,12 @@ gcal calendars list --format json
 
 # List calendars quietly (no status messages)
 gcal calendars list --quiet
+
+# Show only calendar names and IDs
+gcal calendars list --fields name,id
+
+# Show only names (useful for quick overview)
+gcal calendars list --fields name
 ```
 
 ### Output Formats
@@ -65,6 +72,35 @@ Available Calendars (3 found):
   }
 ]
 ```
+
+## Table Field Customization
+
+You can customize which columns are displayed in table format using the `--fields` flag:
+
+### Available Fields
+- `name` - Calendar name/summary
+- `id` - Calendar ID
+- `access` - Access role (owner, reader, writer, etc.)
+- `primary` - Primary calendar indicator
+- `description` - Calendar description
+- `color` - Calendar color
+
+### Examples
+```bash
+# Show only name and ID (most common use case)
+gcal calendars list --fields name,id
+
+# Show name, ID, and access role
+gcal calendars list --fields name,id,access
+
+# Show only names for quick overview
+gcal calendars list --fields name
+
+# Show calendar colors and access
+gcal calendars list --fields name,color,access
+```
+
+**Note**: The `--fields` flag only affects table format output. JSON output always includes all available fields.
 
 ## Use Cases
 

@@ -19,6 +19,7 @@ gcal events list [kalender] [optionen]
 | Flag | Kurz | Beschreibung | Standard |
 |------|------|--------------|----------|
 | `--days` | `-d` | Anzahl der Tage in die Zukunft (1-365) | `30` |
+| `--fields` | | Kommagetrennte Liste der Felder für Tabellenformat | Alle Felder |
 | `--format` | `-f` | Ausgabeformat (table, json, pretty-json) | `table` |
 | `--max-results` | `-n` | Maximale Anzahl zurückzugebender Ereignisse (1-100) | `10` |
 | `--quiet` | `-q` | Nicht-wesentliche Ausgabe ausblenden (Statusmeldungen, Fortschrittsanzeigen) | `false` |
@@ -65,6 +66,10 @@ gcal events list --quiet --format json | jq '.[] | .summary'
 gcal config set defaultCalendar work@company.com
 gcal config set events.days 14
 gcal events list  # Verwendet work@company.com für 14 Tage
+
+# Tabellenspalten anpassen
+gcal events list --fields title,date,time
+gcal events list --fields title,location --max-results 20
 ```
 
 ### Ausgabeformate
@@ -97,6 +102,31 @@ Bevorstehende Ereignisse (2 gefunden):
   }
 ]
 ```
+
+## Tabellenfeld-Anpassung
+
+Sie können anpassen, welche Spalten im Tabellenformat angezeigt werden, indem Sie die `--fields`-Flagge verwenden:
+
+### Verfügbare Felder
+- `title` - Ereignistitel/-zusammenfassung
+- `date` - Ereignisdatum
+- `time` - Ereigniszeit
+- `location` - Ereignisort
+- `description` - Ereignisbeschreibung
+
+### Beispiele
+```bash
+# Nur Titel und Datum anzeigen
+gcal events list --fields title,date
+
+# Titel, Zeit und Ort anzeigen
+gcal events list --fields title,time,location
+
+# Nur Titel anzeigen (für schnelle Übersicht)
+gcal events list --fields title
+```
+
+**Hinweis**: Die `--fields`-Flagge wirkt nur auf die Tabellenformat-Ausgabe. JSON-Ausgabe enthält immer alle verfügbaren Felder.
 
 ## Zeitbereiche und Limits
 

@@ -19,6 +19,7 @@ gcal events list [calendar] [options]
 | フラグ | 短縮形 | 説明 | デフォルト |
 |--------|--------|------|-----------|
 | `--days` | `-d` | 先読みする日数（1-365） | `30` |
+| `--fields` | | テーブル形式で表示するフィールドのカンマ区切りリスト | すべてのフィールド |
 | `--format` | `-f` | 出力形式（table、json、pretty-json） | `table` |
 | `--max-results` | `-n` | 返却する最大イベント数（1-100） | `10` |
 | `--quiet` | `-q` | 重要でない出力を非表示（ステータスメッセージ、進行状況表示） | `false` |
@@ -65,6 +66,10 @@ gcal events list --quiet --format json | jq '.[] | .summary'
 gcal config set defaultCalendar work@company.com
 gcal config set events.days 14
 gcal events list  # work@company.comを14日間使用
+
+# テーブル列をカスタマイズ
+gcal events list --fields title,date,time
+gcal events list --fields title,location --max-results 20
 ```
 
 ### 出力形式
@@ -97,6 +102,33 @@ gcal events list  # work@company.comを14日間使用
   }
 ]
 ```
+
+## テーブルフィールドのカスタマイズ
+
+`--fields`フラグを使用して、テーブル形式で表示する列をカスタマイズできます：
+
+### 利用可能なフィールド
+
+- `title` - イベントタイトル/概要
+- `date` - イベント日付
+- `time` - イベント時間
+- `location` - イベント場所
+- `description` - イベント説明
+
+### 例
+
+```bash
+# タイトルと日付のみ表示
+gcal events list --fields title,date
+
+# タイトル、時間、場所を表示
+gcal events list --fields title,time,location
+
+# タイトルのみ表示（クイック概要用に便利）
+gcal events list --fields title
+```
+
+**注意**: `--fields`フラグはテーブル形式の出力にのみ影響します。JSON出力は常にすべての利用可能なフィールドを含みます。
 
 ## 時間範囲と制限
 

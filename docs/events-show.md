@@ -19,6 +19,7 @@ gcal events show <event-id> [options]
 | Flag | Short | Description | Default |
 |------|-------|-------------|---------|
 | `--calendar` | `-c` | Calendar ID where the event is located | `primary` |
+| `--fields` | | Comma-separated list of fields to display in table format | All fields |
 | `--format` | `-f` | Output format (table, json, or pretty-json) | `table` |
 | `--quiet` | `-q` | Suppress non-essential output (status messages, progress indicators) | `false` |
 

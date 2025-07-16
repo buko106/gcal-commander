@@ -12,6 +12,7 @@ gcal calendars list [options]
 
 | Drapeau | Abrév. | Description | Par défaut |
 |---------|--------|-------------|------------|
+| `--fields` | | Liste séparée par des virgules des champs à afficher en format tableau | Tous les champs |
 | `--format` | `-f` | Format de sortie (table, json, pretty-json) | `table` |
 | `--quiet` | `-q` | Masquer la sortie non essentielle (messages de statut, indicateurs de progression) | `false` |
 
@@ -28,6 +29,12 @@ gcal calendars list --format json
 
 # Lister les calendriers silencieusement (sans messages de statut)
 gcal calendars list --quiet
+
+# Afficher seulement les noms de calendriers et IDs
+gcal calendars list --fields name,id
+
+# Afficher seulement les noms (pour aperçu rapide)
+gcal calendars list --fields name
 ```
 
 ### Formats de sortie
@@ -65,6 +72,35 @@ Calendriers disponibles (3 trouvés) :
   }
 ]
 ```
+
+## Personnalisation des champs de tableau
+
+Vous pouvez personnaliser les colonnes affichées en format tableau en utilisant le flag `--fields` :
+
+### Champs disponibles
+- `name` - Nom/résumé du calendrier
+- `id` - ID du calendrier
+- `access` - Rôle d'accès (owner, reader, writer, etc.)
+- `primary` - Indicateur de calendrier principal
+- `description` - Description du calendrier
+- `color` - Couleur du calendrier
+
+### Exemples
+```bash
+# Afficher seulement le nom et l'ID (cas d'utilisation le plus courant)
+gcal calendars list --fields name,id
+
+# Afficher nom, ID et rôle d'accès
+gcal calendars list --fields name,id,access
+
+# Afficher seulement les noms pour aperçu rapide
+gcal calendars list --fields name
+
+# Afficher les couleurs de calendriers et l'accès
+gcal calendars list --fields name,color,access
+```
+
+**Note** : Le flag `--fields` n'affecte que la sortie en format tableau. La sortie JSON inclut toujours tous les champs disponibles.
 
 ## Cas d'utilisation
 

@@ -19,6 +19,7 @@ gcal events list [calendario] [opciones]
 | Bandera | Abrev. | Descripción | Por defecto |
 |---------|--------|-------------|-------------|
 | `--days` | `-d` | Número de días a buscar hacia adelante (1-365) | `30` |
+| `--fields` | | Lista separada por comas de campos a mostrar en formato tabla | Todos los campos |
 | `--format` | `-f` | Formato de salida (table, json, pretty-json) | `table` |
 | `--max-results` | `-n` | Número máximo de eventos a devolver (1-100) | `10` |
 | `--quiet` | `-q` | Ocultar salida no esencial (mensajes de estado, indicadores de progreso) | `false` |
@@ -65,6 +66,10 @@ gcal events list --quiet --format json | jq '.[] | .summary'
 gcal config set defaultCalendar work@company.com
 gcal config set events.days 14
 gcal events list  # Usa work@company.com por 14 días
+
+# Personalizar columnas de tabla
+gcal events list --fields title,date,time
+gcal events list --fields title,location --max-results 20
 ```
 
 ### Formatos de salida
@@ -97,6 +102,31 @@ Próximos eventos (2 encontrados):
   }
 ]
 ```
+
+## Personalización de campos de tabla
+
+Puedes personalizar qué columnas se muestran en formato tabla usando la bandera `--fields`:
+
+### Campos disponibles
+- `title` - Título/resumen del evento
+- `date` - Fecha del evento
+- `time` - Hora del evento
+- `location` - Ubicación del evento
+- `description` - Descripción del evento
+
+### Ejemplos
+```bash
+# Mostrar solo título y fecha
+gcal events list --fields title,date
+
+# Mostrar título, hora y ubicación
+gcal events list --fields title,time,location
+
+# Mostrar solo títulos (para vista rápida)
+gcal events list --fields title
+```
+
+**Nota**: La bandera `--fields` solo afecta la salida en formato tabla. La salida JSON siempre incluye todos los campos disponibles.
 
 ## Rangos de tiempo y límites
 
